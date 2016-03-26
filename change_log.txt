@@ -1,0 +1,24 @@
+v4.5:
+* Added configuration options to allow canceling certain tasks when a player dies
+* Fixed & improved many messages in commands
+* Added 2 conditional operators: isBefore:DDMMYY,HHMMSS & isAfter:DDMMYY,HHMMSS
+* Added /svs timelimit <minimum|@|-> [maximum]
+* Fixed errors being thrown when a ServerSign expires at the location where a previous sign expire
+* Added new command "/svs option" & /svs add conditional operator "checkOption:<id>=<value>" for player-input during execution
+* Added ability to check for multiple answers with conditional operator "checkOption:<id>=<value>|<value>|..."
+* Decreased verbosity of /svsr command
+* Added new command "/svs import <file path>" to import text files with 1 command per line (without /svs at the start)
+* Fixed an issue that caused commands to be sent as a chat message instead of a command when alternate_command_dispatching is set to true
+* Fixed being unable to remove an EXP cost from a ServerSign using /svs xp 0
+* Added the ability to remove assigned permissions from a sign with /svs setperms -
+* Reduced unnecessary per-command messages being logged in console when Vault is disabled
+
+v4.5.1:
+* Fixed priceitem inventory checks not working correctly with Spigot 1.9 (invalid inventory size)
+* Changed handling of invalid files to sub folders so their file names are not changed (easier to place back)
+* Introduced new error handling for invalid commands to help avoid unexpected exception issues due to misconfiguration
+* Added new conditional operator: onlinePlayers:<operator><amount> - i.e. onlinePlayers:>100 or onlinePlayers:=21
+* Added new conditional operator: nearbyPlayers:<radius><operator><amount> - i.e. nearbyPlayers:10<50 or nearbyPlayers:100>25
+
+v4.5.2:
+*
