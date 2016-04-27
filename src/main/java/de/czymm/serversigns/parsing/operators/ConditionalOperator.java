@@ -39,6 +39,7 @@ public abstract class ConditionalOperator {
         VALUES.add(new CheckOptionOperator());
         VALUES.add(new NearbyPlayersOperator());
         VALUES.add(new OnlinePlayersOperator());
+        VALUES.add(new HasBalanceOperator());
     }
 
     protected String key;
