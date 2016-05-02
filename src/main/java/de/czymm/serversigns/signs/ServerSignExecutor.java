@@ -54,17 +54,22 @@ public class ServerSignExecutor {
         plugin = instance;
     }
 
-    public void executeSignFull(Player player, ServerSign sign, PlayerInteractEvent event) {
+    public void executeSignFull(Player player, ServerSign sign, ClickType clickType, PlayerInteractEvent event) {
+        ServerSignExecData execData = sign.getServerSignExecutorData(clickType);
+        if (execData == null) {
+            return; // This sign does not handle this type of click
+        }
+
         try {
             // Should we cancel this event regardless of the outcome?
-            if (event != null && sign.getCancelMode().equals(CancelMode.ALWAYS)) {
+            if (event != null && execData.getCancelMode().equals(CancelMode.ALWAYS)) {
                 event.setCancelled(true);
             }
 
             // Pre-execution checks
-            if (!isReady(player, sign)) {
+            if (!isReady(player, sign, execData, clickType)) {
                 // Event cancel mode
-                if (event != null && sign.getCancelMode().equals(CancelMode.FAIL_ONLY)) {
+                if (event != null && execData.getCancelMode().equals(CancelMode.FAIL_ONLY)) {
                     event.setCancelled(true);
                 }
                 return;
@@ -89,7 +94,7 @@ public class ServerSignExecutor {
 
                 // Pre-execution granted permissions
                 List<PermissionGrantPlayerTask> grantTasks = null;
-                if (sign.getGrantPermissions() != null && !sign.getGrantPermissions().isEmpty()) {
+                if (execData.getGrantPermissions() != null && !execData.getGrantPermissions().isEmpty()) {
                     if ((!plugin.hookManager.vault.isHooked() || !plugin.hookManager.vault.getHook().hasPermissions()) && (plugin.config.getPermissionAddCommand().isEmpty() || plugin.config.getPermissionRemoveCommand().isEmpty())) {
                         if (sign.shouldDisplayInternalMessages()) {
                             plugin.send(player, Message.FEATURES_NOT_AVAILABLE);
@@ -97,22 +102,22 @@ public class ServerSignExecutor {
                         ServerSignsPlugin.log("ServerSign at " + sign.getLocationString() + " has been activated, but cannot execute as it is attempting to grant permissions but no Vault hook or config-defined commands exist");
                         return;
                     }
-                    grantTasks = grantPermissions(player.getUniqueId(), 0, sign.getGrantPermissions(), tasks);
+                    grantTasks = grantPermissions(player.getUniqueId(), 0, execData.getGrantPermissions(), tasks);
                 }
 
                 // Commands
-                createCommandTasks(sign, tasks, player, event == null ? null : event.getAction());
+                createCommandTasks(sign, execData, tasks, player, event == null ? null : event.getAction());
                 if (plugin.inputOptionsManager.hasCompletedAnswers(player)) { // Clear completed answers as they're no longer needed for this execution
                     plugin.inputOptionsManager.getCompletedAnswers(player, true);
                 }
 
                 // Remove granted permissions
-                if (sign.getGrantPermissions() != null && !sign.getGrantPermissions().isEmpty()) {
+                if (execData.getGrantPermissions() != null && !execData.getGrantPermissions().isEmpty()) {
                     removePermissions(player.getUniqueId(), 0, grantTasks, tasks);
                 }
 
                 // Bulked so we can halt execution of the whole sign if necessary
-                if (sign.getCommands().size() > 0 && tasks.isEmpty()) {
+                if (execData.getCommands().size() > 0 && tasks.isEmpty()) {
                     // No commands applicable for this interaction, halt execution
                     return;
                 }
@@ -122,25 +127,25 @@ public class ServerSignExecutor {
             }
 
             // Update usage
-            sign.setLastGlobalUse(System.currentTimeMillis());
-            if (sign.getCooldown() > 0) {
-                sign.addLastUse(player.getUniqueId()); // Only store if we need to
+            execData.setLastGlobalUse(System.currentTimeMillis());
+            if (execData.getCooldown() > 0) {
+                execData.addLastUse(player.getUniqueId()); // Only store if we need to
             }
 
             // Post-execution function calls
-            removePriceItems(player, sign);
-            removeXP(player, sign);
-            removeMoney(player, sign);
+            removePriceItems(player, sign, execData);
+            removeXP(player, sign, execData);
+            removeMoney(player, sign, execData);
 
             // Event cancel mode
-            if (event != null && sign.getCancelMode().equals(CancelMode.SUCCESS_ONLY)) {
+            if (event != null && execData.getCancelMode().equals(CancelMode.SUCCESS_ONLY)) {
                 event.setCancelled(true);
             }
 
             // Uses limit
-            sign.incrementUseTally();
-            if (sign.getUseLimit() > 0) {
-                if (sign.getUseTally() >= sign.getUseLimit()) {
+            execData.incrementUseTally();
+            if (execData.getUseLimit() > 0) {
+                if (execData.getUseTally() >= execData.getUseLimit()) {
                     ServerSignsPlugin.log("ServerSign at '" + sign.getLocationString() + "' has reached its uses limit and has expired");
                     plugin.serverSignsManager.expire(sign);
                     return;
@@ -149,7 +154,7 @@ public class ServerSignExecutor {
 
             // Loops
             if (looped) {
-                executeSignLooped(sign, player);
+                executeSignLooped(sign, clickType, player);
                 return;
             }
 
@@ -161,7 +166,7 @@ public class ServerSignExecutor {
         }
     }
 
-    public void executeSignLooped(ServerSign sign, Player executor) {
+    public void executeSignLooped(ServerSign sign, ClickType clickType, Player executor) {
         try {
             if (sign == null || plugin.serverSignsManager.getServerSignByLocation(sign.getLocation()) == null) return;
 
@@ -174,16 +179,16 @@ public class ServerSignExecutor {
             sign.setCurrentLoop(currentLoop);
 
             // Format and execute commands
-            for (TaskManagerTask task : createCommandTasks(sign, null, executor, null)) {
+            for (TaskManagerTask task : createCommandTasks(sign, sign.getServerSignExecutorData(clickType), null, executor, null)) {
                 plugin.taskManager.addTask(task);
             }
 
             if (loops == 0) {
                 // Scheduled infinity until restart
-                executeLoopRunnable(sign, executor, loopDelay);
+                executeLoopRunnable(sign, clickType, executor, loopDelay);
             } else if (loops > -1 && currentLoop < loops) {
                 sign.setCurrentLoop(++currentLoop);
-                executeLoopRunnable(sign, executor, loopDelay);
+                executeLoopRunnable(sign, clickType, executor, loopDelay);
             } else {
                 sign.setCurrentLoop(0); // Done
             }
@@ -195,10 +200,10 @@ public class ServerSignExecutor {
         }
     }
 
-    private void executeLoopRunnable(final ServerSign sign, final Player executor, long loopDelay) {
+    private void executeLoopRunnable(final ServerSign sign, final ClickType clickType, final Player executor, long loopDelay) {
         new BukkitRunnable() {
             public void run() {
-                executeSignLooped(sign,
+                executeSignLooped(sign, clickType,
                         executor == null
                                 ? null
                                 : executor.isOnline()
@@ -208,11 +213,11 @@ public class ServerSignExecutor {
         }.runTaskLater(plugin, loopDelay * 20);
     }
 
-    private List<TaskManagerTask> createCommandTasks(ServerSign sign, List<TaskManagerTask> existingList, Player executor, Action eventAction) {
+    private List<TaskManagerTask> createCommandTasks(ServerSign sign, ServerSignExecData execData, List<TaskManagerTask> existingList, Player executor, Action eventAction) {
         List<TaskManagerTask> tasks = existingList == null ? new ArrayList<TaskManagerTask>() : existingList;
 
         ProcessingData processingData = new ProcessingData();
-        for (ServerSignCommand command : sign.getCommands()) {
+        for (ServerSignCommand command : execData.getCommands()) {
             // Event Action check
             if (eventAction != null) {
                 if (command.getInteractValue() != 0 &&
@@ -230,7 +235,7 @@ public class ServerSignExecutor {
                 break;
             }
 
-            tasks.addAll(command.getTasks(executor, plugin, getInjectedCommandReplacements(sign, true)));
+            tasks.addAll(command.getTasks(executor, plugin, getInjectedCommandReplacements(sign, execData, true)));
         }
 
         return tasks;
@@ -298,14 +303,14 @@ public class ServerSignExecutor {
     <signLoc> = sign location in world,x,y,z format
     */
 
-    private Map<String, String> getInjectedCommandReplacements(ServerSign sign, boolean looped) {
+    private Map<String, String> getInjectedCommandReplacements(ServerSign sign, ServerSignExecData execData, boolean looped) {
         Map<String, String> replacementMap = new HashMap<>();
 
-        replacementMap.put("<usesTally>", sign.getUseTally() + "");
+        replacementMap.put("<usesTally>", execData.getUseTally() + "");
         replacementMap.put("<signLoc>", sign.getWorld() + "," + sign.getX() + "," + sign.getY() + "," + sign.getZ());
-        if (sign.getUseLimit() > 0) {
-            replacementMap.put("<usesLeft>", sign.getUseLimit() - sign.getUseTally() + "");
-            replacementMap.put("<usesLimit>", sign.getUseLimit() + "");
+        if (execData.getUseLimit() > 0) {
+            replacementMap.put("<usesLeft>", execData.getUseLimit() - execData.getUseTally() + "");
+            replacementMap.put("<usesLimit>", execData.getUseLimit() + "");
         }
         if (looped) {
             replacementMap.put("<loopCount>", sign.getCurrentLoop() + "");
@@ -319,65 +324,65 @@ public class ServerSignExecutor {
     // PRE-EXECUTION CHECKS
     //-----------------------------------------------------
 
-    private boolean isReady(Player player, ServerSign sign) {
+    private boolean isReady(Player player, ServerSign sign, ServerSignExecData execData, ClickType clickType) {
         // Cancel any previous confirmations pending if this is a new sign
         if (SVSMetaManager.hasInclusiveMeta(player, SVSMetaKey.YES) &&
                 !SVSMetaManager.getMeta(player).getValue().asServerSign().equals(sign)) {
             SVSMetaManager.removeMeta(player);
         }
 
-        if (sign.getTimeLimitMinimum() > 0 && System.currentTimeMillis() < sign.getTimeLimitMinimum()) {
-            plugin.send(player, Message.TIMELIMIT_WAITING, "<string>", TimeUtils.getTimeSpan(sign.getTimeLimitMinimum() - System.currentTimeMillis(), TimeUnit.SECONDS, TimeUnit.YEARS, false, false));
+        if (execData.getTimeLimitMinimum() > 0 && System.currentTimeMillis() < execData.getTimeLimitMinimum()) {
+            plugin.send(player, Message.TIMELIMIT_WAITING, "<string>", TimeUtils.getTimeSpan(execData.getTimeLimitMinimum() - System.currentTimeMillis(), TimeUnit.SECONDS, TimeUnit.YEARS, false, false));
             return false;
         }
-        if (sign.getTimeLimitMaximum() > 0 && System.currentTimeMillis() >= sign.getTimeLimitMaximum()) {
-            plugin.send(player, Message.TIMELIMIT_EXPIRED, "<string>", TimeUtils.getTimeSpan(System.currentTimeMillis() - sign.getTimeLimitMaximum(), TimeUnit.SECONDS, TimeUnit.YEARS, false, false));
+        if (execData.getTimeLimitMaximum() > 0 && System.currentTimeMillis() >= execData.getTimeLimitMaximum()) {
+            plugin.send(player, Message.TIMELIMIT_EXPIRED, "<string>", TimeUtils.getTimeSpan(System.currentTimeMillis() - execData.getTimeLimitMaximum(), TimeUnit.SECONDS, TimeUnit.YEARS, false, false));
             return false;
         }
 
-        if (!sign.getCancelPermission().isEmpty()) {
-            if (player.hasPermission(sign.getCancelPermission())) {
+        if (!execData.getCancelPermission().isEmpty()) {
+            if (player.hasPermission(execData.getCancelPermission())) {
                 if (sign.shouldDisplayInternalMessages()) {
-                    if (sign.getCancelPermissionMessage().isEmpty()) {
+                    if (execData.getCancelPermissionMessage().isEmpty()) {
                         plugin.send(player, Message.CANCELLED_DUE_TO_PERMISSION);
                     } else {
-                        plugin.send(player, StringUtils.colour(sign.getCancelPermissionMessage()));
+                        plugin.send(player, StringUtils.colour(execData.getCancelPermissionMessage()));
                     }
                 }
                 return false;
             }
         }
 
-        if (!hasPermission(player, sign)) {
+        if (!hasPermission(player, execData)) {
             if (sign.shouldDisplayInternalMessages()) {
-                if (sign.getPermissionMessage().isEmpty()) {
+                if (execData.getPermissionMessage().isEmpty()) {
                     plugin.send(player, Message.NOT_ENOUGH_PERMISSIONS);
                 } else {
-                    plugin.send(player, StringUtils.colour(sign.getPermissionMessage()));
+                    plugin.send(player, StringUtils.colour(execData.getPermissionMessage()));
                 }
             }
             return false;
         }
 
-        if (!canUse(player, sign)) {
+        if (!canUse(player, execData)) {
             if (sign.shouldDisplayInternalMessages()) {
-                plugin.send(player, Message.NOT_READY, "<cooldown>", getCooldownLeft(player, sign));
+                plugin.send(player, Message.NOT_READY, "<cooldown>", getCooldownLeft(player, execData));
             }
             return false;
         }
 
-        return !(needConfirmation(player, sign) || !canAffordXP(player, sign) || !canAffordCost(player, sign) || !hasAnsweredQuestions(player, sign)
-                || (hasHeldRequirements(sign) && !meetsHeldItemRequirements(player, sign))
-                || (hasPriceItem(sign) && !canAffordPriceItem(player, sign)));
+        return !(needConfirmation(player, sign, execData) || !canAffordXP(player, sign, execData) || !canAffordCost(player, sign, execData) || !hasAnsweredQuestions(player, sign, execData, clickType)
+                || (hasHeldRequirements(execData) && !meetsHeldItemRequirements(player, sign, execData))
+                || (hasPriceItem(execData) && !canAffordPriceItem(player, sign, execData)));
     }
 
     // Questions
 
-    private boolean hasAnsweredQuestions(Player executor, ServerSign sign) {
+    private boolean hasAnsweredQuestions(Player executor, ServerSign sign, ServerSignExecData execData, ClickType clickType) {
         List<String> displayedOptionIds = new ArrayList<>();
 
         ProcessingData processingData = new ProcessingData();
-        for (ServerSignCommand command : sign.getCommands()) {
+        for (ServerSignCommand command : execData.getCommands()) {
             // Conditional Command Checks
             processingData = processConditionalCommand(sign, executor, command, processingData);
             if (processingData.lastResult == 1) {
@@ -388,7 +393,7 @@ public class ServerSignExecutor {
 
             if (command.getType() == CommandType.DISPLAY_OPTIONS) {
                 String data = command.getUnformattedCommand();
-                PlayerInputOptions options = sign.getInputOption(data);
+                PlayerInputOptions options = execData.getInputOption(data);
                 if (options != null && options.getAnswersLength() > 0) {
                     displayedOptionIds.add(data);
                 } else {
@@ -401,7 +406,7 @@ public class ServerSignExecutor {
             if (!plugin.inputOptionsManager.hasCompletedAnswers(executor)) {
                 // Gather options from player before they can continue again
                 if (!plugin.inputOptionsManager.isSuspended(executor)) {
-                    plugin.inputOptionsManager.suspend(executor, displayedOptionIds, sign);
+                    plugin.inputOptionsManager.suspend(executor, displayedOptionIds, sign, clickType);
                 }
                 return false;
             } else {
@@ -414,7 +419,7 @@ public class ServerSignExecutor {
                         }
                     }
                     //plugin.inputOptionsManager.release(executor, false);
-                    plugin.inputOptionsManager.suspend(executor, displayedOptionIds, sign);
+                    plugin.inputOptionsManager.suspend(executor, displayedOptionIds, sign, clickType);
                     return false;
                 }
             }
@@ -425,16 +430,16 @@ public class ServerSignExecutor {
 
     // Permissions
 
-    private boolean hasPermission(Player player, ServerSign sign) {
+    private boolean hasPermission(Player player, ServerSignExecData execData) {
         if (player.hasPermission("serversigns.admin") || player.hasPermission("serversigns.use.*")) {
             return true;
         }
 
-        if (sign.getPermissions().isEmpty()) {
+        if (execData.getPermissions().isEmpty()) {
             return player.hasPermission("serversigns.use");
         }
 
-        for (String perm : sign.getPermissions()) {
+        for (String perm : execData.getPermissions()) {
             if (!player.hasPermission("serversigns.use." + perm)) {
                 return false;
             }
@@ -445,18 +450,18 @@ public class ServerSignExecutor {
 
     // Cooldowns
 
-    private boolean canUse(Player player, ServerSign sign) {
-        if (sign.getGlobalCooldown() == 0 || System.currentTimeMillis() - sign.getLastGlobalUse() >= sign.getGlobalCooldown() * 1000) {
-            if (sign.getCooldown() == 0 || System.currentTimeMillis() - sign.getLastUse(player.getUniqueId()) >= sign.getCooldown() * 1000) {
+    private boolean canUse(Player player, ServerSignExecData execData) {
+        if (execData.getGlobalCooldown() == 0 || System.currentTimeMillis() - execData.getLastGlobalUse() >= execData.getGlobalCooldown() * 1000) {
+            if (execData.getCooldown() == 0 || System.currentTimeMillis() - execData.getLastUse(player.getUniqueId()) >= execData.getCooldown() * 1000) {
                 return true;
             }
         }
         return false;
     }
 
-    private String getCooldownLeft(Player player, ServerSign sign) {
-        long globalLeft = sign.getGlobalCooldown() * 1000 - (System.currentTimeMillis() - sign.getLastGlobalUse());
-        long normalLeft = sign.getCooldown() * 1000 - (System.currentTimeMillis() - sign.getLastUse(player.getUniqueId()));
+    private String getCooldownLeft(Player player, ServerSignExecData execData) {
+        long globalLeft = execData.getGlobalCooldown() * 1000 - (System.currentTimeMillis() - execData.getLastGlobalUse());
+        long normalLeft = execData.getCooldown() * 1000 - (System.currentTimeMillis() - execData.getLastUse(player.getUniqueId()));
         long applicable = globalLeft > normalLeft ? globalLeft : normalLeft;
         String toRet = TimeUtils.getTimeSpan(applicable, TimeUnit.SECONDS, TimeUnit.YEARS, true, false);
         return toRet.isEmpty() ? "<1s" : toRet;
@@ -465,8 +470,8 @@ public class ServerSignExecutor {
     // Confirmation
 
     @SuppressWarnings("unchecked")
-    private boolean needConfirmation(Player player, ServerSign sign) {
-        if (sign.isConfirmation()) {
+    private boolean needConfirmation(Player player, ServerSign sign, ServerSignExecData execData) {
+        if (execData.isConfirmation()) {
             if (SVSMetaManager.hasInclusiveMeta(player, SVSMetaKey.YES)) {
                 // If they have the meta still, it must be for the same sign
                 SVSMetaManager.removeMeta(player);
@@ -474,30 +479,30 @@ public class ServerSignExecutor {
             }
 
             if (sign.shouldDisplayInternalMessages()) {
-                if (!sign.getHeldItems().isEmpty()) {
+                if (!execData.getHeldItems().isEmpty()) {
                     plugin.send(player, Message.NEED_CONFIRMATION_HELD_ITEMS);
-                    for (ItemStack item : sign.getHeldItems()) {
+                    for (ItemStack item : execData.getHeldItems()) {
                         plugin.send(player, ItemUtils.getDescription(item, plugin.config.getMessageColour()));
                     }
                 }
 
-                if (!sign.getPriceItems().isEmpty()) {
+                if (!execData.getPriceItems().isEmpty()) {
                     plugin.send(player, Message.NEED_CONFIRMATION_PRICE_ITEMS);
-                    for (ItemStack pi : sign.getPriceItems()) {
+                    for (ItemStack pi : execData.getPriceItems()) {
                         plugin.send(player, ItemUtils.getDescription(pi, plugin.config.getMessageColour()));
                     }
                 }
 
-                if (sign.getXP() > 0) {
-                    plugin.send(player, Message.NEED_CONFIRMATION_XP, "<integer>", sign.getXP() + "");
+                if (execData.getXP() > 0) {
+                    plugin.send(player, Message.NEED_CONFIRMATION_XP, "<integer>", execData.getXP() + "");
                 }
 
-                if (!sign.getConfirmationMessage().isEmpty()) {
-                    plugin.send(player, sign.getConfirmationMessage());
+                if (!execData.getConfirmationMessage().isEmpty()) {
+                    plugin.send(player, execData.getConfirmationMessage());
                 }
 
-                if (sign.getPrice() > 0 && plugin.hookManager.vault.isHooked() && plugin.hookManager.vault.getHook().hasEconomy()) {
-                    plugin.send(player, Message.NEED_CONFIRMATION_COST, "<price>", sign.getPrice() + "", "<currency>", plugin.config.getCurrencyString());
+                if (execData.getPrice() > 0 && plugin.hookManager.vault.isHooked() && plugin.hookManager.vault.getHook().hasEconomy()) {
+                    plugin.send(player, Message.NEED_CONFIRMATION_COST, "<price>", execData.getPrice() + "", "<currency>", plugin.config.getCurrencyString());
                 } else {
                     plugin.send(player, Message.NEED_CONFIRMATION);
                 }
@@ -512,15 +517,15 @@ public class ServerSignExecutor {
 
     // Exp
 
-    private boolean canAffordXP(Player player, ServerSign sign) {
-        if (sign.getXP() > 0) {
-            if (player.getLevel() >= sign.getXP()) {
+    private boolean canAffordXP(Player player, ServerSign sign, ServerSignExecData execData) {
+        if (execData.getXP() > 0) {
+            if (player.getLevel() >= execData.getXP()) {
                 return true;
             }
 
             if (sign.shouldDisplayInternalMessages()) {
                 plugin.send(player, Message.NOT_ENOUGH_XP);
-                plugin.send(player, Message.LEVELS_NEEDED, "<integer>", sign.getXP() - player.getLevel() + "");
+                plugin.send(player, Message.LEVELS_NEEDED, "<integer>", execData.getXP() - player.getLevel() + "");
             }
             return false;
         }
@@ -529,9 +534,9 @@ public class ServerSignExecutor {
 
     // Money
 
-    private boolean canAffordCost(Player player, ServerSign sign) {
+    private boolean canAffordCost(Player player, ServerSign sign, ServerSignExecData execData) {
         if (plugin.hookManager.vault.isHooked() && plugin.hookManager.vault.getHook().hasEconomy()) {
-            double price = sign.getPrice();
+            double price = execData.getPrice();
             if (price > 0) {
                 if (plugin.hookManager.vault.getHook().getEconomy().has(player, price)) {
                     return true;
@@ -549,13 +554,13 @@ public class ServerSignExecutor {
 
     // Price items
 
-    private boolean hasPriceItem(ServerSign sign) {
-        return !sign.getPriceItems().isEmpty();
+    private boolean hasPriceItem(ServerSignExecData execData) {
+        return !execData.getPriceItems().isEmpty();
     }
 
-    private boolean canAffordPriceItem(Player player, ServerSign sign) {
-        ItemStack[] items = sign.getPriceItems().toArray(new ItemStack[1]);
-        Collection<ItemStack> leftover = InventoryUtils.scan(player.getInventory(), sign.getPIC(), false, items);
+    private boolean canAffordPriceItem(Player player, ServerSign sign, ServerSignExecData execData) {
+        ItemStack[] items = execData.getPriceItems().toArray(new ItemStack[1]);
+        Collection<ItemStack> leftover = InventoryUtils.scan(player.getInventory(), execData.getPIC(), false, items);
 
         if (!leftover.isEmpty()) {
             if (sign.shouldDisplayInternalMessages()) {
@@ -572,22 +577,22 @@ public class ServerSignExecutor {
 
     // Held items
 
-    private boolean hasHeldRequirements(ServerSign sign) {
-        return !sign.getHeldItems().isEmpty();
+    private boolean hasHeldRequirements(ServerSignExecData execData) {
+        return !execData.getHeldItems().isEmpty();
     }
 
-    private boolean meetsHeldItemRequirements(Player player, ServerSign sign) {
+    private boolean meetsHeldItemRequirements(Player player, ServerSign sign, ServerSignExecData execData) {
         ItemStack held = player.getItemInHand();
         if (held != null && !held.getType().equals(Material.AIR)) {
-            for (ItemStack stack : sign.getHeldItems()) {
-                if (ItemUtils.compare(stack, held, sign.getHIC()))
+            for (ItemStack stack : execData.getHeldItems()) {
+                if (ItemUtils.compare(stack, held, execData.getHIC()))
                     return true;
             }
         }
 
         if (sign.shouldDisplayInternalMessages()) {
             plugin.send(player, Message.MUST_BE_HOLDING);
-            for (ItemStack required : sign.getHeldItems()) {
+            for (ItemStack required : execData.getHeldItems()) {
                 plugin.send(player, ItemUtils.getDescription(required, plugin.config.getMessageColour()));
             }
         }
@@ -600,29 +605,29 @@ public class ServerSignExecutor {
 
     //  Exp
 
-    private void removeXP(Player player, ServerSign sign) {
-        if (sign.getXP() > 0) {
-            player.setLevel(player.getLevel() - sign.getXP());
+    private void removeXP(Player player, ServerSign sign, ServerSignExecData execData) {
+        if (execData.getXP() > 0) {
+            player.setLevel(player.getLevel() - execData.getXP());
             if (sign.shouldDisplayInternalMessages()) {
-                plugin.send(player, Message.XP_REMOVED, "<levels>", sign.getXP() + "");
+                plugin.send(player, Message.XP_REMOVED, "<levels>", execData.getXP() + "");
             }
         }
     }
 
     // Money
 
-    private boolean removeMoney(Player player, ServerSign sign) {
-        if (sign.getPrice() > 0) {
+    private boolean removeMoney(Player player, ServerSign sign, ServerSignExecData execData) {
+        if (execData.getPrice() > 0) {
             if (!plugin.hookManager.vault.isHooked() || !plugin.hookManager.vault.getHook().hasEconomy()) {
                 ServerSignsPlugin.log("Unable to remove money from " + player.getName() + " because no Economy plugins exist!");
                 return false;
             }
 
-            plugin.hookManager.vault.getHook().getEconomy().withdrawPlayer(player, sign.getPrice());
+            plugin.hookManager.vault.getHook().getEconomy().withdrawPlayer(player, execData.getPrice());
             if (plugin.config.getShowFundsRemovedMessage() && sign.shouldDisplayInternalMessages()) {
                 String message = plugin.msgHandler.get(Message.FUNDS_WITHDRAWN);
                 if (message.contains("<number>")) {
-                    message = message.replaceAll("<number>", String.valueOf(sign.getPrice()));
+                    message = message.replaceAll("<number>", String.valueOf(execData.getPrice()));
                 }
 
                 if (message.contains("<currency>") && !plugin.config.getCurrencyString().isEmpty()) {
@@ -636,7 +641,7 @@ public class ServerSignExecutor {
                 String bank = plugin.config.getDepositBankName();
                 if (bank.isEmpty()) return true;
 
-                plugin.hookManager.vault.getHook().getEconomy().bankDeposit(bank, sign.getPrice());
+                plugin.hookManager.vault.getHook().getEconomy().bankDeposit(bank, execData.getPrice());
             }
             return true;
 
@@ -646,11 +651,11 @@ public class ServerSignExecutor {
 
     // Price items
 
-    private void removePriceItems(Player player, ServerSign sign) {
-        if (sign.getPriceItems().isEmpty()) return;
+    private void removePriceItems(Player player, ServerSign sign, ServerSignExecData execData) {
+        if (execData.getPriceItems().isEmpty()) return;
 
-        ItemStack[] items = sign.getPriceItems().toArray(new ItemStack[1]);
-        if (!InventoryUtils.scan(player.getInventory(), sign.getPIC(), true, items).isEmpty()) {
+        ItemStack[] items = execData.getPriceItems().toArray(new ItemStack[1]);
+        if (!InventoryUtils.scan(player.getInventory(), execData.getPIC(), true, items).isEmpty()) {
             Bukkit.getLogger().warning("A player has managed to execute a ServerSign without paying all the price items! (Location: " + sign.getLocation().toString() + ")");
         }
 

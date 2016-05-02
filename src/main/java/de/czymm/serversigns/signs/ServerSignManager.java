@@ -51,6 +51,7 @@ public class ServerSignManager {
     private final Path INVALID_SIGNS_PARENT_DIRECTORY;
     private final Path INVALID_SIGNS_LOCATION_DIRECTORY;
     private final Path INVALID_SIGNS_COMMANDS_DIRECTORY;
+    private final Path INVALID_SIGNS_EXECUTOR_DATA_DIRECTORY;
     private final Path INVALID_SIGNS_DUPLICATE_DIRECTORY;
     private final Path EXPIRED_SIGNS_DIRECTORY;
 
@@ -61,6 +62,7 @@ public class ServerSignManager {
         this.INVALID_SIGNS_PARENT_DIRECTORY = SIGNS_DIRECTORY.resolve("invalid");
         this.INVALID_SIGNS_LOCATION_DIRECTORY = INVALID_SIGNS_PARENT_DIRECTORY.resolve("invalid_location");
         this.INVALID_SIGNS_COMMANDS_DIRECTORY = INVALID_SIGNS_PARENT_DIRECTORY.resolve("invalid_commands");
+        this.INVALID_SIGNS_EXECUTOR_DATA_DIRECTORY = INVALID_SIGNS_PARENT_DIRECTORY.resolve("invalid_executor_data");
         this.INVALID_SIGNS_DUPLICATE_DIRECTORY = INVALID_SIGNS_PARENT_DIRECTORY.resolve("duplicate");
         this.EXPIRED_SIGNS_DIRECTORY = SIGNS_DIRECTORY.resolve("expired");
 
@@ -68,6 +70,7 @@ public class ServerSignManager {
         Files.createDirectories(INVALID_SIGNS_PARENT_DIRECTORY);
         Files.createDirectories(INVALID_SIGNS_LOCATION_DIRECTORY);
         Files.createDirectories(INVALID_SIGNS_COMMANDS_DIRECTORY);
+        Files.createDirectories(INVALID_SIGNS_EXECUTOR_DATA_DIRECTORY);
         Files.createDirectories(INVALID_SIGNS_DUPLICATE_DIRECTORY);
         Files.createDirectories(EXPIRED_SIGNS_DIRECTORY);
     }
@@ -114,26 +117,31 @@ public class ServerSignManager {
                     }
                 }
 
-                // Check commands
-                if (sign.getCommands() == null || (sign.getCommands().size() > 0 && sign.getCommands().get(0) == null)) {
-                    ServerSignsPlugin.log("Could not load ServerSign " + current.getFileName() + ". The file doesn't contain any valid commands, proceeding to next file.");
-                    Files.move(current, INVALID_SIGNS_COMMANDS_DIRECTORY.resolve(current.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-                    continue;
-                }
+                // Check available executor data
+                for (Entry<ClickType, ServerSignExecData> entry : sign.getServerSignExecutorData().entrySet()) {
+                    ServerSignExecData execData = entry.getValue();
 
-                // Trim last use map
-                HashMap<String, Long> toKeep = new HashMap<>();
-                for (Entry<String, Long> entry : sign.getLastUse().entrySet()) {
-                    if (entry.getValue() + (sign.getCooldown() * 1000) > System.currentTimeMillis()) {
-                        toKeep.put(entry.getKey(), entry.getValue()); // We only care about non-expired cooldowns
+                    // Check commands
+                    if (execData.getCommands() == null || (execData.getCommands().size() > 0 && execData.getCommands().get(0) == null)) {
+                        ServerSignsPlugin.log("Could not load ServerSign " + current.getFileName() + ". The file doesn't contain any valid commands, proceeding to next file.");
+                        Files.move(current, INVALID_SIGNS_COMMANDS_DIRECTORY.resolve(current.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+                        continue stream;
                     }
-                }
 
-                if ((sign.getLastUse().size() - toKeep.size()) > 0) {
-                    ServerSignsPlugin.log("Discarding " + (sign.getLastUse().size() - toKeep.size()) + " expired cooldowns for a ServerSign at " + sign.getLocationString());
-                    yamlLoad.set("lastUse", toKeep);
-                    yamlLoad.save(current.toFile());
-                    sign.setLastUse(toKeep);
+                    // Trim last use map
+                    HashMap<String, Long> toKeep = new HashMap<>();
+                    for (Entry<String, Long> entr : execData.getLastUse().entrySet()) {
+                        if (entr.getValue() + (execData.getCooldown() * 1000) > System.currentTimeMillis()) {
+                            toKeep.put(entr.getKey(), entr.getValue()); // We only care about non-expired cooldowns
+                        }
+                    }
+
+                    if ((execData.getLastUse().size() - toKeep.size()) > 0) {
+                        ServerSignsPlugin.log("Discarding " + (execData.getLastUse().size() - toKeep.size()) + " expired cooldowns for a ServerSign at " + sign.getLocationString());
+                        yamlLoad.set("lastUse", toKeep);
+                        yamlLoad.save(current.toFile());
+                        execData.setLastUse(toKeep);
+                    }
                 }
 
                 signs.add(sign);
@@ -193,6 +201,11 @@ public class ServerSignManager {
                 case COMMANDS:
                     ServerSignsPlugin.log("Could not load ServerSign from " + fileName + " - The file contains error(s) in the commands section, proceeding to next file.");
                     Files.move(signPath, INVALID_SIGNS_COMMANDS_DIRECTORY.resolve(signPath.getFileName().toString()), StandardCopyOption.REPLACE_EXISTING);
+                    break;
+
+                case DATA_EXECUTOR:
+                    ServerSignsPlugin.log("Could not load ServerSign from " + fileName + " - The file contains error(s) in the data-executors section, proceeding to next file.");
+                    Files.move(signPath, INVALID_SIGNS_EXECUTOR_DATA_DIRECTORY.resolve(signPath.getFileName().toString()), StandardCopyOption.REPLACE_EXISTING);
                     break;
             }
             return null;

@@ -24,17 +24,16 @@ import de.czymm.serversigns.parsing.command.ConditionalServerSignCommand;
 import de.czymm.serversigns.parsing.command.ReturnServerSignCommand;
 import de.czymm.serversigns.parsing.command.ServerSignCommand;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemorySection;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServerSignCommandListMapper implements ISmartPersistenceMapper<List<ServerSignCommand>> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
     private String host;
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

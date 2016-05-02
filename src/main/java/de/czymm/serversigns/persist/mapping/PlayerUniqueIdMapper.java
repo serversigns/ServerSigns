@@ -17,15 +17,15 @@
 
 package de.czymm.serversigns.persist.mapping;
 
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.UUID;
 
 public class PlayerUniqueIdMapper implements IPersistenceMapper<UUID> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

@@ -20,18 +20,18 @@ package de.czymm.serversigns.persist.mapping;
 import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.itemdata.ItemStringParser;
 import de.czymm.serversigns.utils.ItemUtils;
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemStackListMapper implements ISmartPersistenceMapper<List<ItemStack>> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
     private String host = "unknown";
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

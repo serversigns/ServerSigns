@@ -17,12 +17,12 @@
 
 package de.czymm.serversigns.persist.mapping;
 
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 public interface IPersistenceMapper<E> {
-    void setMemorySection(MemorySection memorySection);
+    void setMemorySection(ConfigurationSection memorySection);
 
     E getValue(String path) throws MappingException;
 
-    void setValue(String path, E value);
+    void setValue(String path, E value) throws MappingException;
 }

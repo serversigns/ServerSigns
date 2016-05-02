@@ -18,13 +18,13 @@
 package de.czymm.serversigns.persist.mapping;
 
 import de.czymm.serversigns.itemdata.ItemSearchCriteria;
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class ItemSearchCriteriaMapper implements IPersistenceMapper<ItemSearchCriteria> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

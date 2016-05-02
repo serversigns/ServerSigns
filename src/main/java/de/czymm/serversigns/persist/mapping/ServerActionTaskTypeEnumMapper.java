@@ -18,13 +18,13 @@
 package de.czymm.serversigns.persist.mapping;
 
 import de.czymm.serversigns.taskmanager.tasks.ServerActionTaskType;
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class ServerActionTaskTypeEnumMapper implements IPersistenceMapper<ServerActionTaskType> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

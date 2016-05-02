@@ -20,6 +20,7 @@ package de.czymm.serversigns.persist;
 import de.czymm.serversigns.persist.mapping.IPersistenceMapper;
 import de.czymm.serversigns.persist.mapping.ISmartPersistenceMapper;
 import de.czymm.serversigns.persist.mapping.MappingException;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -30,13 +31,13 @@ import java.util.Map;
 
 public class YamlFieldPersistence {
 
-    public static <E> void loadFromYaml(YamlConfiguration yaml, E instance) throws PersistenceException, MappingException {
+    public static <E> void loadFromMemorySection(ConfigurationSection configurationSection, E instance) throws PersistenceException, MappingException {
         Map<Class<?>, IPersistenceMapper<?>> configMapperBuffer = new HashMap<>();
-        loadClassFromYaml(yaml, configMapperBuffer, instance.getClass(), instance);
+        loadClassFromMemorySection(configurationSection, configMapperBuffer, instance.getClass(), instance);
 
         Class<?> superClass = instance.getClass().getSuperclass();
         while (superClass != null && !superClass.equals(Object.class)) {
-            loadClassFromYaml(yaml, configMapperBuffer, superClass, instance);
+            loadClassFromMemorySection(configurationSection, configMapperBuffer, superClass, instance);
             superClass = superClass.getSuperclass();
         }
     }
@@ -44,10 +45,14 @@ public class YamlFieldPersistence {
     public static <E> void loadFromYaml(String yaml, E instance) throws InvalidConfigurationException, PersistenceException, MappingException {
         YamlConfiguration configuration = new YamlConfiguration();
         configuration.loadFromString(yaml);
-        loadFromYaml(configuration, instance);
+        loadFromMemorySection(configuration, instance);
     }
 
-    private static <E> void loadClassFromYaml(YamlConfiguration yaml, Map<Class<?>, IPersistenceMapper<?>> mapperBuffer, Class<?> clazz, E instance) throws PersistenceException, MappingException {
+    public static <E> void loadFromYaml(YamlConfiguration yaml, E instance) throws PersistenceException, MappingException {
+        loadFromMemorySection(yaml.getConfigurationSection(""), instance);
+    }
+
+    private static <E> void loadClassFromMemorySection(ConfigurationSection configurationSection, Map<Class<?>, IPersistenceMapper<?>> mapperBuffer, Class<?> clazz, E instance) throws PersistenceException, MappingException {
         Field[] declaredFields = clazz.getDeclaredFields();
         for (Field declaredField : declaredFields) {
             PersistenceEntry configEntry = declaredField.getAnnotation(PersistenceEntry.class);
@@ -58,7 +63,7 @@ public class YamlFieldPersistence {
                 try {
                     if (configMapper == null) {
                         configMapper = configMapperClass.newInstance();
-                        configMapper.setMemorySection(yaml);
+                        configMapper.setMemorySection(configurationSection);
                         if (configMapper instanceof ISmartPersistenceMapper) {
                             ((ISmartPersistenceMapper) configMapper).setHostId(instance.toString());
                         }
@@ -80,23 +85,27 @@ public class YamlFieldPersistence {
     }
 
     public static <E> void saveToYaml(YamlConfiguration yaml, E instance) throws PersistenceException {
+        saveToMemorySection(yaml.getConfigurationSection(""), instance);
+    }
+
+    public static <E> void saveToMemorySection(ConfigurationSection configurationSection, E instance) throws PersistenceException {
         Map<Class<?>, IPersistenceMapper<?>> configMapperBuffer = new HashMap<>();
-        saveClassToYaml(yaml, configMapperBuffer, instance.getClass(), instance);
+        saveClassToMemorySection(configurationSection, configMapperBuffer, instance.getClass(), instance);
 
         Class<?> superClass = instance.getClass().getSuperclass();
         while (superClass != null && !superClass.equals(Object.class)) {
-            saveClassToYaml(yaml, configMapperBuffer, superClass, instance);
+            saveClassToMemorySection(configurationSection, configMapperBuffer, superClass, instance);
             superClass = superClass.getSuperclass();
         }
     }
 
     public static <E> YamlConfiguration saveToYaml(E instance) throws PersistenceException {
         YamlConfiguration yamlConfiguration = new YamlConfiguration();
-        saveToYaml(yamlConfiguration, instance);
+        saveToMemorySection(yamlConfiguration, instance);
         return yamlConfiguration;
     }
 
-    private static <E> void saveClassToYaml(YamlConfiguration yaml, Map<Class<?>, IPersistenceMapper<?>> mapperBuffer, Class<?> clazz, E instance) throws PersistenceException {
+    private static <E> void saveClassToMemorySection(ConfigurationSection configurationSection, Map<Class<?>, IPersistenceMapper<?>> mapperBuffer, Class<?> clazz, E instance) throws PersistenceException {
         Field[] declaredFields = clazz.getDeclaredFields();
         for (Field declaredField : declaredFields) {
             PersistenceEntry configEntry = declaredField.getAnnotation(PersistenceEntry.class);
@@ -108,7 +117,7 @@ public class YamlFieldPersistence {
                 try {
                     if (configMapper == null) {
                         configMapper = configMapperClass.newInstance();
-                        configMapper.setMemorySection(yaml);
+                        configMapper.setMemorySection(configurationSection);
                         mapperBuffer.put(configMapperClass, configMapper);
                     }
 

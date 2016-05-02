@@ -18,16 +18,16 @@
 package de.czymm.serversigns.persist.mapping;
 
 import de.czymm.serversigns.signs.PlayerInputOptions;
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class PlayerInputOptionsMapper implements IPersistenceMapper<Set<PlayerInputOptions>> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

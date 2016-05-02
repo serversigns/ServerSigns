@@ -41,12 +41,12 @@ public class PlayerInputOptionsManager implements Listener {
         this.plugin = plugin;
     }
 
-    public void suspend(Player player, List<String> optionDisplayNames, ServerSign sign) {
+    public void suspend(Player player, List<String> optionDisplayNames, ServerSign sign, ClickType clickType) {
         if (optionDisplayNames.size() < 1) return;
 
-        askQuestion(player, sign.getInputOption(optionDisplayNames.get(0)));
+        askQuestion(player, sign.getServerSignExecutorData(clickType).getInputOption(optionDisplayNames.get(0)));
         pendingOptionDisplays.put(player.getUniqueId(), optionDisplayNames);
-        pendingPlayerData.put(player.getUniqueId(), new Data(sign, optionDisplayNames));
+        pendingPlayerData.put(player.getUniqueId(), new Data(sign, clickType, optionDisplayNames));
     }
 
     public boolean isSuspended(Player player) {
@@ -71,7 +71,7 @@ public class PlayerInputOptionsManager implements Listener {
         // Check if this answer is valid
         List<String> pendingToDisplay = pendingOptionDisplays.get(player.getUniqueId());
         Data playerData = pendingPlayerData.get(player.getUniqueId());
-        PlayerInputOptions options = playerData.sign.getInputOption(pendingToDisplay.get(0));
+        PlayerInputOptions options = playerData.sign.getServerSignExecutorData(playerData.clickType).getInputOption(pendingToDisplay.get(0));
 
         if (!options.isValidAnswerLabel(answer)) {
             plugin.send(player, Message.OPTION_INVALID_ANSWER);
@@ -84,7 +84,7 @@ public class PlayerInputOptionsManager implements Listener {
         plugin.send(player, "&7&oOK!"); // Useful for players to know their answer is submitted correctly
 
         if (pendingToDisplay.size() > 0) {
-            askQuestion(player, playerData.sign.getInputOption(pendingToDisplay.get(0)));
+            askQuestion(player, playerData.sign.getServerSignExecutorData(playerData.clickType).getInputOption(pendingToDisplay.get(0)));
         } else {
             release(player, true);
         }
@@ -116,7 +116,7 @@ public class PlayerInputOptionsManager implements Listener {
                     map.put(data.originalQuestionIds.get(k), data.answers.get(k));
                 }
                 completedAnswers.put(player.getUniqueId(), map);
-                plugin.serverSignExecutor.executeSignFull(player, data.sign, null);
+                plugin.serverSignExecutor.executeSignFull(player, data.sign, data.clickType, null);
                 // Are there more questions pending?
                 if (pendingOptionDisplays.containsKey(player.getUniqueId())) {
                     Data newData = pendingPlayerData.get(player.getUniqueId());
@@ -146,13 +146,15 @@ public class PlayerInputOptionsManager implements Listener {
     }
 
     private class Data {
-        public Data(ServerSign sign, List<String> originalQuestions) {
+        public Data(ServerSign sign, ClickType clickType, List<String> originalQuestions) {
             this.sign = sign;
+            this.clickType = clickType;
             this.originalQuestionIds = new ArrayList<>();
             this.originalQuestionIds.addAll(originalQuestions);
         }
 
         public ServerSign sign;
+        public ClickType clickType;
         public List<String> originalQuestionIds;
         public List<String> answers = new ArrayList<>();
     }

@@ -17,13 +17,13 @@
 
 package de.czymm.serversigns.persist.mapping;
 
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class DefaultPersistenceMapper implements IPersistenceMapper<Object> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

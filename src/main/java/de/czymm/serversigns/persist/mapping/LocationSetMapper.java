@@ -20,7 +20,7 @@ package de.czymm.serversigns.persist.mapping;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.Set;
 
 public class LocationSetMapper implements ISmartPersistenceMapper<Set<Location>> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
     private String host = "unknown";
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

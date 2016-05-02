@@ -21,4 +21,4 @@ v4.5.1:
 * Added new conditional operator: nearbyPlayers:<radius><operator><amount> - i.e. nearbyPlayers:10<50 or nearbyPlayers:100>25
 
 v4.5.2:
-*
+* Added new conditional operator: hasBalance:<operator><amount> - i.e. hasBalance:>10000 or hasBalance:=250

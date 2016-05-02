@@ -17,16 +17,16 @@
 
 package de.czymm.serversigns.persist.mapping;
 
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class StringLongHashMapper implements IPersistenceMapper<HashMap<String, Long>> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

@@ -20,7 +20,8 @@ package de.czymm.serversigns.persist.mapping;
 public class MappingException extends Exception {
 
     public enum ExceptionType {
-        COMMANDS,;
+        COMMANDS,
+        DATA_EXECUTOR
     }
 
     private ExceptionType type;

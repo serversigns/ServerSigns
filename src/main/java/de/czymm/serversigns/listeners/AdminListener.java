@@ -26,9 +26,7 @@ import de.czymm.serversigns.meta.SVSMetaKey;
 import de.czymm.serversigns.meta.SVSMetaManager;
 import de.czymm.serversigns.meta.SVSMetaValue;
 import de.czymm.serversigns.parsing.command.ServerSignCommand;
-import de.czymm.serversigns.signs.CancelMode;
-import de.czymm.serversigns.signs.PlayerInputOptions;
-import de.czymm.serversigns.signs.ServerSign;
+import de.czymm.serversigns.signs.*;
 import de.czymm.serversigns.translations.Message;
 import de.czymm.serversigns.utils.ItemUtils;
 import de.czymm.serversigns.utils.StringUtils;
@@ -73,7 +71,7 @@ public class AdminListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void adminChatCheck(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
@@ -95,19 +93,21 @@ public class AdminListener implements Listener {
     public void adminInteractCheck(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        if (SVSMetaManager.hasExclusiveMeta(player, SVSMetaKey.YES) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+        if (SVSMetaManager.hasExclusiveMeta(player, SVSMetaKey.YES) && (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.LEFT_CLICK_BLOCK))) {
             Block block = event.getClickedBlock();
             if (block == null) return;
 
             Location location = block.getLocation();
-            handleAdminInteract(location, player, player.getUniqueId());
+            handleAdminInteract(location, ClickType.fromAction(event.getAction()), player, player.getUniqueId());
             if (!SVSMetaManager.hasInclusiveMeta(player, SVSMetaKey.COPY))
                 event.setCancelled(true); // Don't cancel interact on unsuccessful copies
         }
     }
 
-    public void handleAdminInteract(Location clicked, CommandSender recipient, UUID adminUUID) {
+    public void handleAdminInteract(Location clicked, ClickType clickType, CommandSender recipient, UUID adminUUID) {
         ServerSign sign = plugin.serverSignsManager.getServerSignByLocation(clicked);
+        ServerSignExecData execData = sign == null ? null : sign.getServerSignExecutorData(clickType);
+
         if (sign == null && !plugin.config.getAnyBlock() && !plugin.config.getBlocks().contains(clicked.getBlock().getType()))
             return; // Not a sign, can't be a sign; we don't care
 
@@ -116,46 +116,54 @@ public class AdminListener implements Listener {
         boolean saveRemoveExit = false;
         switch (meta.getKey()) {
             case ADD:
-                if (sign != null) sign.addCommand(meta.getValue().asServerSignCommand());
-                else sign = new ServerSign(clicked, meta.getValue().asServerSignCommand());
+                if (execData != null) {
+                    execData.addCommand(meta.getValue().asServerSignCommand());
+                } else {
+                    execData = new ServerSignExecData(meta.getValue().asServerSignCommand());
+                    if (sign == null) {
+                        sign = new ServerSign(clicked, clickType, execData);
+                    } else {
+                        sign.setServerSignExecutorData(clickType, execData);
+                    }
+                }
 
                 plugin.send(recipient, Message.COMMAND_SET);
                 saveRemoveExit = true;
                 break;
 
             case CANCEL:
-                if (sign == null) return;
+                if (execData == null) return;
                 String raw = meta.getValue().asString();
                 CancelMode mode = CancelMode.valueOf(raw);
-                sign.setCancelMode(mode);
+                execData.setCancelMode(mode);
 
                 plugin.send(recipient, Message.SET_CANCEL_MODE, "<mode>", raw);
                 saveRemoveExit = true;
                 break;
 
             case CANCEL_PERMISSION:
-                if (sign == null) return;
+                if (execData == null) return;
 
-                sign.setCancelPermission(meta.getValue().asString());
+                execData.setCancelPermission(meta.getValue().asString());
                 if (meta.hasValue(1)) {
-                    sign.setCancelPermissionMessage(meta.getValue(1).asString());
+                    execData.setCancelPermissionMessage(meta.getValue(1).asString());
                 }
                 plugin.send(recipient, Message.CANCEL_PERMISSION_SET);
                 saveRemoveExit = true;
                 break;
 
             case CONFIRMATION:
-                if (sign == null) return;
-                sign.setConfirmation(meta.getValue().asBoolean());
-                if (meta.hasValue(1)) sign.setConfirmationMessage(meta.getValue(1).asString());
+                if (execData == null) return;
+                execData.setConfirmation(meta.getValue().asBoolean());
+                if (meta.hasValue(1)) execData.setConfirmationMessage(meta.getValue(1).asString());
 
                 plugin.send(recipient, Message.CONFIRMATION_SET, "<boolean>", meta.getValue().asBoolean() + "");
                 saveRemoveExit = true;
                 break;
 
             case COOLDOWN_RESET:
-                if (sign == null) return;
-                sign.resetCooldowns();
+                if (execData == null) return;
+                execData.resetCooldowns();
 
                 plugin.send(recipient, Message.RESET_COOLDOWN);
                 saveRemoveExit = true;
@@ -187,37 +195,40 @@ public class AdminListener implements Listener {
                 return;
 
             case CREATE:
+                if (sign != null) return;
+
                 sign = new ServerSign();
                 sign.setLocation(clicked);
+                sign.setServerSignExecutorData(clickType, new ServerSignExecData());
 
                 plugin.send(recipient, Message.CREATE_SUCCESS);
                 saveRemoveExit = true;
                 break;
 
             case EDIT:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 int index = meta.getValue().asInt();
                 ServerSignCommand cmd = meta.getValue(1).asServerSignCommand();
 
-                if (index > sign.getCommands().size() || index < 1) {
+                if (index > execData.getCommands().size() || index < 1) {
                     plugin.send(recipient, Message.INVALID_INDEX);
                     return;
                 }
 
                 plugin.send(recipient, Message.COMMAND_EDITED);
-                sign.editCommand(index - 1, cmd);
+                execData.editCommand(index - 1, cmd);
                 saveRemoveExit = true;
                 break;
 
             case GRANT:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 if (meta.getValue().asBoolean()) {
-                    sign.addGrantPermissions(meta.getValue(1).asString());
+                    execData.addGrantPermissions(meta.getValue(1).asString());
                     plugin.send(recipient, Message.PERMISSION_SET);
                 } else {
-                    sign.removeGrantPermissions();
+                    execData.removeGrantPermissions();
                     plugin.send(recipient, Message.PERMISSION_REMOVED);
                 }
 
@@ -225,13 +236,13 @@ public class AdminListener implements Listener {
                 break;
 
             case HOLDING:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 if (meta.getValue().asObject() == null) {
-                    sign.clearHeldItems();
+                    execData.clearHeldItems();
                     plugin.send(recipient, Message.HOLDING_REMOVED);
                 } else {
-                    sign.addHeldItem(meta.getValue().asItemStack());
+                    execData.addHeldItem(meta.getValue().asItemStack());
                     plugin.send(recipient, Message.HOLDING_SUCCESS);
                 }
 
@@ -239,9 +250,9 @@ public class AdminListener implements Listener {
                 break;
 
             case HELD_ITEM_CRITERIA:
-                if (sign == null) return;
+                if (execData == null) return;
 
-                sign.setHIC(new ItemSearchCriteria(meta.getValue().asBoolean(), meta.getValue(2).asBoolean(),
+                execData.setHIC(new ItemSearchCriteria(meta.getValue().asBoolean(), meta.getValue(2).asBoolean(),
                         meta.getValue(1).asBoolean(), meta.getValue(3).asBoolean()));
 
                 plugin.send(recipient, Message.HELD_ITEM_CRITERIA_SET);
@@ -249,7 +260,7 @@ public class AdminListener implements Listener {
                 break;
 
             case IMPORT:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 Path path = Paths.get(meta.getValue().asString());
                 try {
@@ -269,85 +280,85 @@ public class AdminListener implements Listener {
                 break;
 
             case INSERT:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 int insertIndex = meta.getValue().asInt();
                 ServerSignCommand insertCmd = meta.getValue(1).asServerSignCommand();
 
-                if (insertIndex > sign.getCommands().size()) {
+                if (insertIndex > execData.getCommands().size()) {
                     plugin.send(recipient, Message.INVALID_INDEX);
                     return;
                 }
 
                 plugin.send(recipient, Message.COMMAND_SET);
-                sign.getCommands().add(insertIndex - 1, insertCmd);
+                execData.getCommands().add(insertIndex - 1, insertCmd);
                 saveRemoveExit = true;
                 break;
 
             case LIST:
                 plugin.send(recipient, String.format("&6Coordinates: &e%s&7, &e%d&7, &e%d&7, &e%d", clicked.getWorld().getName(), clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ()));
 
-                if (sign != null) {
-                    if (!sign.getPermissions().isEmpty())
-                        plugin.send(recipient, "&6Permissions: &e" + StringUtils.join(sign.getPermissions(), ", "));
+                if (execData != null) {
+                    if (!execData.getPermissions().isEmpty())
+                        plugin.send(recipient, "&6Permissions: &e" + StringUtils.join(execData.getPermissions(), ", "));
 
-                    if (!sign.getCancelPermission().isEmpty()) {
-                        plugin.send(recipient, "&6Cancel Permission: &e" + sign.getCancelPermission());
-                        if (!sign.getCancelPermissionMessage().isEmpty())
-                            plugin.send(recipient, "&6Cancel Perm Message: &e" + sign.getCancelPermissionMessage());
+                    if (!execData.getCancelPermission().isEmpty()) {
+                        plugin.send(recipient, "&6Cancel Permission: &e" + execData.getCancelPermission());
+                        if (!execData.getCancelPermissionMessage().isEmpty())
+                            plugin.send(recipient, "&6Cancel Perm Message: &e" + execData.getCancelPermissionMessage());
                     }
 
-                    if (!sign.getPermissionMessage().isEmpty())
-                        plugin.send(recipient, "&6No Perm Message: &e" + sign.getPermissionMessage());
+                    if (!execData.getPermissionMessage().isEmpty())
+                        plugin.send(recipient, "&6No Perm Message: &e" + execData.getPermissionMessage());
 
-                    if (sign.getPrice() != 0)
-                        plugin.send(recipient, "&6Price: &e" + sign.getPrice());
+                    if (execData.getPrice() != 0)
+                        plugin.send(recipient, "&6Price: &e" + execData.getPrice());
 
-                    if (sign.getXP() != 0)
-                        plugin.send(recipient, "&6Xp Cost: &e" + sign.getXP());
+                    if (execData.getXP() != 0)
+                        plugin.send(recipient, "&6Xp Cost: &e" + execData.getXP());
 
-                    if (sign.isConfirmation())
-                        plugin.send(recipient, "&6Confirmation: &etrue" + (sign.getConfirmationMessage().isEmpty() ? "" : ", &6Message: &e" + sign.getConfirmationMessage()));
+                    if (execData.isConfirmation())
+                        plugin.send(recipient, "&6Confirmation: &etrue" + (execData.getConfirmationMessage().isEmpty() ? "" : ", &6Message: &e" + execData.getConfirmationMessage()));
 
-                    if (sign.getCooldown() != 0)
-                        plugin.send(recipient, "&6Cooldown: &e" + TimeUtils.getTimeSpan(sign.getCooldown() * 1000, TimeUtils.TimeUnit.SECONDS, TimeUtils.TimeUnit.YEARS, true, false));
+                    if (execData.getCooldown() != 0)
+                        plugin.send(recipient, "&6Cooldown: &e" + TimeUtils.getTimeSpan(execData.getCooldown() * 1000, TimeUtils.TimeUnit.SECONDS, TimeUtils.TimeUnit.YEARS, true, false));
 
-                    if (sign.getGlobalCooldown() != 0)
-                        plugin.send(recipient, "&6Global Cooldown: &e" + TimeUtils.getTimeSpan(sign.getGlobalCooldown() * 1000, TimeUtils.TimeUnit.SECONDS, TimeUtils.TimeUnit.YEARS, true, false));
+                    if (execData.getGlobalCooldown() != 0)
+                        plugin.send(recipient, "&6Global Cooldown: &e" + TimeUtils.getTimeSpan(execData.getGlobalCooldown() * 1000, TimeUtils.TimeUnit.SECONDS, TimeUtils.TimeUnit.YEARS, true, false));
 
                     if (sign.getLoops() >= 0) {
                         plugin.send(recipient, "&6Loop count: &e" + sign.getLoops());
                         plugin.send(recipient, "&6Loop delay: &e" + sign.getLoopDelayInSecs() + "s");
                     }
 
-                    if (sign.getUseLimit() > 0) {
-                        plugin.send(recipient, "&6Use limit: &e" + sign.getUseLimit());
+                    if (execData.getUseLimit() > 0) {
+                        plugin.send(recipient, "&6Use limit: &e" + execData.getUseLimit());
                     }
-                    plugin.send(recipient, "&6Use tally: &e" + sign.getUseTally());
+                    plugin.send(recipient, "&6Use tally: &e" + execData.getUseTally());
 
-                    if (!sign.getPriceItems().isEmpty()) {
+                    if (!execData.getPriceItems().isEmpty()) {
                         plugin.send(recipient, "&6Price Items: ");
-                        for (ItemStack stack : sign.getPriceItems()) {
+                        for (ItemStack stack : execData.getPriceItems()) {
                             plugin.send(recipient, ItemUtils.getDescription(stack, plugin.config.getMessageColour()));
                         }
 
                         plugin.send(recipient, "&6Price Item Criteria: &a&oTrue &c&oFalse");
-                        plugin.send(recipient, sign.getPIC().getColouredString(ChatColor.GREEN, ChatColor.RED));
+                        plugin.send(recipient, execData.getPIC().getColouredString(ChatColor.GREEN, ChatColor.RED));
                     }
 
-                    if (!sign.getHeldItems().isEmpty()) {
+                    if (!execData.getHeldItems().isEmpty()) {
                         plugin.send(recipient, "&6Held Items: ");
-                        for (ItemStack stack : sign.getHeldItems()) {
+                        for (ItemStack stack : execData.getHeldItems()) {
                             plugin.send(recipient, ItemUtils.getDescription(stack, plugin.config.getMessageColour()));
                         }
 
                         plugin.send(recipient, "&6Held Item Criteria: ");
-                        plugin.send(recipient, sign.getHIC().getColouredString(ChatColor.GREEN, ChatColor.RED));
+                        plugin.send(recipient, execData.getHIC().getColouredString(ChatColor.GREEN, ChatColor.RED));
                     }
 
-                    if (!sign.getGrantPermissions().isEmpty()) {
+                    if (!execData.getGrantPermissions().isEmpty()) {
                         plugin.send(recipient, "&6Grant Permissions: ");
-                        for (String str : sign.getGrantPermissions()) {
+                        for (String str : execData.getGrantPermissions()) {
                             plugin.send(recipient, "- " + str);
                         }
                     }
@@ -357,17 +368,17 @@ public class AdminListener implements Listener {
                     }
 
 
-                    if (sign.getTimeLimitMinimum() > 0) {
-                        plugin.send(recipient, "&6Time Limit (min): &e" + TimeUtils.getFormattedTime(sign.getTimeLimitMinimum(), "d MMM yyyy hh:mm:ss a"));
+                    if (execData.getTimeLimitMinimum() > 0) {
+                        plugin.send(recipient, "&6Time Limit (min): &e" + TimeUtils.getFormattedTime(execData.getTimeLimitMinimum(), "d MMM yyyy hh:mm:ss a"));
                     }
 
-                    if (sign.getTimeLimitMaximum() > 0) {
-                        plugin.send(recipient, "&6Time Limit (max): &e" + TimeUtils.getFormattedTime(sign.getTimeLimitMaximum(), "d MMM yyyy hh:mm:ss a"));
+                    if (execData.getTimeLimitMaximum() > 0) {
+                        plugin.send(recipient, "&6Time Limit (max): &e" + TimeUtils.getFormattedTime(execData.getTimeLimitMaximum(), "d MMM yyyy hh:mm:ss a"));
                     }
 
-                    if (!sign.getInputOptions().isEmpty()) {
+                    if (!execData.getInputOptions().isEmpty()) {
                         plugin.send(recipient, "&6'Option Menus' (Q+As): ");
-                        for (PlayerInputOptions options : sign.getInputOptions()) {
+                        for (PlayerInputOptions options : execData.getInputOptions()) {
                             plugin.send(recipient, "&bID: " + options.getName());
                             plugin.send(recipient, "  &9" + options.getQuestion());
                             for (int k = 0; k < options.getAnswersLength(); k++) {
@@ -376,14 +387,14 @@ public class AdminListener implements Listener {
                         }
                     }
 
-                    plugin.send(recipient, "&6Cancel interact event mode: &e" + sign.getCancelMode().name());
+                    plugin.send(recipient, "&6Cancel interact event mode: &e" + execData.getCancelMode().name());
 
-                    if (!sign.getCommands().isEmpty()) {
+                    if (!execData.getCommands().isEmpty()) {
                         plugin.send(recipient, "&6Commands: ");
                         plugin.send(recipient, "&oLine #: &c&oType &a&oDelay &9&oPerms &d&o[ap] &7&oClick &f&oCommand");
                         StringBuilder builder;
                         int k = 1;
-                        for (ServerSignCommand line : sign.getCommands()) {
+                        for (ServerSignCommand line : execData.getCommands()) {
                             builder = new StringBuilder();
                             builder.append(k++).append(": &c").append(line.getType().toString().toLowerCase()).append(" ");
                             if (line.getDelay() > 0) {
@@ -415,7 +426,7 @@ public class AdminListener implements Listener {
                 break;
 
             case LOOP:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 sign.setLoops(meta.getValue().asInt());
                 if (meta.getValue().asInt() > -1) sign.setLoopDelay(meta.getValue(1).asInt());
@@ -424,29 +435,29 @@ public class AdminListener implements Listener {
                 break;
 
             case OPTION:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 String optionName = meta.getValue().asString();
                 int optionId = meta.getValue(1).asInt();
 
                 if (optionId == 0) {
-                    sign.setInputOptionQuestion(optionName, meta.getValue(2).asString());
+                    execData.setInputOptionQuestion(optionName, meta.getValue(2).asString());
                 } else {
-                    if (!sign.containsInputOption(optionName)) {
+                    if (!execData.containsInputOption(optionName)) {
                         plugin.send(recipient, Message.OPTION_CREATE_W_QUESTION);
                         SVSMetaManager.removeMeta(adminUUID);
                         return;
                     }
 
                     if (optionId == 1) {
-                        if (sign.getInputOption(optionName).isValidAnswerLabel(meta.getValue(2).asString())) {
+                        if (execData.getInputOption(optionName).isValidAnswerLabel(meta.getValue(2).asString())) {
                             plugin.send(recipient, Message.OPTION_LABEL_UNIQUE);
                             SVSMetaManager.removeMeta(adminUUID);
                             return;
                         }
-                        sign.addInputOptionAnswer(optionName, meta.getValue(2).asString(), meta.getValue(3).asString());
+                        execData.addInputOptionAnswer(optionName, meta.getValue(2).asString(), meta.getValue(3).asString());
                     } else if (optionId == 2) {
-                        sign.removeInputOptionAnswer(optionName, meta.getValue(2).asString());
+                        execData.removeInputOptionAnswer(optionName, meta.getValue(2).asString());
                     }
                 }
                 saveRemoveExit = true;
@@ -454,17 +465,17 @@ public class AdminListener implements Listener {
                 break;
 
             case PERMISSION:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 if (meta.getValue().asObject() == null) {
-                    sign.setPermissions(new ArrayList<String>());
+                    execData.setPermissions(new ArrayList<String>());
                     plugin.send(recipient, Message.PERMISSIONS_REMOVED);
                 } else {
                     if (!meta.getValue().asStringList().isEmpty()) { // Allows just the message to be set
-                        sign.setPermissions(meta.getValue().asStringList());
+                        execData.setPermissions(meta.getValue().asStringList());
                     }
                     if (meta.hasValue(1)) {
-                        sign.setPermissionMessage(meta.getValue(1).asString());
+                        execData.setPermissionMessage(meta.getValue(1).asString());
                     }
                     plugin.send(recipient, Message.PERMISSION_SET);
                 }
@@ -473,21 +484,21 @@ public class AdminListener implements Listener {
                 break;
 
             case PRICE:
-                if (sign == null) return;
+                if (execData == null) return;
 
-                sign.setPrice(meta.getValue().asDouble());
+                execData.setPrice(meta.getValue().asDouble());
                 plugin.send(recipient, Message.PRICE_SET);
                 saveRemoveExit = true;
                 break;
 
             case PRICE_ITEM:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 if (meta.getValue().asObject() == null) {
-                    sign.clearPriceItems();
+                    execData.clearPriceItems();
                     plugin.send(recipient, Message.PRICE_ITEM_REMOVED);
                 } else {
-                    sign.addPriceItem(meta.getValue().asItemStack());
+                    execData.addPriceItem(meta.getValue().asItemStack());
                     plugin.send(recipient, Message.PRICE_ITEM_SUCCESS);
                 }
 
@@ -495,9 +506,9 @@ public class AdminListener implements Listener {
                 break;
 
             case PRICE_ITEM_CRITERIA:
-                if (sign == null) return;
+                if (execData == null) return;
 
-                sign.setPIC(new ItemSearchCriteria(meta.getValue().asBoolean(), meta.getValue(2).asBoolean(),
+                execData.setPIC(new ItemSearchCriteria(meta.getValue().asBoolean(), meta.getValue(2).asBoolean(),
                         meta.getValue(1).asBoolean(), meta.getValue(3).asBoolean()));
 
                 plugin.send(recipient, Message.PRICE_ITEM_CRITERIA_SET);
@@ -505,18 +516,18 @@ public class AdminListener implements Listener {
                 break;
 
             case REMOVE:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 int lineNumber = meta.getValue().asInt();
                 if (lineNumber < 0) {
                     plugin.serverSignsManager.remove(sign);
 
                     plugin.send(recipient, Message.COMMANDS_REMOVED);
-                } else if (lineNumber > sign.getCommands().size() || lineNumber < 1) {
+                } else if (lineNumber > execData.getCommands().size() || lineNumber < 1) {
                     plugin.send(recipient, Message.LINE_NOT_FOUND);
                     return;
                 } else {
-                    sign.removeCommand(lineNumber - 1);
+                    execData.removeCommand(lineNumber - 1);
                     plugin.serverSignsManager.save(sign);
                     plugin.send(recipient, Message.COMMAND_REMOVED);
                 }
@@ -525,7 +536,7 @@ public class AdminListener implements Listener {
                 break;
 
             case SELECT:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 SVSMetaManager.removeMeta(adminUUID);
                 SVSMetaManager.setSpecialMeta(adminUUID, new SVSMeta(SVSMetaKey.SELECT, new SVSMetaValue(clicked)));
@@ -533,23 +544,23 @@ public class AdminListener implements Listener {
                 break;
 
             case SET_COOLDOWN:
-                if (sign == null) return;
+                if (execData == null) return;
 
-                sign.setCooldown(meta.getValue().asLong());
+                execData.setCooldown(meta.getValue().asLong());
                 plugin.send(recipient, Message.COOLDOWN_SET);
                 saveRemoveExit = true;
                 break;
 
             case SET_GLOBAL_COOLDOWN:
-                if (sign == null) return;
+                if (execData == null) return;
 
-                sign.setGlobalCooldown(meta.getValue().asLong());
+                execData.setGlobalCooldown(meta.getValue().asLong());
                 plugin.send(recipient, Message.COOLDOWN_SET);
                 saveRemoveExit = true;
                 break;
 
             case SILENT:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 sign.setDisplayInternalMessages(meta.getValue().asBoolean());
                 plugin.send(recipient, Message.SILENT_SUCCESS);
@@ -557,14 +568,14 @@ public class AdminListener implements Listener {
                 break;
 
             case TIME_LIMIT:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 // -1 keep current value | 0 remove current value | >0 set as current value
                 if (meta.getValue().asLong() >= 0) {
-                    sign.setTimeLimitMinimum(meta.getValue().asLong());
+                    execData.setTimeLimitMinimum(meta.getValue().asLong());
                 }
                 if (meta.getValue(1).asLong() >= 0) {
-                    sign.setTimeLimitMaximum(meta.getValue(1).asLong());
+                    execData.setTimeLimitMaximum(meta.getValue(1).asLong());
                 }
 
                 plugin.send(recipient, Message.TIMELIMIT_SUCCESS);
@@ -572,15 +583,15 @@ public class AdminListener implements Listener {
                 break;
 
             case USES:
-                if (sign == null) return;
+                if (execData == null) return;
 
-                sign.setUseLimit(meta.getValue().asInt());
+                execData.setUseLimit(meta.getValue().asInt());
                 plugin.send(recipient, Message.USES_SUCCESS);
                 saveRemoveExit = true;
                 break;
 
             case XP:
-                if (sign == null) return;
+                if (execData == null) return;
 
                 int value = meta.getValue().asInt();
                 if (value == 0) {
@@ -589,7 +600,7 @@ public class AdminListener implements Listener {
                     plugin.send(recipient, Message.XP_SET);
                 }
 
-                sign.setXP(value);
+                execData.setXP(value);
                 saveRemoveExit = true;
                 break;
 

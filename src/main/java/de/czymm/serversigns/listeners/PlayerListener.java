@@ -20,6 +20,7 @@ package de.czymm.serversigns.listeners;
 import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.meta.SVSMetaKey;
 import de.czymm.serversigns.meta.SVSMetaManager;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.signs.ServerSign;
 import de.czymm.serversigns.translations.Message;
 import org.bukkit.Material;
@@ -74,7 +75,7 @@ public class PlayerListener implements Listener {
                             }
                         }
 
-                        plugin.serverSignExecutor.executeSignFull(player, sign, event);
+                        plugin.serverSignExecutor.executeSignFull(player, sign, ClickType.fromAction(event.getAction()), event);
                         if (PLATE_MATERIALS.contains(block.getType())) {
                             pair = new PlatePair(createRemoveTask(plugin, playerUniqueId), event.isCancelled());
                             plateMap.put(playerUniqueId, pair);

@@ -18,13 +18,13 @@
 package de.czymm.serversigns.persist.mapping;
 
 import de.czymm.serversigns.signs.CancelMode;
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class CancelEnumMapper implements IPersistenceMapper<CancelMode> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 

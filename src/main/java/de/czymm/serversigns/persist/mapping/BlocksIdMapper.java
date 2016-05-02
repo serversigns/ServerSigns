@@ -20,17 +20,17 @@ package de.czymm.serversigns.persist.mapping;
 import de.czymm.serversigns.utils.MaterialConvertor;
 import de.czymm.serversigns.utils.NumberUtils;
 import org.bukkit.Material;
-import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 public class BlocksIdMapper implements IPersistenceMapper<EnumSet<Material>> {
-    private MemorySection memorySection;
+    private ConfigurationSection memorySection;
 
     @Override
-    public void setMemorySection(MemorySection memorySection) {
+    public void setMemorySection(ConfigurationSection memorySection) {
         this.memorySection = memorySection;
     }
 
