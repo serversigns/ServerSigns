@@ -29,6 +29,7 @@ import de.czymm.serversigns.signs.ServerSignManager;
 import de.czymm.serversigns.utils.NumberUtils;
 import de.czymm.serversigns.utils.UUIDUpdateTask;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
@@ -66,14 +67,17 @@ public class ServerSignConverter {
         }
         if (currentVersion <= 2) {
             createBackup(signDirectory);
-            return updateMalformedFileName(
+            YamlConfiguration yaml =
                     updateExecutorData(
                             updatePriceItemData(
                                     updateCommands(
                                             updatePermissions(signFile),
                                             signFile),
                                     signFile),
-                            signFile),
+                            signFile);
+            yaml.save(signFile.toFile());
+            return updateMalformedFileName(
+                    yaml,
                     signDirectory,
                     signFile
             );
@@ -86,7 +90,7 @@ public class ServerSignConverter {
                             signFile),
                     signFile),
                     signFile
-            );
+            ).save(signFile.toFile());
         } else if (currentVersion <= 4) {
             createBackup(signDirectory);
             updateExecutorData(
@@ -94,16 +98,16 @@ public class ServerSignConverter {
                             updatePermissions(signFile),
                             signFile),
                     signFile
-            );
+            ).save(signFile.toFile());
         } else if (currentVersion <= 5) {
             createBackup(signDirectory);
             updateExecutorData(
                     updatePermissions(signFile),
                     signFile
-            );
+            ).save(signFile.toFile());
         } else if (currentVersion <= 7) {
             createBackup(signDirectory);
-            updateExecutorData(signFile);
+            updateExecutorData(signFile).save(signFile.toFile());
         }
         return signFile;
     }
@@ -133,8 +137,7 @@ public class ServerSignConverter {
     // FILE_VERSION <= 3
     public static YamlConfiguration updatePriceItemData(Path signFile) throws IOException {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(signFile.toFile());
-        updatePriceItemData(yaml, signFile);
-        return yaml;
+        return updatePriceItemData(yaml, signFile);
     }
 
     private static YamlConfiguration updatePriceItemData(YamlConfiguration yml, Path signFile) throws IOException {
@@ -145,15 +148,13 @@ public class ServerSignConverter {
             piStrings.set(k, ItemStringConverter.convertPreV4String(raw));
         }
         yml.set("priceItems", piStrings);
-        yml.save(signFile.toFile());
         return yml;
     }
 
     // FILE_VERSION <= 4
     public static YamlConfiguration updateCommands(Path signFile) throws IOException {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(signFile.toFile());
-        updateCommands(yaml, signFile);
-        return yaml;
+        return updateCommands(yaml, signFile);
     }
 
     private static YamlConfiguration updateCommands(YamlConfiguration yaml, Path signFile) throws IOException {
@@ -180,7 +181,6 @@ public class ServerSignConverter {
                 ServerSignsPlugin.log(String.format("Encountered an exception while converting commands in file '%s' (%s) - this ServerSign might not perform correctly!", signFile.getFileName(), ex.getMessage()), Level.WARNING);
             }
         }
-        yaml.save(signFile.toFile());
         return yaml;
     }
 
@@ -199,8 +199,7 @@ public class ServerSignConverter {
     // FILE_VERSION <= 5
     public static YamlConfiguration updatePermissions(Path signFile) throws IOException {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(signFile.toFile());
-        updatePermissions(yaml, signFile);
-        return yaml;
+        return updatePermissions(yaml, signFile);
     }
 
     private static YamlConfiguration updatePermissions(YamlConfiguration yaml, Path signFile) throws IOException {
@@ -226,8 +225,7 @@ public class ServerSignConverter {
 
     public static YamlConfiguration updateExecutorData(Path signFile) throws IOException {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(signFile.toFile());
-        updateExecutorData(yaml, signFile);
-        return yaml;
+        return updateExecutorData(yaml, signFile);
     }
 
     public static YamlConfiguration updateExecutorData(YamlConfiguration yaml, Path signFile) throws IOException {
@@ -241,31 +239,38 @@ public class ServerSignConverter {
             } else if (declaredField.getType().equals(ClickType.class)) {
                 PersistenceEntry configEntry = declaredField.getAnnotation(PersistenceEntry.class);
                 if (configEntry != null) {
-                    newYaml.set(configEntry.configPath(), "RIGHT");
+                    String path = configEntry.configPath().isEmpty() ? declaredField.getName() : configEntry.configPath();
+                    newYaml.set(path, "LEFT");
                 }
                 continue;
             }
 
             PersistenceEntry configEntry = declaredField.getAnnotation(PersistenceEntry.class);
             if (configEntry != null) {
-                newYaml.set(configEntry.configPath(), yaml.get(configEntry.configPath()));
+                String path = configEntry.configPath().isEmpty() ? declaredField.getName() : configEntry.configPath();
+                newYaml.set(path, yaml.get(path));
             }
         }
 
         List<ConfigurationSection> leftClickCommands = new ArrayList<>();
         List<ConfigurationSection> rightClickCommands = new ArrayList<>();
 
-        // Analyse each command and put into separate lists for RIGHT/LEFT sections
-        for (String commandIndex : yaml.getConfigurationSection("commands").getKeys(false)) {
-            int interactValue = yaml.getInt("commands." + commandIndex + ".interactValue");
-            if (interactValue == 0 || interactValue == 2) {
-                rightClickCommands.add(yaml.getConfigurationSection("commands." + commandIndex));
-            } else if (interactValue == 1) {
-                leftClickCommands.add(yaml.getConfigurationSection("commands." + commandIndex));
+        if (yaml.getConfigurationSection("commands") == null) {
+            // No commands on this sign yet
+            newYaml.set("executor-data.RIGHT.commands", new ArrayList<>());
+        } else {
+            // Analyse each command and put into separate lists for RIGHT/LEFT sections
+            for (String commandIndex : yaml.getConfigurationSection("commands").getKeys(false)) {
+                int interactValue = yaml.getInt("commands." + commandIndex + ".interactValue");
+                if (interactValue == 0 || interactValue == 2) {
+                    rightClickCommands.add(yaml.getConfigurationSection("commands." + commandIndex));
+                } else if (interactValue == 1) {
+                    leftClickCommands.add(yaml.getConfigurationSection("commands." + commandIndex));
+                }
             }
         }
 
-        // Construct RIGHT executor data (as all the previous data shifts to here now)
+        // Construct executor data (as all the previous data shifts to here now)
         String[] entries = leftClickCommands.isEmpty() ? new String[]{"RIGHT"} : new String[]{"RIGHT", "LEFT"};
         for (String entryType : entries) {
             for (Field declaredField : ServerSignExecData.class.getDeclaredFields()) {
@@ -275,7 +280,21 @@ public class ServerSignConverter {
 
                 PersistenceEntry configEntry = declaredField.getAnnotation(PersistenceEntry.class);
                 if (configEntry != null) {
-                    newYaml.set("executor-data." + entryType + "." + configEntry.configPath(), yaml.get(configEntry.configPath()));
+                    String path = configEntry.configPath().isEmpty() ? declaredField.getName() : configEntry.configPath();
+                    Object value = yaml.get(path);
+
+                    newYaml.set("executor-data." + entryType + "." + path, value);
+                }
+            }
+
+            // We need to do this otherwise YamlConfiguration has a fit about us adding values to similar keys
+            if (entries.length > 1) {
+                String current = newYaml.saveToString();
+                newYaml = new YamlConfiguration();
+                try {
+                    newYaml.loadFromString(current);
+                } catch (InvalidConfigurationException ex) {
+                    // Ignore it?
                 }
             }
         }

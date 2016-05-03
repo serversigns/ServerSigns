@@ -28,6 +28,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.material.Door;
 
@@ -260,6 +261,17 @@ public class ServerSignManager {
 
             YamlConfiguration yamlConfiguration = new YamlConfiguration();
             YamlFieldPersistence.saveToYaml(yamlConfiguration, sign);
+
+            for (Entry<ClickType, ServerSignExecData> entry : sign.getServerSignExecutorData().entrySet()) {
+                if (entry.getValue() != null) {
+                    ConfigurationSection configurationSection = yamlConfiguration.getConfigurationSection("executor-data." + entry.getKey().toString());
+                    if (configurationSection == null) {
+                        yamlConfiguration.createSection("executor-data." + entry.getKey().toString());
+                    }
+
+                    YamlFieldPersistence.saveToMemorySection(configurationSection, sign);
+                }
+            }
 
             yamlConfiguration.save(getPath(sign).toFile());
         } catch (IOException | PersistenceException e) {

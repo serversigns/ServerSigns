@@ -12,7 +12,7 @@ public class SubCommandDefaultExecutor extends SubCommand {
         super(
                 plugin,
                 "default_executor",
-                "defaultexecutor <left|right|none>",
+                "defaultexecutor <left|right>",
                 "Set which click-type executor should be defaulted to when a player clicks a ServerSign",
                 "defaultexecutor", "defexec", "defex"
         );
@@ -37,7 +37,6 @@ public class SubCommandDefaultExecutor extends SubCommand {
         applyMeta(SVSMetaKey.DEFAULT_CLICKTYPE, new SVSMetaValue(type));
         if (verbose) {
             msg(Message.CLICK_APPLY);
-            msg(Message.CLICK_INFO);
         }
     }
 }

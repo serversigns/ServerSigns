@@ -58,8 +58,8 @@ public class ServerSign implements Cloneable, Serializable {
     @PersistenceEntry(configMapper = ClickTypeServerSignExecDataHashMapper.class, configPath = "executor-data")
     private Map<ClickType, ServerSignExecData> execDataMap = new HashMap<>();
 
-    @PersistenceEntry(configMapper = EnumMapper.class)
-    private ClickType defaultClickType = ClickType.RIGHT;
+    @PersistenceEntry(configMapper = EnumMapper.class, configPath = "defaultExecutor")
+    private ClickType defaultClickType = ClickType.LEFT;
 
     public ServerSign() {
     }
