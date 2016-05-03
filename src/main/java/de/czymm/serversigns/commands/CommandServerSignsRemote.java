@@ -21,6 +21,7 @@ import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.commands.core.CommandException;
 import de.czymm.serversigns.commands.core.SubCommand;
 import de.czymm.serversigns.meta.SVSMetaManager;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -69,10 +70,11 @@ public class CommandServerSignsRemote extends de.czymm.serversigns.commands.core
 
     @Override
     protected void perform(final String commandLabel, final Command cmd) throws Exception {
-        label += " <location>";
-        if (!this.argSet(1)) {
+        label += " <location> <executor-type>";
+        if (!this.argSet(2)) {
             sendHelpMessages();
             msg("&7<location> must be in the format 'world,x,y,z'");
+            msg("&7<executor-type> is the click type (left|right|none)");
             msg("&7&oParameters: &2<required> &c{exact} &9[optional]");
             msg("&7Detailed reference: http://serversigns.de/cmds");
             return;
@@ -109,24 +111,35 @@ public class CommandServerSignsRemote extends de.czymm.serversigns.commands.core
             return;
         }
 
-        SubCommand match = matchSubCommand(arg(1));
+        String rawClickType = arg(1);
+        ClickType clickType;
+        try {
+            clickType = ClickType.valueOf(rawClickType.toUpperCase());
+            if (clickType.equals(ClickType.NONE)) throw new IllegalArgumentException();
+        } catch (IllegalArgumentException ex) {
+            msg("Invalid executor-type provided. Must be either left or right");
+            return;
+        }
+
+        SubCommand match = matchSubCommand(arg(2));
         if (match != null) {
             if (!isConsole && !match.hasPermission(player)) {
                 sendHelpMessages();
                 return;
             }
 
-            match.execute(sender, args.subList(2, args.size()), label, false); // Verbose = false, as it's handled immediately
+            match.execute(sender, args.subList(3, args.size()), label, false); // Verbose = false, as it's handled immediately
             // Imitate sender clicking the desired sign if they have meta to use
             UUID id = player == null ? SVSMetaManager.CONSOLE_UUID : player.getUniqueId();
             if (SVSMetaManager.hasMeta(id)) {
-                plugin.adminListener.handleAdminInteract(remoteLocation, sender, id);
+                plugin.adminListener.handleAdminInteract(remoteLocation, clickType, sender, id);
             }
             return;
         }
 
         sendHelpMessages();
         msg("&7<location> must be in the format 'world,x,y,z'");
+        msg("&7<executor-type> is the click type (left|right|none)");
         msg("&7&oParameters: &2<required> &c{exact} &9[optional]");
         msg("&7Detailed reference: http://serversigns.de/cmds");
     }

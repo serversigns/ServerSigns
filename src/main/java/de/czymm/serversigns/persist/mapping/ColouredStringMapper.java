@@ -29,7 +29,7 @@ public class ColouredStringMapper implements IPersistenceMapper<String> {
     }
 
     @Override
-    public String getValue(String path) {
+    public String getValue(String path, Class<?> valueClass) {
         return StringUtils.colour(memorySection.getString(path));
     }
 

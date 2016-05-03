@@ -26,7 +26,10 @@ import de.czymm.serversigns.meta.SVSMetaKey;
 import de.czymm.serversigns.meta.SVSMetaManager;
 import de.czymm.serversigns.meta.SVSMetaValue;
 import de.czymm.serversigns.parsing.command.ServerSignCommand;
-import de.czymm.serversigns.signs.*;
+import de.czymm.serversigns.signs.ClickType;
+import de.czymm.serversigns.signs.PlayerInputOptions;
+import de.czymm.serversigns.signs.ServerSign;
+import de.czymm.serversigns.signs.ServerSignExecData;
 import de.czymm.serversigns.translations.Message;
 import de.czymm.serversigns.utils.ItemUtils;
 import de.czymm.serversigns.utils.StringUtils;
@@ -133,11 +136,10 @@ public class AdminListener implements Listener {
 
             case CANCEL:
                 if (execData == null) return;
-                String raw = meta.getValue().asString();
-                CancelMode mode = CancelMode.valueOf(raw);
-                execData.setCancelMode(mode);
 
-                plugin.send(recipient, Message.SET_CANCEL_MODE, "<mode>", raw);
+                execData.setCancelMode(meta.getValue().asCancelMode());
+
+                plugin.send(recipient, Message.SET_CANCEL_MODE, "<mode>", meta.getValue().asCancelMode().name());
                 saveRemoveExit = true;
                 break;
 
@@ -205,6 +207,15 @@ public class AdminListener implements Listener {
                 saveRemoveExit = true;
                 break;
 
+            case DEFAULT_CLICKTYPE:
+                if (sign == null) return;
+
+                sign.setDefaultClickType(meta.getValue().asClickType());
+
+                plugin.send(recipient, Message.DEFAULT_EXECUTOR_SET);
+                saveRemoveExit = true;
+                break;
+
             case EDIT:
                 if (execData == null) return;
 
@@ -267,7 +278,7 @@ public class AdminListener implements Listener {
                     List<String> commands = Files.readLines(path.toFile(), Charset.defaultCharset());
                     ExecutableSVSR svsr = new ExecutableSVSR(plugin);
                     for (String command : commands) {
-                        svsr.execute(clicked, (Player) recipient, command);
+                        svsr.execute(clicked, (Player) recipient, clickType, command);
                     }
                 } catch (Exception ex) {
                     plugin.send(recipient, "An error occurred, please refer to console for details.");
@@ -391,7 +402,7 @@ public class AdminListener implements Listener {
 
                     if (!execData.getCommands().isEmpty()) {
                         plugin.send(recipient, "&6Commands: ");
-                        plugin.send(recipient, "&oLine #: &c&oType &a&oDelay &9&oPerms &d&o[ap] &7&oClick &f&oCommand");
+                        plugin.send(recipient, "&oLine #: &c&oType &a&oDelay &9&oPerms &d&o[ap] &f&oCommand");
                         StringBuilder builder;
                         int k = 1;
                         for (ServerSignCommand line : execData.getCommands()) {
@@ -409,7 +420,6 @@ public class AdminListener implements Listener {
                             if (line.isAlwaysPersisted()) {
                                 builder.append("&dtrue ");
                             }
-                            builder.append("&7").append(line.getInteractValue() == 0 ? "both " : line.getInteractValue() == 1 ? "left " : "right ");
                             builder.append("&f").append(line.getUnformattedCommand());
                             plugin.send(recipient, builder.toString().trim());
                         }

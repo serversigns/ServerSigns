@@ -31,7 +31,7 @@ public class StringLongHashMapper implements IPersistenceMapper<HashMap<String, 
     }
 
     @Override
-    public HashMap<String, Long> getValue(String path) {
+    public HashMap<String, Long> getValue(String path, Class<?> valueClass) {
         HashMap<String, Long> map = new HashMap<>();
         if (memorySection.getConfigurationSection(path) == null) return map;
         for (String key : memorySection.getConfigurationSection(path).getKeys(false)) {

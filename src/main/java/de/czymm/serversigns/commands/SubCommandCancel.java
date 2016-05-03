@@ -51,7 +51,7 @@ public class SubCommandCancel extends SubCommand {
             return;
         }
 
-        applyMeta(SVSMetaKey.CANCEL, new SVSMetaValue(mode.name()));
+        applyMeta(SVSMetaKey.CANCEL, new SVSMetaValue(mode));
         if (verbose) msg(Message.RIGHT_CLICK_APPLY);
     }
 }

@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.PHYSICAL) || (plugin.config.getAllowLeftClicking() && event.getAction().equals(Action.LEFT_CLICK_BLOCK))) {
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.PHYSICAL) || event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
             if (plugin.config.getAnyBlock() || plugin.config.getBlocks().contains(block.getType())) {
                 final UUID playerUniqueId = player.getUniqueId();
                 PlatePair pair = plateMap.get(playerUniqueId);
@@ -66,7 +66,7 @@ public class PlayerListener implements Listener {
                     ServerSign sign = plugin.serverSignsManager.getServerSignByLocation(block.getLocation());
                     if (sign != null) {
                         // Check if this is an admin attempt to remove the ServerSign
-                        if (event.getAction().equals(Action.LEFT_CLICK_BLOCK) && plugin.config.getAllowLeftClicking() && player.hasPermission("serversigns.admin")) {
+                        if (event.getAction().equals(Action.LEFT_CLICK_BLOCK) && player.hasPermission("serversigns.admin")) {
                             if ((plugin.config.getSneakToDestroy() && player.isSneaking()) || (!plugin.config.getSneakToDestroy() && !player.isSneaking())) {
                                 plugin.serverSignsManager.remove(sign);
                                 plugin.send(event.getPlayer(), Message.COMMANDS_REMOVED);

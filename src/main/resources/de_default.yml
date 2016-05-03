@@ -114,3 +114,4 @@ import_select_sign: 'Right-click an existing ServerSign to import the commands t
 xp_cost_removed: 'Successfully removed the EXP cost from this ServerSign'
 xp_cost_invalid: 'The EXP level cost must be an integer greater than -1'
 permissions_removed: 'Successfully removed permissions from this sign'
+default_executor_set: 'Successfully set the default executor for this ServerSign'

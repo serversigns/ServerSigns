@@ -28,7 +28,7 @@ public class DefaultPersistenceMapper implements IPersistenceMapper<Object> {
     }
 
     @Override
-    public Object getValue(String path) {
+    public Object getValue(String path, Class<?> valueClass) {
         return memorySection.get(path);
     }
 

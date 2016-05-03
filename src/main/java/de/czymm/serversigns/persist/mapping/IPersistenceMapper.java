@@ -22,7 +22,7 @@ import org.bukkit.configuration.ConfigurationSection;
 public interface IPersistenceMapper<E> {
     void setMemorySection(ConfigurationSection memorySection);
 
-    E getValue(String path) throws MappingException;
+    E getValue(String path, Class<?> valueClass) throws MappingException;
 
     void setValue(String path, E value) throws MappingException;
 }

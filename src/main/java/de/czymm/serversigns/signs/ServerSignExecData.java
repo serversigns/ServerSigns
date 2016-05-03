@@ -48,7 +48,7 @@ public class ServerSignExecData implements Cloneable, Serializable {
     @PersistenceEntry
     private String confirmationMessage = "";
 
-    @PersistenceEntry(configMapper = CancelEnumMapper.class, configPath = "cancel_mode")
+    @PersistenceEntry(configMapper = EnumMapper.class, configPath = "cancel_mode")
     private CancelMode cancel = CancelMode.ALWAYS;
 
     @PersistenceEntry(configMapper = ServerSignCommandListMapper.class)

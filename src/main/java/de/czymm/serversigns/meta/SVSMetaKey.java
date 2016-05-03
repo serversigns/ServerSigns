@@ -47,5 +47,6 @@ public enum SVSMetaKey {
     SELECT,
     OPTION,
     TIME_LIMIT,
-    IMPORT
+    IMPORT,
+    DEFAULT_CLICKTYPE
 }

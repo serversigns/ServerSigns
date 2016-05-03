@@ -18,6 +18,7 @@
 package de.czymm.serversigns.parsing.operators;
 
 import de.czymm.serversigns.ServerSignsPlugin;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.signs.ServerSign;
 import org.bukkit.entity.Player;
 
@@ -75,14 +76,14 @@ public abstract class ConditionalOperator {
         this.params = params;
     }
 
-    public boolean evaluate(Player executor, ServerSign executingSign, ServerSignsPlugin plugin) {
+    public boolean evaluate(Player executor, ServerSign executingSign, ClickType clickType, ServerSignsPlugin plugin) {
         //Exclusive OR, return true if either:
         // - condition is true and negation is false
         // - condition is false and negation is true
-        return isNegative() ^ meetsConditions(executor, executingSign, plugin);
+        return isNegative() ^ meetsConditions(executor, executingSign, clickType, plugin);
     }
 
-    protected abstract boolean meetsConditions(Player executor, ServerSign executingSign, ServerSignsPlugin plugin);
+    protected abstract boolean meetsConditions(Player executor, ServerSign executingSign, ClickType clickType, ServerSignsPlugin plugin);
 
     public ConditionalOperator newInstance() {
         try {

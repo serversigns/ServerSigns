@@ -21,26 +21,28 @@ import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.parsing.CommandParseException;
 import de.czymm.serversigns.parsing.ServerSignCommandFactory;
 import de.czymm.serversigns.parsing.command.ServerSignCommand;
+import de.czymm.serversigns.persist.PersistenceEntry;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.signs.ServerSign;
+import de.czymm.serversigns.signs.ServerSignExecData;
 import de.czymm.serversigns.signs.ServerSignManager;
 import de.czymm.serversigns.utils.NumberUtils;
 import de.czymm.serversigns.utils.UUIDUpdateTask;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 public class ServerSignConverter {
 
-    public static final int FILE_VERSION = 7;
+    public static final int FILE_VERSION = 8;
     private static int currentVersion = -1;
 
     public static int getCurrentPersistVersion(Path signDirectory) throws IOException {
@@ -65,28 +67,43 @@ public class ServerSignConverter {
         if (currentVersion <= 2) {
             createBackup(signDirectory);
             return updateMalformedFileName(
-                    updatePriceItemData(
-                            updateCommands(
-                                    updatePermissions(signFile),
+                    updateExecutorData(
+                            updatePriceItemData(
+                                    updateCommands(
+                                            updatePermissions(signFile),
+                                            signFile),
                                     signFile),
                             signFile),
                     signDirectory,
-                    signFile);
+                    signFile
+            );
         } else if (currentVersion <= 3) {
             createBackup(signDirectory);
+            updateExecutorData(
             updatePriceItemData(
                     updateCommands(
                             updatePermissions(signFile),
                             signFile),
-                    signFile);
+                    signFile),
+                    signFile
+            );
         } else if (currentVersion <= 4) {
             createBackup(signDirectory);
-            updateCommands(
-                    updatePermissions(signFile),
-                    signFile);
+            updateExecutorData(
+                    updateCommands(
+                            updatePermissions(signFile),
+                            signFile),
+                    signFile
+            );
         } else if (currentVersion <= 5) {
             createBackup(signDirectory);
-            updatePermissions(signFile);
+            updateExecutorData(
+                    updatePermissions(signFile),
+                    signFile
+            );
+        } else if (currentVersion <= 7) {
+            createBackup(signDirectory);
+            updateExecutorData(signFile);
         }
         return signFile;
     }
@@ -155,7 +172,7 @@ public class ServerSignConverter {
                     yaml.set("commands." + k + ".delay", command.getDelay());
                     yaml.set("commands." + k + ".grantPerms", command.getGrantPermissions());
                     yaml.set("commands." + k + ".alwaysPersisted", command.isAlwaysPersisted());
-                    yaml.set("commands." + k + ".interactValue", command.getInteractValue());
+                    yaml.set("commands." + k + ".interactValue", "0");
                 } else {
                     ServerSignsPlugin.log("Encountered invalid command while updating " + signFile.getFileName().toString() + ": '" + commands.get(k) + "'");
                 }
@@ -168,11 +185,13 @@ public class ServerSignConverter {
     }
 
     public static void updateLastUseMapUUIDs(ServerSign sign, ServerSignsPlugin plugin) throws IOException {
-        for (Map.Entry<String, Long> entry : sign.getLastUse().entrySet()) {
-            if (entry.getKey().length() <= 16) {
-                UUIDUpdateTask task = new UUIDUpdateTask(plugin, sign);
-                task.updateLastUse();
-                return;
+        for (ServerSignExecData execData : sign.getServerSignExecutorData().values()) {
+            for (Map.Entry<String, Long> entry : execData.getLastUse().entrySet()) {
+                if (entry.getKey().length() <= 16) {
+                    UUIDUpdateTask task = new UUIDUpdateTask(plugin, sign);
+                    task.updateLastUse();
+                    return;
+                }
             }
         }
     }
@@ -201,6 +220,86 @@ public class ServerSignConverter {
     public static void updateProtectedBlocks(ServerSign sign, ServerSignManager manager) {
         sign.updateProtectedBlocks();
         manager.save(sign);
+    }
+
+    // FILE_VERSION <= 7
+
+    public static YamlConfiguration updateExecutorData(Path signFile) throws IOException {
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(signFile.toFile());
+        updateExecutorData(yaml, signFile);
+        return yaml;
+    }
+
+    public static YamlConfiguration updateExecutorData(YamlConfiguration yaml, Path signFile) throws IOException {
+        // Construct new config to save to (as we're changing the whole thing basically)
+        YamlConfiguration newYaml = new YamlConfiguration();
+
+        // Everything in ExecData except commands moved to RIGHT section
+        for (Field declaredField : ServerSign.class.getDeclaredFields()) {
+            if (declaredField.getType().equals(Map.class)) {
+                continue;
+            } else if (declaredField.getType().equals(ClickType.class)) {
+                PersistenceEntry configEntry = declaredField.getAnnotation(PersistenceEntry.class);
+                if (configEntry != null) {
+                    newYaml.set(configEntry.configPath(), "RIGHT");
+                }
+                continue;
+            }
+
+            PersistenceEntry configEntry = declaredField.getAnnotation(PersistenceEntry.class);
+            if (configEntry != null) {
+                newYaml.set(configEntry.configPath(), yaml.get(configEntry.configPath()));
+            }
+        }
+
+        List<ConfigurationSection> leftClickCommands = new ArrayList<>();
+        List<ConfigurationSection> rightClickCommands = new ArrayList<>();
+
+        // Analyse each command and put into separate lists for RIGHT/LEFT sections
+        for (String commandIndex : yaml.getConfigurationSection("commands").getKeys(false)) {
+            int interactValue = yaml.getInt("commands." + commandIndex + ".interactValue");
+            if (interactValue == 0 || interactValue == 2) {
+                rightClickCommands.add(yaml.getConfigurationSection("commands." + commandIndex));
+            } else if (interactValue == 1) {
+                leftClickCommands.add(yaml.getConfigurationSection("commands." + commandIndex));
+            }
+        }
+
+        // Construct RIGHT executor data (as all the previous data shifts to here now)
+        String[] entries = leftClickCommands.isEmpty() ? new String[]{"RIGHT"} : new String[]{"RIGHT", "LEFT"};
+        for (String entryType : entries) {
+            for (Field declaredField : ServerSignExecData.class.getDeclaredFields()) {
+                if (declaredField.getName().equals("commands")) {
+                    continue;
+                }
+
+                PersistenceEntry configEntry = declaredField.getAnnotation(PersistenceEntry.class);
+                if (configEntry != null) {
+                    newYaml.set("executor-data." + entryType + "." + configEntry.configPath(), yaml.get(configEntry.configPath()));
+                }
+            }
+        }
+
+        if (!rightClickCommands.isEmpty()) {
+            for (int k = 0; k < rightClickCommands.size(); k++) {
+                ConfigurationSection configurationSection = rightClickCommands.get(k);
+                for (String key : configurationSection.getKeys(false)) {
+                    if (key.equals("interactValue")) continue;
+                    newYaml.set("executor-data.RIGHT.commands." + k + "." + key, configurationSection.get(key));
+                }
+            }
+        }
+        if (!leftClickCommands.isEmpty()) {
+            for (int k = 0; k < leftClickCommands.size(); k++) {
+                ConfigurationSection configurationSection = leftClickCommands.get(k);
+                for (String key : configurationSection.getKeys(false)) {
+                    if (key.equals("interactValue")) continue;
+                    newYaml.set("executor-data.LEFT.commands." + k + "." + key, configurationSection.get(key));
+                }
+            }
+        }
+
+        return newYaml;
     }
 
     // BACKUP

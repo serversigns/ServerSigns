@@ -49,7 +49,6 @@ public class ServerSignCommandFactory {
     private static final Pattern PERMISSION_PATTERN = Pattern.compile("\\[p:([\\S]*)\\]");
     private static final Pattern DELAY_PATTERN = Pattern.compile("\\[d:(\\d*)(\\w*)\\]");
     private static final Pattern AP_PATTERN = Pattern.compile("\\[ap:(\\w*)\\]");
-    private static final Pattern CLICK_PATTERN = Pattern.compile("\\[click:(\\w*)\\]");
     private static final Pattern TYPE_PATTERN = Pattern.compile("^<(\\w+)>");
 
     public static ServerSignCommand getCommandFromString(String input, ServerSignsPlugin plugin) throws CommandParseException {
@@ -57,10 +56,7 @@ public class ServerSignCommandFactory {
 
         // Conditional Statements
         if (input.trim().startsWith("<if>")) {
-            InteractResult result = getInteractValue(plugin, input); // Make sure we check for the click type, as that's important!!
-            ConditionalServerSignCommand command = new ConditionalServerSignCommand(CommandType.CONDITIONAL_IF, result.getInputValue().trim().substring(4).trim());
-            command.setInteractValue(result.getInteractValue());
-            return command;
+            return new ConditionalServerSignCommand(CommandType.CONDITIONAL_IF, input.substring(4).trim());
         } else if (input.trim().startsWith("<endif>")) {
             return new ConditionalServerSignCommand(CommandType.CONDITIONAL_ENDIF, "");
         }
@@ -107,11 +103,6 @@ public class ServerSignCommandFactory {
             input = matcher.replaceFirst("");
         }
 
-        // Interact value
-        InteractResult result = getInteractValue(plugin, input);
-        int interactValue = result.getInteractValue(); // default to 0 = both
-        input = result.getInputValue().trim();
-
         // Type
         CommandType type = null;
         if ((matcher = TYPE_PATTERN.matcher(input)).find()) {
@@ -147,49 +138,7 @@ public class ServerSignCommandFactory {
         cmd.setDelay(delay);
         cmd.setGrantPermissions(permissions);
         cmd.setAlwaysPersisted(alwaysPersist);
-        cmd.setInteractValue(interactValue);
 
         return cmd;
-    }
-
-    private static InteractResult getInteractValue(ServerSignsPlugin plugin, String input) throws CommandParseException {
-        int val = 0;
-        Matcher matcher = CLICK_PATTERN.matcher(input);
-        if (matcher.find()) {
-            if (!matcher.group(1).isEmpty()) {
-                if (matcher.group(1).equalsIgnoreCase("left") || matcher.group(1).equalsIgnoreCase("l")) {
-                    if (plugin != null && !plugin.getServerSignsConfig().getAllowLeftClicking()) {
-                        throw new CommandParseException("'allow_left_clicking' must be set to true in config.yml for left-click commands!");
-                    }
-                    val = 1;
-                } else if (matcher.group(1).equalsIgnoreCase("right") || matcher.group(1).equalsIgnoreCase("r")) {
-                    val = 2;
-                } else if (matcher.group(1).equalsIgnoreCase("both") || matcher.group(1).equalsIgnoreCase("b")) {
-                    val = 0;
-                } else {
-                    throw new CommandParseException("Invalid click parameter - [click:<left|right|both>] is expected");
-                }
-            }
-            input = matcher.replaceFirst("");
-        }
-        return new InteractResult(input, val);
-    }
-
-    protected static class InteractResult {
-        int interactValue;
-        String inputValue;
-
-        public InteractResult(String input, int interact) {
-            interactValue = interact;
-            inputValue = input;
-        }
-
-        public int getInteractValue() {
-            return interactValue;
-        }
-
-        public String getInputValue() {
-            return inputValue;
-        }
     }
 }

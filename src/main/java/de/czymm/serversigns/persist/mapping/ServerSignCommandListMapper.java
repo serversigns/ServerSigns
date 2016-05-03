@@ -38,7 +38,7 @@ public class ServerSignCommandListMapper implements ISmartPersistenceMapper<List
     }
 
     @Override
-    public List<ServerSignCommand> getValue(String path) throws MappingException {
+    public List<ServerSignCommand> getValue(String path, Class<?> valueClass) throws MappingException {
         List<ServerSignCommand> list = new ArrayList<>();
 
         ConfigurationSection section = memorySection.getConfigurationSection(path);
@@ -64,20 +64,17 @@ public class ServerSignCommandListMapper implements ISmartPersistenceMapper<List
                 ServerSignCommand cmd;
                 ConfigurationSection subSection = section.getConfigurationSection(indexStr);
                 CommandType type = CommandType.valueOf(subSection.getString("type"));
-                int interactValue = subSection.getInt("interactValue");
                 String command = subSection.getString("command");
 
                 if (type == CommandType.CONDITIONAL_IF || type == CommandType.CONDITIONAL_ENDIF) {
                     try {
                         cmd = new ConditionalServerSignCommand(type, command);
-                        cmd.setInteractValue(interactValue);
                     } catch (CommandParseException ex) {
                         ServerSignsPlugin.log("Encountered an error that is a result of manual file editing: Invalid conditional command defined in '" + host + "'");
                         continue;
                     }
                 } else if (type == CommandType.RETURN) {
                     cmd = new ReturnServerSignCommand();
-                    cmd.setInteractValue(interactValue);
                 } else {
                     long delay = subSection.getLong("delay", 0);
                     boolean alwaysPersisted = subSection.getBoolean("alwaysPersisted");
@@ -86,7 +83,6 @@ public class ServerSignCommandListMapper implements ISmartPersistenceMapper<List
                     cmd = new ServerSignCommand(type, command);
                     cmd.setDelay(delay);
                     cmd.setAlwaysPersisted(alwaysPersisted);
-                    cmd.setInteractValue(interactValue);
                     if (grantPerms != null && !grantPerms.isEmpty()) {
                         cmd.setGrantPermissions(grantPerms);
                     }
@@ -120,7 +116,6 @@ public class ServerSignCommandListMapper implements ISmartPersistenceMapper<List
             memorySection.set(path + "." + k + ".delay", cmd.getDelay());
             memorySection.set(path + "." + k + ".grantPerms", cmd.getGrantPermissions());
             memorySection.set(path + "." + k + ".alwaysPersisted", cmd.isAlwaysPersisted());
-            memorySection.set(path + "." + k + ".interactValue", cmd.getInteractValue());
         }
     }
 

@@ -20,5 +20,7 @@ v4.5.1:
 * Added new conditional operator: onlinePlayers:<operator><amount> - i.e. onlinePlayers:>100 or onlinePlayers:=21
 * Added new conditional operator: nearbyPlayers:<radius><operator><amount> - i.e. nearbyPlayers:10<50 or nearbyPlayers:100>25
 
-v4.5.2:
+v4.6:
 * Added new conditional operator: hasBalance:<operator><amount> - i.e. hasBalance:>10000 or hasBalance:=250
+* Changed ServerSign execution system so that completely separate ServerSign data can be set for left or right clicking
+* Removed allow_left_clicking configuration option as it can be controlled entirely per-sign

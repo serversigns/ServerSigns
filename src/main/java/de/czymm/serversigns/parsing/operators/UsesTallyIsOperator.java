@@ -18,6 +18,7 @@
 package de.czymm.serversigns.parsing.operators;
 
 import de.czymm.serversigns.ServerSignsPlugin;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.signs.ServerSign;
 import de.czymm.serversigns.utils.NumberUtils;
 import org.bukkit.entity.Player;
@@ -34,12 +35,12 @@ public class UsesTallyIsOperator extends ConditionalOperator {
     }
 
     @Override
-    public boolean meetsConditions(Player executor, ServerSign executingSign, ServerSignsPlugin plugin) {
+    public boolean meetsConditions(Player executor, ServerSign executingSign, ClickType clickType, ServerSignsPlugin plugin) {
         if (params == null) {
             return false;
         }
 
         int tally = NumberUtils.parseInt(params);
-        return executingSign.getUseTally() == tally;
+        return executingSign.getServerSignExecutorData(clickType).getUseTally() == tally;
     }
 }

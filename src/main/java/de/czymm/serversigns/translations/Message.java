@@ -131,7 +131,8 @@ public enum Message {
     OPTION_LABEL_DESC_SEPARATOR("option_label_desc_separator"),
     XP_COST_REMOVED("xp_cost_removed"),
     XP_COST_INVALID("xp_cost_invalid"),
-    PERMISSIONS_REMOVED("permissions_removed");
+    PERMISSIONS_REMOVED("permissions_removed"),
+    DEFAULT_EXECUTOR_SET("default_executor_set"),;
 
     private String path;
 

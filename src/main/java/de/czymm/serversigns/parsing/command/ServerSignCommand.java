@@ -39,21 +39,11 @@ public class ServerSignCommand implements Serializable {
 
     private long delay = 0;
     private boolean alwaysPersisted = false;
-    private int interactValue = 0; // 0 = both, 1 = left, 2 = right
     private List<String> grant = new ArrayList<>();
 
     public ServerSignCommand(CommandType type, String command) {
         this.type = type;
         this.command = command;
-    }
-
-    public int getInteractValue() {
-        return interactValue;
-    }
-
-    public void setInteractValue(int val) {
-        if (val < 0 || val > 2) throw new IllegalArgumentException("Value cannot be < 0 or > 2");
-        interactValue = val;
     }
 
     public boolean isAlwaysPersisted() {

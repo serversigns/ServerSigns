@@ -20,6 +20,7 @@ package de.czymm.serversigns.commands;
 import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.commands.core.SubCommand;
 import de.czymm.serversigns.meta.SVSMetaManager;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.translations.Message;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -85,7 +86,7 @@ public class ExecutableSVSR {
         return null;
     }
 
-    public void execute(final Location signLocation, final Player player, final String command) throws Exception {
+    public void execute(final Location signLocation, final Player player, final ClickType clickType, final String command) throws Exception {
         List<String> parts = Arrays.asList(command.split(" "));
 
         SubCommand match = matchSubCommand(parts.get(0));
@@ -94,7 +95,7 @@ public class ExecutableSVSR {
             // Imitate sender clicking the desired sign if they have meta to use
             UUID id = player == null ? SVSMetaManager.CONSOLE_UUID : player.getUniqueId();
             if (SVSMetaManager.hasMeta(id)) {
-                plugin.adminListener.handleAdminInteract(signLocation, player, id);
+                plugin.adminListener.handleAdminInteract(signLocation, clickType, player, id);
             }
         } else {
             plugin.send(player, Message.UNABLE_TO_EXECUTE_CMD, "<string>", command);

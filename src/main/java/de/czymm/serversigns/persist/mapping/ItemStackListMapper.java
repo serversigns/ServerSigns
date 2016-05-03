@@ -36,7 +36,7 @@ public class ItemStackListMapper implements ISmartPersistenceMapper<List<ItemSta
     }
 
     @Override
-    public List<ItemStack> getValue(String path) {
+    public List<ItemStack> getValue(String path, Class<?> valueClass) {
         ArrayList<ItemStack> stacks = new ArrayList<>();
         List<String> rawStrings = memorySection.getStringList(path);
 

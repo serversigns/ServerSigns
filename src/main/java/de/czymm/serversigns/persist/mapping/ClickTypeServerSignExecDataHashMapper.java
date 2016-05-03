@@ -19,14 +19,14 @@ public class ClickTypeServerSignExecDataHashMapper implements ISmartPersistenceM
     }
 
     @Override
-    public HashMap<ClickType, ServerSignExecData> getValue(String path) throws MappingException {
+    public HashMap<ClickType, ServerSignExecData> getValue(String path, Class<?> valueClass) throws MappingException {
         HashMap<ClickType, ServerSignExecData> map = new HashMap<>();
         if (memorySection.getConfigurationSection(path) == null) return map;
 
         try {
             for (String clickTypeKey : memorySection.getConfigurationSection(path).getKeys(false)) {
                 ServerSignExecData execData = new ServerSignExecData();
-                YamlFieldPersistence.loadFromMemorySection(memorySection, execData);
+                YamlFieldPersistence.loadFromMemorySection(memorySection.getConfigurationSection(path + "." + clickTypeKey), execData);
                 map.put(ClickType.valueOf(clickTypeKey.toUpperCase()), execData);
             }
         } catch (IllegalArgumentException | MappingException | PersistenceException ex) {
@@ -47,7 +47,6 @@ public class ClickTypeServerSignExecDataHashMapper implements ISmartPersistenceM
                 YamlFieldPersistence.saveToMemorySection(section, entry.getValue());
             }
         } catch (PersistenceException ex) {
-            ex.printStackTrace(); // TODO: Remove
             throw new MappingException("Unable to save ServerSign executor data for sign at: " + host, MappingException.ExceptionType.DATA_EXECUTOR);
         }
     }

@@ -20,6 +20,7 @@ package de.czymm.serversigns.commands;
 import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.commands.core.SubCommand;
 import de.czymm.serversigns.signs.ServerSign;
+import de.czymm.serversigns.signs.ServerSignExecData;
 import de.czymm.serversigns.translations.Message;
 
 import java.util.Iterator;
@@ -41,8 +42,10 @@ public class SubCommandResetAllCooldowns extends SubCommand {
         Iterator<ServerSign> iterator = plugin.serverSignsManager.getSigns().iterator();
         while (iterator.hasNext()) {
             ServerSign sign = iterator.next();
-            sign.setLastGlobalUse(0);
-            sign.getLastUse().clear();
+            for (ServerSignExecData execData : sign.getServerSignExecutorData().values()) {
+                execData.setLastGlobalUse(0);
+                execData.getLastUse().clear();
+            }
             plugin.serverSignsManager.save(sign);
         }
 

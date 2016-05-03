@@ -29,7 +29,7 @@ public class ServerActionTaskTypeEnumMapper implements IPersistenceMapper<Server
     }
 
     @Override
-    public ServerActionTaskType getValue(String path) {
+    public ServerActionTaskType getValue(String path, Class<?> valueClass) {
         try {
             return Enum.valueOf(ServerActionTaskType.class, memorySection.getString(path));
         } catch (IllegalArgumentException | NullPointerException ex) {

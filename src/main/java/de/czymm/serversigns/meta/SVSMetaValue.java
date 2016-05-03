@@ -18,6 +18,8 @@
 package de.czymm.serversigns.meta;
 
 import de.czymm.serversigns.parsing.command.ServerSignCommand;
+import de.czymm.serversigns.signs.CancelMode;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.signs.ServerSign;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -110,6 +112,22 @@ public class SVSMetaValue {
     public List<String> asStringList() {
         if (object instanceof List<?>) {
             return (List<String>) object;
+        }
+
+        return null;
+    }
+
+    public ClickType asClickType() {
+        if (object instanceof ClickType) {
+            return (ClickType) object;
+        }
+
+        return null;
+    }
+
+    public CancelMode asCancelMode() {
+        if (object instanceof CancelMode) {
+            return (CancelMode) object;
         }
 
         return null;

@@ -20,6 +20,7 @@ package de.czymm.serversigns.commands;
 import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.commands.core.SubCommand;
 import de.czymm.serversigns.signs.ServerSign;
+import de.czymm.serversigns.signs.ServerSignExecData;
 import de.czymm.serversigns.translations.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -57,9 +58,11 @@ public class SubCommandResetCooldowns extends SubCommand {
         while (it.hasNext()) {
             ServerSign sign = it.next();
 
-            if (sign.getLastUse(offline.getUniqueId()) > 0) {
-                sign.removeLastUse(offline.getUniqueId());
-                toSave.add(sign);
+            for (ServerSignExecData execData : sign.getServerSignExecutorData().values()) {
+                if (execData.getLastUse(offline.getUniqueId()) > 0) {
+                    execData.removeLastUse(offline.getUniqueId());
+                    toSave.add(sign);
+                }
             }
         }
 

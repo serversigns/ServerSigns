@@ -78,11 +78,6 @@ public class ServerSignsConfig implements IServerSignsConfig {
     @PersistenceEntry(comments = {"# Whether command logging to the console should be disabled"})
     private boolean disable_command_logging = false;
 
-    @PersistenceEntry(comments = {
-            "# Whether the plugin should listen for left clicks as well as right clicks for ServerSign activation",
-            "# This option must be enabled to allow ServerSigns to execute different commands for left & right clicks"})
-    private boolean allow_left_clicking = true;
-
     @PersistenceEntry(comments = {"# Whether funds remove via /svs setprice should be sent to a server bank"})
     private boolean send_payments_to_bank = false;
     @PersistenceEntry(comments = {"# The server bank name (used if send_payments_to_bank is set to true)"})
@@ -174,10 +169,6 @@ public class ServerSignsConfig implements IServerSignsConfig {
         return disable_command_logging;
     }
 
-    public boolean getAllowLeftClicking() {
-        return allow_left_clicking;
-    }
-
     public boolean getSendPaymentsToBank() {
         return send_payments_to_bank;
     }
@@ -245,7 +236,6 @@ public class ServerSignsConfig implements IServerSignsConfig {
         broadcast_developers = oldConfig.getBroadcastDevelopers();
         check_for_updates = oldConfig.getAutomaticUpdateChecks();
         disable_command_logging = oldConfig.getDisableConsoleCommandLogging();
-        allow_left_clicking = oldConfig.getAllowLeftClicking();
         send_payments_to_bank = oldConfig.getSendPaymentsToBank();
         deposit_bank_name = oldConfig.getDepositBankName();
         alternate_command_dispatching = oldConfig.getAlternateCommandDispatching();

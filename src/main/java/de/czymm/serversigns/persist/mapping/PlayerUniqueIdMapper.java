@@ -30,7 +30,7 @@ public class PlayerUniqueIdMapper implements IPersistenceMapper<UUID> {
     }
 
     @Override
-    public UUID getValue(String path) {
+    public UUID getValue(String path, Class<?> valueClass) {
         String string = memorySection.getString(path);
         try {
             return UUID.fromString(string);

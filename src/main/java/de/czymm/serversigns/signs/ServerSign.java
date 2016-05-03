@@ -20,6 +20,7 @@ package de.czymm.serversigns.signs;
 import de.czymm.serversigns.parsing.command.ServerSignCommand;
 import de.czymm.serversigns.persist.PersistenceEntry;
 import de.czymm.serversigns.persist.mapping.ClickTypeServerSignExecDataHashMapper;
+import de.czymm.serversigns.persist.mapping.EnumMapper;
 import de.czymm.serversigns.persist.mapping.LocationSetMapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -56,6 +57,9 @@ public class ServerSign implements Cloneable, Serializable {
 
     @PersistenceEntry(configMapper = ClickTypeServerSignExecDataHashMapper.class, configPath = "executor-data")
     private Map<ClickType, ServerSignExecData> execDataMap = new HashMap<>();
+
+    @PersistenceEntry(configMapper = EnumMapper.class)
+    private ClickType defaultClickType = ClickType.RIGHT;
 
     public ServerSign() {
     }
@@ -217,6 +221,16 @@ public class ServerSign implements Cloneable, Serializable {
 
     public void setDisplayInternalMessages(boolean val) {
         displayInternalMessages = val;
+    }
+
+    // Default click type
+
+    public ClickType getDefaultClickType() {
+        return defaultClickType;
+    }
+
+    public void setDefaultClickType(ClickType clickType) {
+        this.defaultClickType = clickType;
     }
 
     // Interface

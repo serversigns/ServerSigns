@@ -19,6 +19,7 @@ package de.czymm.serversigns.utils;
 
 import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.signs.ServerSign;
+import de.czymm.serversigns.signs.ServerSignExecData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -34,7 +35,7 @@ public class UUIDUpdateTask {
     }
 
     public void updateLastUse() {
-        final List<String> list = new ArrayList<>(sign.getLastUse().keySet());
+        final List<String> list = new ArrayList<>();
         if (list.isEmpty()) return;
         ServerSignsPlugin.log("Starting UUID conversion for " + list.size() + " usernames from a ServerSign at " + sign.getLocationString());
 
@@ -49,17 +50,19 @@ public class UUIDUpdateTask {
                     return;
                 }
 
-                HashMap<String, Long> oldLastUse = sign.getLastUse();
-                HashMap<String, Long> newLastUse = new HashMap<>();
+                for (ServerSignExecData execData : sign.getServerSignExecutorData().values()) {
+                    HashMap<String, Long> oldLastUse = execData.getLastUse();
+                    HashMap<String, Long> newLastUse = new HashMap<>();
 
-                for (Entry<String, Long> entry : oldLastUse.entrySet()) {
-                    if (!uuidMap.containsKey(entry.getKey()))
-                        continue;
+                    for (Entry<String, Long> entry : oldLastUse.entrySet()) {
+                        if (!uuidMap.containsKey(entry.getKey()))
+                            continue;
 
-                    newLastUse.put(uuidMap.get(entry.getKey()).toString().trim(), entry.getValue());
+                        newLastUse.put(uuidMap.get(entry.getKey()).toString().trim(), entry.getValue());
+                    }
+
+                    execData.setLastUse(newLastUse);
                 }
-
-                sign.setLastUse(newLastUse);
                 plugin.serverSignsManager.save(sign);
                 this.cancel();
 

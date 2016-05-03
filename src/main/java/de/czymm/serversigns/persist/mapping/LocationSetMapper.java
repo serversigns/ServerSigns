@@ -37,7 +37,7 @@ public class LocationSetMapper implements ISmartPersistenceMapper<Set<Location>>
     }
 
     @Override
-    public Set<Location> getValue(String path) {
+    public Set<Location> getValue(String path, Class<?> valueClass) {
         List<String> strings = memorySection.getStringList(path);
         Set<Location> locs = new HashSet<>();
 

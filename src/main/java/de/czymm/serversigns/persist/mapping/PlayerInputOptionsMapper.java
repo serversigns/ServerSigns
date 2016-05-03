@@ -32,7 +32,7 @@ public class PlayerInputOptionsMapper implements IPersistenceMapper<Set<PlayerIn
     }
 
     @Override
-    public Set<PlayerInputOptions> getValue(String path) {
+    public Set<PlayerInputOptions> getValue(String path, Class<?> valueClass) {
         if (!memorySection.contains(path)) return null;
 
         Set<PlayerInputOptions> optionSet = new HashSet<>();

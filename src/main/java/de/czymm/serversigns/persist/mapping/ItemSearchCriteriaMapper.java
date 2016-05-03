@@ -29,7 +29,7 @@ public class ItemSearchCriteriaMapper implements IPersistenceMapper<ItemSearchCr
     }
 
     @Override
-    public ItemSearchCriteria getValue(String path) {
+    public ItemSearchCriteria getValue(String path, Class<?> valueClass) {
         if (memorySection.getConfigurationSection(path) == null)
             return new ItemSearchCriteria(false, false, false, false);
         return new ItemSearchCriteria(memorySection.getBoolean(path + ".enchants"), memorySection.getBoolean(path + ".name"),

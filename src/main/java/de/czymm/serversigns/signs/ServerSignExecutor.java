@@ -38,7 +38,6 @@ import de.czymm.serversigns.utils.TimeUtils.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -57,7 +56,14 @@ public class ServerSignExecutor {
     public void executeSignFull(Player player, ServerSign sign, ClickType clickType, PlayerInteractEvent event) {
         ServerSignExecData execData = sign.getServerSignExecutorData(clickType);
         if (execData == null) {
-            return; // This sign does not handle this type of click
+            // Check for a default executor data set
+            if (sign.getDefaultClickType() != ClickType.NONE) {
+                execData = sign.getServerSignExecutorData(sign.getDefaultClickType());
+                clickType = sign.getDefaultClickType();
+            }
+            if (execData == null) {
+                return; // This sign does not handle this type of click
+            }
         }
 
         try {
@@ -106,7 +112,7 @@ public class ServerSignExecutor {
                 }
 
                 // Commands
-                createCommandTasks(sign, execData, tasks, player, event == null ? null : event.getAction());
+                createCommandTasks(sign, clickType, execData, tasks, player);
                 if (plugin.inputOptionsManager.hasCompletedAnswers(player)) { // Clear completed answers as they're no longer needed for this execution
                     plugin.inputOptionsManager.getCompletedAnswers(player, true);
                 }
@@ -179,7 +185,7 @@ public class ServerSignExecutor {
             sign.setCurrentLoop(currentLoop);
 
             // Format and execute commands
-            for (TaskManagerTask task : createCommandTasks(sign, sign.getServerSignExecutorData(clickType), null, executor, null)) {
+            for (TaskManagerTask task : createCommandTasks(sign, clickType, sign.getServerSignExecutorData(clickType), null, executor)) {
                 plugin.taskManager.addTask(task);
             }
 
@@ -213,22 +219,13 @@ public class ServerSignExecutor {
         }.runTaskLater(plugin, loopDelay * 20);
     }
 
-    private List<TaskManagerTask> createCommandTasks(ServerSign sign, ServerSignExecData execData, List<TaskManagerTask> existingList, Player executor, Action eventAction) {
+    private List<TaskManagerTask> createCommandTasks(ServerSign sign, ClickType clickType, ServerSignExecData execData, List<TaskManagerTask> existingList, Player executor) {
         List<TaskManagerTask> tasks = existingList == null ? new ArrayList<TaskManagerTask>() : existingList;
 
         ProcessingData processingData = new ProcessingData();
         for (ServerSignCommand command : execData.getCommands()) {
-            // Event Action check
-            if (eventAction != null) {
-                if (command.getInteractValue() != 0 &&
-                        (command.getInteractValue() == 1 && !eventAction.equals(Action.LEFT_CLICK_BLOCK)) ||
-                        (command.getInteractValue() == 2 && !eventAction.equals(Action.RIGHT_CLICK_BLOCK))) {
-                    continue;
-                }
-            }
-
             // Conditional Command Checks
-            processingData = processConditionalCommand(sign, executor, command, processingData);
+            processingData = processConditionalCommand(sign, clickType, executor, command, processingData);
             if (processingData.lastResult == 1) {
                 continue;
             } else if (processingData.lastResult == 2) {
@@ -249,7 +246,7 @@ public class ServerSignExecutor {
     }
 
     // 0 = flow, 1 = continue, 2 = break
-    private ProcessingData processConditionalCommand(ServerSign sign, Player executor, ServerSignCommand command, ProcessingData data) {
+    private ProcessingData processConditionalCommand(ServerSign sign, ClickType clickType, Player executor, ServerSignCommand command, ProcessingData data) {
         // Skip commands within false blocks
         if (data.skipUntilLevel > 0) {
             // Check if this is an endif statement
@@ -277,7 +274,7 @@ public class ServerSignExecutor {
             ConditionalServerSignCommand condCommand = (ConditionalServerSignCommand) command;
             if (condCommand.isIfStatement()) {
                 data.ifLevel++;
-                if (!condCommand.meetsAllConditions(executor, sign, plugin)) {
+                if (!condCommand.meetsAllConditions(executor, sign, clickType, plugin)) {
                     // Skip all commands within this statement
                     data.skipUntilLevel = data.ifLevel;
                     data.lastResult = 1;
@@ -371,7 +368,7 @@ public class ServerSignExecutor {
             return false;
         }
 
-        return !(needConfirmation(player, sign, execData) || !canAffordXP(player, sign, execData) || !canAffordCost(player, sign, execData) || !hasAnsweredQuestions(player, sign, execData, clickType)
+        return !(needConfirmation(player, sign, execData, clickType) || !canAffordXP(player, sign, execData) || !canAffordCost(player, sign, execData) || !hasAnsweredQuestions(player, sign, execData, clickType)
                 || (hasHeldRequirements(execData) && !meetsHeldItemRequirements(player, sign, execData))
                 || (hasPriceItem(execData) && !canAffordPriceItem(player, sign, execData)));
     }
@@ -384,7 +381,7 @@ public class ServerSignExecutor {
         ProcessingData processingData = new ProcessingData();
         for (ServerSignCommand command : execData.getCommands()) {
             // Conditional Command Checks
-            processingData = processConditionalCommand(sign, executor, command, processingData);
+            processingData = processConditionalCommand(sign, clickType, executor, command, processingData);
             if (processingData.lastResult == 1) {
                 continue;
             } else if (processingData.lastResult == 2) {
@@ -470,7 +467,7 @@ public class ServerSignExecutor {
     // Confirmation
 
     @SuppressWarnings("unchecked")
-    private boolean needConfirmation(Player player, ServerSign sign, ServerSignExecData execData) {
+    private boolean needConfirmation(Player player, ServerSign sign, ServerSignExecData execData, ClickType clickType) {
         if (execData.isConfirmation()) {
             if (SVSMetaManager.hasInclusiveMeta(player, SVSMetaKey.YES)) {
                 // If they have the meta still, it must be for the same sign
@@ -508,7 +505,7 @@ public class ServerSignExecutor {
                 }
             }
 
-            SVSMetaManager.setMeta(player, new SVSMeta(SVSMetaKey.YES, new SVSMetaValue(sign)));
+            SVSMetaManager.setMeta(player, new SVSMeta(SVSMetaKey.YES, new SVSMetaValue(sign), new SVSMetaValue(clickType)));
             return true;
         }
 

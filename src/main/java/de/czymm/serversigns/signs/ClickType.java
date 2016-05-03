@@ -5,7 +5,7 @@ import org.bukkit.event.block.Action;
 public enum ClickType {
     LEFT,
     RIGHT,
-    BOTH;
+    NONE;
 
     public static ClickType fromAction(Action action) {
         switch (action) {

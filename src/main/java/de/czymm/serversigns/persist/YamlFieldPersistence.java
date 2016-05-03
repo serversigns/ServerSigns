@@ -71,7 +71,7 @@ public class YamlFieldPersistence {
                     }
 
                     String path = configEntry.configPath().isEmpty() ? declaredField.getName() : configEntry.configPath();
-                    Object value = configMapper.getValue(path);
+                    Object value = configMapper.getValue(path, declaredField.getClass());
 
                     if (value != null) {
                         declaredField.setAccessible(true);

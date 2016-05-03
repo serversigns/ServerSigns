@@ -33,7 +33,7 @@ public class BlocksMapper implements IPersistenceMapper<EnumSet<Material>> {
     }
 
     @Override
-    public EnumSet<Material> getValue(String path) {
+    public EnumSet<Material> getValue(String path, Class<?> valueClass) {
         List<String> blocksList = memorySection.getStringList(path);
         EnumSet<Material> blocks = EnumSet.noneOf(Material.class);
         for (String block : blocksList) {

@@ -21,6 +21,7 @@ import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.parsing.CommandParseException;
 import de.czymm.serversigns.parsing.CommandType;
 import de.czymm.serversigns.parsing.operators.ConditionalOperator;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.signs.ServerSign;
 import de.czymm.serversigns.taskmanager.TaskManagerTask;
 import org.bukkit.entity.Player;
@@ -70,9 +71,9 @@ public class ConditionalServerSignCommand extends ServerSignCommand {
         return conditionalOperators;
     }
 
-    public boolean meetsAllConditions(Player executor, ServerSign executingSign, ServerSignsPlugin plugin) {
+    public boolean meetsAllConditions(Player executor, ServerSign executingSign, ClickType clickType, ServerSignsPlugin plugin) {
         for (ConditionalOperator condOp : conditionalOperators) {
-            if (!condOp.evaluate(executor, executingSign, plugin)) {
+            if (!condOp.evaluate(executor, executingSign, clickType, plugin)) {
                 return false;
             }
         }

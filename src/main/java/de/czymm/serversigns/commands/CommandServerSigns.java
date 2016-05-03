@@ -23,6 +23,7 @@ import de.czymm.serversigns.commands.core.SubCommand;
 import de.czymm.serversigns.meta.SVSMeta;
 import de.czymm.serversigns.meta.SVSMetaKey;
 import de.czymm.serversigns.meta.SVSMetaManager;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.signs.ServerSign;
 import org.bukkit.command.Command;
 
@@ -94,7 +95,8 @@ public class CommandServerSigns extends de.czymm.serversigns.commands.core.Comma
                 SVSMeta meta = SVSMetaManager.getMeta(player);
                 if (meta.getKey().equals(SVSMetaKey.YES)) {
                     ServerSign sign = meta.getValue().asServerSign();
-                    plugin.serverSignExecutor.executeSignFull(player, sign, null);
+                    ClickType clickType = meta.getValue(1).asClickType();
+                    plugin.serverSignExecutor.executeSignFull(player, sign, clickType, null);
                     SVSMetaManager.removeMeta(player);
                 }
             }
@@ -114,7 +116,7 @@ public class CommandServerSigns extends de.czymm.serversigns.commands.core.Comma
             // Imitate sender clicking the desired sign if they have SELECT special meta assigned
             UUID id = player == null ? SVSMetaManager.CONSOLE_UUID : player.getUniqueId();
             if (SVSMetaManager.hasSpecialMeta(id, SVSMetaKey.SELECT) && SVSMetaManager.hasMeta(id)) { // They should have normal meta too!!
-                plugin.adminListener.handleAdminInteract(SVSMetaManager.getSpecialMeta(id).getValue().asLocation(), sender, id);
+                plugin.adminListener.handleAdminInteract(SVSMetaManager.getSpecialMeta(id).getValue().asLocation(), ClickType.RIGHT, sender, id);
             }
             return;
         }

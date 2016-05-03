@@ -31,6 +31,7 @@ permissions:
           serversigns.command.reset_cooldown: true
           serversigns.command.copy: true
           serversigns.command.create: true
+          serversigns.command.default_executor: true
           serversigns.command.edit: true
           serversigns.command.holding: true
           serversigns.command.held_item_criteria: true

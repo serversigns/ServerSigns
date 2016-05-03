@@ -18,6 +18,7 @@
 package de.czymm.serversigns.parsing.operators;
 
 import de.czymm.serversigns.ServerSignsPlugin;
+import de.czymm.serversigns.signs.ClickType;
 import de.czymm.serversigns.signs.PlayerInputOptions;
 import de.czymm.serversigns.signs.ServerSign;
 import org.bukkit.entity.Player;
@@ -37,7 +38,7 @@ public class CheckOptionOperator extends ConditionalOperator {
     }
 
     @Override
-    public boolean meetsConditions(Player executor, ServerSign executingSign, ServerSignsPlugin plugin) {
+    public boolean meetsConditions(Player executor, ServerSign executingSign, ClickType clickType, ServerSignsPlugin plugin) {
         if (params == null || params.indexOf('=') < 1) {
             return false;
         }
@@ -47,7 +48,7 @@ public class CheckOptionOperator extends ConditionalOperator {
         String[] answerLabels = rawAnswer.contains("|") ? rawAnswer.split("|") : new String[]{rawAnswer};
 
 
-        PlayerInputOptions options = executingSign.getInputOption(optionId);
+        PlayerInputOptions options = executingSign.getServerSignExecutorData(clickType).getInputOption(optionId);
         if (options != null) {
             Map<String, String> answers = plugin.inputOptionsManager.getCompletedAnswers(executor, false);
             if (answers != null && answers.containsKey(optionId)) {

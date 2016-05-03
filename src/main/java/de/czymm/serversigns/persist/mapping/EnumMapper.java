@@ -17,10 +17,9 @@
 
 package de.czymm.serversigns.persist.mapping;
 
-import de.czymm.serversigns.signs.CancelMode;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class CancelEnumMapper implements IPersistenceMapper<CancelMode> {
+public class EnumMapper implements IPersistenceMapper<Enum> {
     private ConfigurationSection memorySection;
 
     @Override
@@ -29,16 +28,21 @@ public class CancelEnumMapper implements IPersistenceMapper<CancelMode> {
     }
 
     @Override
-    public CancelMode getValue(String path) {
+    @SuppressWarnings("unchecked")
+    public Enum getValue(String path, Class<?> valueClass) {
+        if (!Enum.class.isAssignableFrom(valueClass)) {
+            return null;
+        }
+
         try {
-            return Enum.valueOf(CancelMode.class, memorySection.getString(path));
+            return Enum.valueOf((Class<? extends Enum>) valueClass, memorySection.getString(path));
         } catch (IllegalArgumentException | NullPointerException ex) {
             return null;
         }
     }
 
     @Override
-    public void setValue(String path, CancelMode value) {
+    public void setValue(String path, Enum value) {
         memorySection.set(path, value.toString());
     }
 }

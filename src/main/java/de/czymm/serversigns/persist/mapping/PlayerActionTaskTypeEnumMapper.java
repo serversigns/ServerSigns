@@ -29,7 +29,7 @@ public class PlayerActionTaskTypeEnumMapper implements IPersistenceMapper<Player
     }
 
     @Override
-    public PlayerActionTaskType getValue(String path) {
+    public PlayerActionTaskType getValue(String path, Class<?> valueClass) {
         try {
             return Enum.valueOf(PlayerActionTaskType.class, memorySection.getString(path));
         } catch (IllegalArgumentException | NullPointerException ex) {
