@@ -125,6 +125,7 @@ public class AdminListener implements Listener {
                     execData = new ServerSignExecData(meta.getValue().asServerSignCommand());
                     if (sign == null) {
                         sign = new ServerSign(clicked, clickType, execData);
+                        sign.setDefaultClickType(plugin.getServerSignsConfig().getGlobalDefaultExecutor());
                     } else {
                         sign.setServerSignExecutorData(clickType, execData);
                     }
@@ -202,6 +203,7 @@ public class AdminListener implements Listener {
                 sign = new ServerSign();
                 sign.setLocation(clicked);
                 sign.setServerSignExecutorData(clickType, new ServerSignExecData());
+                sign.setDefaultClickType(plugin.getServerSignsConfig().getGlobalDefaultExecutor());
 
                 plugin.send(recipient, Message.CREATE_SUCCESS);
                 saveRemoveExit = true;

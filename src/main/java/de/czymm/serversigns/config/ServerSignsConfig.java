@@ -21,6 +21,8 @@ import de.czymm.serversigns.legacy.OldServerSignsConfig;
 import de.czymm.serversigns.persist.PersistenceEntry;
 import de.czymm.serversigns.persist.mapping.BlocksMapper;
 import de.czymm.serversigns.persist.mapping.ColouredStringMapper;
+import de.czymm.serversigns.persist.mapping.EnumMapper;
+import de.czymm.serversigns.signs.ClickType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -36,7 +38,8 @@ public class ServerSignsConfig implements IServerSignsConfig {
     @PersistenceEntry(configMapper = BlocksMapper.class, comments = {
             "# A list of material names (should be in the Bukkit/Spigot Material enum form)",
             "# These materials define the blocks which can be used with ServerSigns",
-            "# Refer to this page for the list: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html"})
+            "# Refer to this page for the list: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html"
+    })
     private EnumSet<Material> blocks = EnumSet.of(Material.WALL_SIGN, Material.SIGN_POST);
 
     @PersistenceEntry(comments = {"# Whether or not any block can be used with ServerSigns (overrides 'blocks' list)"})
@@ -44,7 +47,8 @@ public class ServerSignsConfig implements IServerSignsConfig {
 
     @PersistenceEntry(comments = {
             "# The language key which should be used to find the languages file",
-            "# For example, 'en' will resolve to the 'ServerSigns/translations/en.yml' file"})
+            "# For example, 'en' will resolve to the 'ServerSigns/translations/en.yml' file"
+    })
     private String language = "en_default";
 
     @PersistenceEntry(configMapper = ColouredStringMapper.class, comments = {"# The prefix used in most ServerSigns messages"})
@@ -85,7 +89,8 @@ public class ServerSignsConfig implements IServerSignsConfig {
 
     @PersistenceEntry(comments = {
             "# Whether the Player#chat() function should be used instead of Player#performCommand() for commands",
-            "# If enabled, this means commands executed through ServerSigns will fire the command pre-process event"})
+            "# If enabled, this means commands executed through ServerSigns will fire the command pre-process event"
+    })
     private boolean alternate_command_dispatching = false;
 
     @PersistenceEntry(comments = {"# Whether or not you want to opt-out of Metrics statistic gathering through www.mcstats.org"})
@@ -97,16 +102,27 @@ public class ServerSignsConfig implements IServerSignsConfig {
     @PersistenceEntry(comments = {"# Defines the task delay threshold (in seconds) above which tasks will be persisted to disk"})
     private long task_persist_threshold = 10;
 
-    @PersistenceEntry(comments = {"# Whether or not you want to have tasks that match the defined regex pattern cancelled on player death",
-            "# Please note that in servers with over 10,000 queued tasks, the regex search can affect performance"})
+    @PersistenceEntry(comments = {
+            "# Whether or not you want to have tasks that match the defined regex pattern cancelled on player death",
+            "# Please note that in servers with over 10,000 queued tasks, the regex search can affect performance"
+    })
     private boolean cancel_tasks_on_death = false;
 
-    @PersistenceEntry(comments = {"# The Regular Expression pattern used when determining which tasks to cancel upon a player's death",
-            "# This Regex pattern will be used to compare each pending command a player has on their death; matching commands will be cancelled"})
+    @PersistenceEntry(comments = {
+            "# The Regular Expression pattern used when determining which tasks to cancel upon a player's death",
+            "# This Regex pattern will be used to compare each pending command a player has on their death; matching commands will be cancelled"
+    })
     private String cancel_tasks_regex_pattern = "warp .*";
 
     @PersistenceEntry(comments = {"# The number of hours your timezone is offset from GMT/UTC - must be an integer between -12 and 12"})
     private int time_zone_offset = 0;
+
+    @PersistenceEntry(configMapper = EnumMapper.class, comments = {
+            "# The default executor that is assigned to ServerSigns during conversion & creation",
+            "# A default executor is used if the ServerSign doesn't have data for the intended click",
+            "# This value must be either: LEFT, RIGHT, or NONE"
+    })
+    private ClickType global_default_executor = ClickType.NONE;
 
     public EnumSet<Material> getBlocks() {
         return blocks;
@@ -207,6 +223,10 @@ public class ServerSignsConfig implements IServerSignsConfig {
         return timeZone == null ? (timeZone = TimeZone.getTimeZone("GMT" + (getTimeZoneOffset() > -1 ? "+" + getTimeZoneOffset() : getTimeZoneOffset()))) : timeZone;
     }
 
+    public ClickType getGlobalDefaultExecutor() {
+        return global_default_executor;
+    }
+
     private transient Pattern compiledCancelTaskPattern;
 
     public Pattern getCompiledCancelTaskPattern() {
@@ -245,6 +265,6 @@ public class ServerSignsConfig implements IServerSignsConfig {
 
     @Override
     public int getVersion() {
-        return 3;
+        return 4;
     }
 }

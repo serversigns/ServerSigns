@@ -12,7 +12,7 @@ public class SubCommandDefaultExecutor extends SubCommand {
         super(
                 plugin,
                 "default_executor",
-                "defaultexecutor <left|right>",
+                "defaultexecutor <left|right|none>",
                 "Set which click-type executor should be defaulted to when a player clicks a ServerSign",
                 "defaultexecutor", "defexec", "defex"
         );

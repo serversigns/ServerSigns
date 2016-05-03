@@ -61,7 +61,7 @@ public class ServerSignConverter {
         return currentVersion;
     }
 
-    public static Path performAllFileUpdates(Path signDirectory, Path signFile) throws IOException {
+    public static Path performAllFileUpdates(ServerSignsPlugin plugin, Path signDirectory, Path signFile) throws IOException {
         if (currentVersion == -1) {
             currentVersion = getCurrentPersistVersion(signDirectory);
         }
@@ -69,6 +69,7 @@ public class ServerSignConverter {
             createBackup(signDirectory);
             YamlConfiguration yaml =
                     updateExecutorData(
+                            plugin,
                             updatePriceItemData(
                                     updateCommands(
                                             updatePermissions(signFile),
@@ -84,16 +85,18 @@ public class ServerSignConverter {
         } else if (currentVersion <= 3) {
             createBackup(signDirectory);
             updateExecutorData(
-            updatePriceItemData(
-                    updateCommands(
-                            updatePermissions(signFile),
+                    plugin,
+                    updatePriceItemData(
+                            updateCommands(
+                                    updatePermissions(signFile),
+                                    signFile),
                             signFile),
-                    signFile),
                     signFile
             ).save(signFile.toFile());
         } else if (currentVersion <= 4) {
             createBackup(signDirectory);
             updateExecutorData(
+                    plugin,
                     updateCommands(
                             updatePermissions(signFile),
                             signFile),
@@ -102,12 +105,13 @@ public class ServerSignConverter {
         } else if (currentVersion <= 5) {
             createBackup(signDirectory);
             updateExecutorData(
+                    plugin,
                     updatePermissions(signFile),
                     signFile
             ).save(signFile.toFile());
         } else if (currentVersion <= 7) {
             createBackup(signDirectory);
-            updateExecutorData(signFile).save(signFile.toFile());
+            updateExecutorData(plugin, signFile).save(signFile.toFile());
         }
         return signFile;
     }
@@ -223,12 +227,12 @@ public class ServerSignConverter {
 
     // FILE_VERSION <= 7
 
-    public static YamlConfiguration updateExecutorData(Path signFile) throws IOException {
+    public static YamlConfiguration updateExecutorData(ServerSignsPlugin plugin, Path signFile) throws IOException {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(signFile.toFile());
-        return updateExecutorData(yaml, signFile);
+        return updateExecutorData(plugin, yaml, signFile);
     }
 
-    public static YamlConfiguration updateExecutorData(YamlConfiguration yaml, Path signFile) throws IOException {
+    public static YamlConfiguration updateExecutorData(ServerSignsPlugin plugin, YamlConfiguration yaml, Path signFile) throws IOException {
         // Construct new config to save to (as we're changing the whole thing basically)
         YamlConfiguration newYaml = new YamlConfiguration();
 
@@ -240,7 +244,7 @@ public class ServerSignConverter {
                 PersistenceEntry configEntry = declaredField.getAnnotation(PersistenceEntry.class);
                 if (configEntry != null) {
                     String path = configEntry.configPath().isEmpty() ? declaredField.getName() : configEntry.configPath();
-                    newYaml.set(path, "LEFT");
+                    newYaml.set(path, plugin.getServerSignsConfig().getGlobalDefaultExecutor().toString());
                 }
                 continue;
             }

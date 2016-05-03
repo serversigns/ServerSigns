@@ -91,7 +91,7 @@ public class ServerSignManager {
                 }
 
                 // Update old files
-                current = ServerSignConverter.performAllFileUpdates(SIGNS_DIRECTORY, current);
+                current = ServerSignConverter.performAllFileUpdates(plugin, SIGNS_DIRECTORY, current);
 
                 // Load
                 YamlConfiguration yamlLoad;

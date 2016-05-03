@@ -51,11 +51,14 @@ public class ConfigLoader {
                     ConfigurationConverter.updateConfig_0(yamlConfiguration, config, configPath); // Update to generated format; version is updated on regeneration
                 } else if (version == 1) {
                     YamlFieldPersistence.loadFromYaml(yamlConfiguration, config);
-                    ConfigurationConverter.updateConfig_1(yamlConfiguration, config, configPath); // Insert missing keys; version is updated on regeneration
+                    ConfigurationConverter.updateConfig_1(config, configPath); // Insert missing keys; version is updated on regeneration
                 } else if (version == 2) {
                     YamlFieldPersistence.loadFromYaml(yamlConfiguration, config);
-                    ConfigurationConverter.updateConfig_2(yamlConfiguration, config, configPath);
+                    ConfigurationConverter.updateConfig_2(config, configPath);
                 } else if (version == 3) {
+                    YamlFieldPersistence.loadFromYaml(yamlConfiguration, config);
+                    ConfigurationConverter.updateConfig_3(config, configPath);
+                } else if (version == 4) {
                     YamlFieldPersistence.loadFromYaml(yamlConfiguration, config); // Load as normal
                 } else {
                     throw new ConfigLoadingException("Invalid config-version in config.yml");

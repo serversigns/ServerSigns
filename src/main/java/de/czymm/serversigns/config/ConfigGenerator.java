@@ -26,7 +26,6 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 
 public class ConfigGenerator {
     private static final String[] HEADER = new String[]{
@@ -83,12 +82,12 @@ public class ConfigGenerator {
                     try {
                         String name = configEntry.configPath().isEmpty() ? declaredField.getName() : configEntry.configPath();
                         writer.write(name);
-                        if (Collection.class.isAssignableFrom(declaredField.getType())) {
+                        if (Iterable.class.isAssignableFrom(declaredField.getType())) {
                             // Collection
                             writer.write(':');
                             writer.newLine();
 
-                            Collection<?> collection = (Collection<?>) declaredField.get(config);
+                            Iterable<?> collection = (Iterable<?>) declaredField.get(config);
                             for (Object obj : collection) {
                                 writer.write("- ");
                                 writer.write(getValueOf(obj));

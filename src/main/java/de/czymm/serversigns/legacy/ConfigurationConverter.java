@@ -38,20 +38,25 @@ public class ConfigurationConverter {
 
         newConfig.setFromOldConfig(oldServerSignsConfig);
 
-        updateConfig_x(yaml, newConfig, configPath, "config_vPRE1_backup.yml");
+        updateConfig_x(newConfig, configPath, "config_vPRE1_backup.yml");
     }
 
-    public static void updateConfig_1(YamlConfiguration yaml, ServerSignsConfig config, Path configPath) throws PersistenceException, ConfigLoadingException {
+    public static void updateConfig_1(ServerSignsConfig config, Path configPath) throws PersistenceException, ConfigLoadingException {
         // The default values for new keys are already loaded in the ServerSignsConfig object, we just need to save it to file.
-        updateConfig_x(yaml, config, configPath, "config_v1_backup.yml");
+        updateConfig_x(config, configPath, "config_v1_backup.yml");
     }
 
-    public static void updateConfig_2(YamlConfiguration yaml, ServerSignsConfig config, Path configPath) throws PersistenceException, ConfigLoadingException {
+    public static void updateConfig_2(ServerSignsConfig config, Path configPath) throws PersistenceException, ConfigLoadingException {
         // The default values for new keys are already loaded in the ServerSignsConfig object, we just need to save it to file.
-        updateConfig_x(yaml, config, configPath, "config_v2_backup.yml");
+        updateConfig_x(config, configPath, "config_v2_backup.yml");
     }
 
-    private static void updateConfig_x(YamlConfiguration yaml, ServerSignsConfig config, Path configPath, String backupName) throws PersistenceException, ConfigLoadingException {
+    public static void updateConfig_3(ServerSignsConfig config, Path configPath) throws PersistenceException, ConfigLoadingException {
+        // The default values for new keys are already loaded in the ServerSignsConfig object, we just need to save it to file.
+        updateConfig_x(config, configPath, "config_v3_backup.yml");
+    }
+
+    private static void updateConfig_x(ServerSignsConfig config, Path configPath, String backupName) throws PersistenceException, ConfigLoadingException {
         try {
             Files.move(configPath, configPath.resolveSibling(backupName), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
