@@ -57,7 +57,10 @@ public class SubCommandList extends SubCommand {
 
         applyMeta(SVSMetaKey.LIST, new SVSMetaValue(argBool(0, false)));
         if (argSet(0) && argBool(0, false) && verbose) msg(Message.LIST_PERSIST_ON);
-        if (verbose) msg(Message.RIGHT_CLICK_VIEW_LIST);
+        if (verbose) {
+            msg(Message.CLICK_VIEW_LIST);
+            msg(Message.CLICK_INFO);
+        }
     }
 
 }

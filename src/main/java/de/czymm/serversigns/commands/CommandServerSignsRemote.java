@@ -41,30 +41,31 @@ public class CommandServerSignsRemote extends de.czymm.serversigns.commands.core
         addSubCommand(new SubCommandConfirmation(plugin));
         addSubCommand(new SubCommandCreate(plugin));
 
+        addSubCommand(new SubCommandDefaultExecutor(plugin));
         addSubCommand(new SubCommandEdit(plugin));
         addSubCommand(new SubCommandHeldItemCriteria(plugin));
         addSubCommand(new SubCommandHolding(plugin));
         addSubCommand(new SubCommandInsert(plugin));
-        addSubCommand(new SubCommandList(plugin));
 
+        addSubCommand(new SubCommandList(plugin));
         addSubCommand(new SubCommandGrantPermission(plugin));
         addSubCommand(new SubCommandOption(plugin));
         addSubCommand(new SubCommandPriceItem(plugin));
         addSubCommand(new SubCommandPriceItemCriteria(plugin));
-        addSubCommand(new SubCommandRemove(plugin));
 
+        addSubCommand(new SubCommandRemove(plugin));
         addSubCommand(new SubCommandResetCooldowns(plugin));
         addSubCommand(new SubCommandResetCooldown(plugin));
         addSubCommand(new SubCommandSetCooldown(plugin));
         addSubCommand(new SubCommandSetGlobalCooldown(plugin));
-        addSubCommand(new SubCommandSetLoops(plugin));
 
+        addSubCommand(new SubCommandSetLoops(plugin));
         addSubCommand(new SubCommandSetPermission(plugin));
         addSubCommand(new SubCommandSetPrice(plugin));
         addSubCommand(new SubCommandSetUses(plugin));
         addSubCommand(new SubCommandSilent(plugin));
-        addSubCommand(new SubCommandTimelimit(plugin));
 
+        addSubCommand(new SubCommandTimelimit(plugin));
         addSubCommand(new SubCommandXP(plugin));
     }
 
@@ -74,7 +75,7 @@ public class CommandServerSignsRemote extends de.czymm.serversigns.commands.core
         if (!this.argSet(2)) {
             sendHelpMessages();
             msg("&7<location> must be in the format 'world,x,y,z'");
-            msg("&7<executor-type> is the click type (left|right|none)");
+            msg("&7<executor-type> is the click type (left|right)");
             msg("&7&oParameters: &2<required> &c{exact} &9[optional]");
             msg("&7Detailed reference: http://serversigns.de/cmds");
             return;
@@ -139,7 +140,7 @@ public class CommandServerSignsRemote extends de.czymm.serversigns.commands.core
 
         sendHelpMessages();
         msg("&7<location> must be in the format 'world,x,y,z'");
-        msg("&7<executor-type> is the click type (left|right|none)");
+        msg("&7<executor-type> is the click type (left|right)");
         msg("&7&oParameters: &2<required> &c{exact} &9[optional]");
         msg("&7Detailed reference: http://serversigns.de/cmds");
     }

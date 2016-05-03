@@ -76,7 +76,7 @@ public class SubCommandTimelimit extends SubCommand {
             }
         }
 
-        msg(Message.RIGHT_CLICK_APPLY);
+        msg(Message.CLICK_APPLY);
         applyMeta(SVSMetaKey.TIME_LIMIT, new SVSMetaValue(min), new SVSMetaValue(max)); // -1 keep current value | 0 remove current value | >0 set as current value
     }
 }

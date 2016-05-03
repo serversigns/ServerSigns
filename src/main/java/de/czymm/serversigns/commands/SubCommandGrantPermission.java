@@ -46,7 +46,10 @@ public class SubCommandGrantPermission extends SubCommand {
         SVSMeta meta;
         if (arg(0).equalsIgnoreCase("delete")) {
             meta = new SVSMeta(SVSMetaKey.GRANT, new SVSMetaValue(false));
-            if (verbose) msg(Message.RIGHT_CLICK_DEL_PERMISSION);
+            if (verbose) {
+                msg(Message.CLICK_DEL_PERMISSION);
+                msg(Message.CLICK_INFO);
+            }
         } else if (arg(0).equalsIgnoreCase("add")) {
             if (!argSet(1)) {
                 if (verbose) sendUsage();
@@ -54,7 +57,10 @@ public class SubCommandGrantPermission extends SubCommand {
             }
 
             meta = new SVSMeta(SVSMetaKey.GRANT, new SVSMetaValue(true), new SVSMetaValue(arg(1)));
-            if (verbose) msg(Message.RIGHT_CLICK_BIND_PERMISSION);
+            if (verbose) {
+                msg(Message.CLICK_BIND_PERMISSION);
+                msg(Message.CLICK_INFO);
+            }
         } else {
             if (verbose) sendUsage();
             return;

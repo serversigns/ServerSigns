@@ -38,6 +38,9 @@ public class SubCommandCreate extends SubCommand {
     @Override
     public void execute(boolean verbose) {
         applyMeta(SVSMetaKey.CREATE, new SVSMetaValue(1));
-        if (verbose) msg(Message.RIGHT_CLICK_CREATE);
+        if (verbose) {
+            msg(Message.CLICK_CREATE);
+            msg(Message.CLICK_INFO);
+        }
     }
 }

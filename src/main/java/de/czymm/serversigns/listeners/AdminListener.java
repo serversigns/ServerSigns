@@ -186,12 +186,12 @@ public class AdminListener implements Listener {
 
                     plugin.serverSignsManager.save(sign);
                     plugin.send(recipient, Message.COPY_SUCCESS);
-                    if (meta.getValue().asBoolean()) plugin.send(recipient, Message.RIGHT_CLICK_PASTE);
+                    if (meta.getValue().asBoolean()) plugin.send(recipient, Message.CLICK_PASTE);
                     else SVSMetaManager.removeMeta(adminUUID);
                 } else if (copiedSign == null) {
                     if (meta.hasValue(1)) meta.removeValue(1);
                     meta.addValue(new SVSMetaValue(sign));
-                    plugin.send(recipient, Message.RIGHT_CLICK_PASTE);
+                    plugin.send(recipient, Message.CLICK_PASTE);
                 }
                 // Don't allow existing signs to be overwritten
                 return;

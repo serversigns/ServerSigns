@@ -48,7 +48,10 @@ public class SubCommandSetLoops extends SubCommand {
         }
 
         applyMeta(SVSMetaKey.LOOP, new SVSMetaValue(argInt(0)), new SVSMetaValue(argInt(1, 60)));
-        if (verbose) msg(Message.RIGHT_CLICK_BIND_LOOPS);
+        if (verbose) {
+            msg(Message.CLICK_BIND_LOOPS);
+            msg(Message.CLICK_INFO);
+        }
     }
 
 }

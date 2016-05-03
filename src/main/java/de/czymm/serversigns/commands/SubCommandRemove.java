@@ -39,7 +39,8 @@ public class SubCommandRemove extends SubCommand {
     @Override
     public void execute(boolean verbose) {
         applyMeta(SVSMetaKey.REMOVE, new SVSMetaValue(argInt(0, -1)));
-        if (verbose) msg(Message.RIGHT_CLICK_REMOVE_COMMAND);
+        if (verbose) {
+            msg(Message.CLICK_REMOVE_COMMAND);
+        }
     }
-
 }

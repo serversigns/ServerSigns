@@ -43,6 +43,8 @@ public class SubCommandSilent extends SubCommand {
         }
 
         applyMeta(SVSMetaKey.SILENT, new SVSMetaValue(!argBool(0))); // Invert their input as we want to know whether it's verbose or not
-        if (verbose) msg(Message.RIGHT_CLICK_APPLY);
+        if (verbose) {
+            msg(Message.CLICK_APPLY);
+        }
     }
 }

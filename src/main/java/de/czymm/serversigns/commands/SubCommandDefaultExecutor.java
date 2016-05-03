@@ -35,6 +35,9 @@ public class SubCommandDefaultExecutor extends SubCommand {
         }
 
         applyMeta(SVSMetaKey.DEFAULT_CLICKTYPE, new SVSMetaValue(type));
-        if (verbose) msg(Message.RIGHT_CLICK_APPLY);
+        if (verbose) {
+            msg(Message.CLICK_APPLY);
+            msg(Message.CLICK_INFO);
+        }
     }
 }

@@ -41,41 +41,42 @@ public class CommandServerSigns extends de.czymm.serversigns.commands.core.Comma
         addSubCommand(new SubCommandCopy(plugin));
 
         addSubCommand(new SubCommandCreate(plugin));
+        addSubCommand(new SubCommandDefaultExecutor(plugin));
         addSubCommand(new SubCommandDev(plugin));
         addSubCommand(new SubCommandEdit(plugin));
         addSubCommand(new SubCommandHeldItemCriteria(plugin));
-        addSubCommand(new SubCommandHolding(plugin));
 
+        addSubCommand(new SubCommandHolding(plugin));
         addSubCommand(new SubCommandImport(plugin));
         addSubCommand(new SubCommandInsert(plugin));
         addSubCommand(new SubCommandList(plugin));
         addSubCommand(new SubCommandLong(plugin));
-        addSubCommand(new SubCommandGrantPermission(plugin));
 
+        addSubCommand(new SubCommandGrantPermission(plugin));
         addSubCommand(new SubCommandOption(plugin));
         addSubCommand(new SubCommandPriceItem(plugin));
         addSubCommand(new SubCommandPriceItemCriteria(plugin));
         addSubCommand(new SubCommandReload(plugin));
-        addSubCommand(new SubCommandReloadConfig(plugin));
 
+        addSubCommand(new SubCommandReloadConfig(plugin));
         addSubCommand(new SubCommandReloadSigns(plugin));
         addSubCommand(new SubCommandRemove(plugin));
         addSubCommand(new SubCommandResetAllCooldowns(plugin));
         addSubCommand(new SubCommandResetCooldowns(plugin));
-        addSubCommand(new SubCommandResetCooldown(plugin));
 
+        addSubCommand(new SubCommandResetCooldown(plugin));
         addSubCommand(new SubCommandSelect(plugin));
         addSubCommand(new SubCommandSetCooldown(plugin));
         addSubCommand(new SubCommandSetGlobalCooldown(plugin));
         addSubCommand(new SubCommandSetLoops(plugin));
-        addSubCommand(new SubCommandSetPermission(plugin));
 
+        addSubCommand(new SubCommandSetPermission(plugin));
         addSubCommand(new SubCommandSetPrice(plugin));
         addSubCommand(new SubCommandSetUses(plugin));
         addSubCommand(new SubCommandSilent(plugin));
         addSubCommand(new SubCommandTimelimit(plugin));
-        addSubCommand(new SubCommandVoid(plugin));
 
+        addSubCommand(new SubCommandVoid(plugin));
         addSubCommand(new SubCommandXP(plugin));
     }
 

@@ -49,7 +49,10 @@ public class SubCommandSetPermission extends SubCommand {
         if (arg(0).equals("-")) {
             // Remove permissions
             SVSMetaManager.setMeta(player, new SVSMeta(SVSMetaKey.PERMISSION, new SVSMetaValue(null)));
-            if (verbose) msg(Message.RIGHT_CLICK_DEL_PERMISSION);
+            if (verbose) {
+                msg(Message.CLICK_DEL_PERMISSION);
+                msg(Message.CLICK_INFO);
+            }
             return;
         }
 
@@ -82,6 +85,9 @@ public class SubCommandSetPermission extends SubCommand {
         }
 
         SVSMetaManager.setMeta(player, meta);
-        if (verbose) msg(Message.RIGHT_CLICK_BIND_PERMISSION);
+        if (verbose) {
+            msg(Message.CLICK_BIND_PERMISSION);
+            msg(Message.CLICK_INFO);
+        }
     }
 }

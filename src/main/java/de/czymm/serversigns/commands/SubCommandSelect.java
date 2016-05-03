@@ -45,6 +45,9 @@ public class SubCommandSelect extends SubCommand {
         }
 
         applyMeta(SVSMetaKey.SELECT, new SVSMetaValue(1));
-        if (verbose) msg(Message.RIGHT_CLICK_SELECT);
+        if (verbose) {
+            msg(Message.CLICK_SELECT);
+            msg(Message.CLICK_INFO);
+        }
     }
 }

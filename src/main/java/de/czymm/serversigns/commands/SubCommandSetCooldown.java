@@ -50,7 +50,10 @@ public class SubCommandSetCooldown extends SubCommand {
         }
 
         applyMeta(SVSMetaKey.SET_COOLDOWN, new SVSMetaValue(cooldown / 1000));
-        if (verbose) msg(Message.RIGHT_CLICK_SET_COOLDOWN);
+        if (verbose) {
+            msg(Message.CLICK_SET_COOLDOWN);
+            msg(Message.CLICK_INFO);
+        }
     }
 
 }

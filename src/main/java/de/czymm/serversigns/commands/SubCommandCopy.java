@@ -57,6 +57,9 @@ public class SubCommandCopy extends SubCommand {
 
         applyMeta(SVSMetaKey.COPY, new SVSMetaValue(argSet(0) ? argBool(0) : false));
         if (argSet(0) && argBool(0) && verbose) msg(Message.PERSISTENCE_ON);
-        if (verbose) msg(Message.RIGHT_CLICK_COPY);
+        if (verbose) {
+            msg(Message.CLICK_COPY);
+            msg(Message.CLICK_INFO);
+        }
     }
 }

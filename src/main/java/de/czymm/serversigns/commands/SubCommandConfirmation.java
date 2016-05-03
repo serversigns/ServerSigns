@@ -50,7 +50,10 @@ public class SubCommandConfirmation extends SubCommand {
         }
 
         SVSMetaManager.setMeta(player, meta);
-        if (verbose) msg(Message.RIGHT_CLICK_APPLY);
+        if (verbose) {
+            msg(Message.CLICK_APPLY);
+            msg(Message.CLICK_INFO);
+        }
     }
 
 }

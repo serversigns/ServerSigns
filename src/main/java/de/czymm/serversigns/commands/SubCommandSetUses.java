@@ -50,8 +50,9 @@ public class SubCommandSetUses extends SubCommand {
         applyMeta(SVSMetaKey.USES, new SVSMetaValue(uses));
 
         if (verbose) {
-            if (uses == 0) msg(Message.RIGHT_CLICK_REMOVE_USES);
-            else msg(Message.RIGHT_CLICK_SET_USES);
+            if (uses == 0) msg(Message.CLICK_REMOVE_USES);
+            else msg(Message.CLICK_SET_USES);
+            msg(Message.CLICK_INFO);
         }
     }
 }

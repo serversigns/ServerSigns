@@ -49,6 +49,9 @@ public class SubCommandCancelPermission extends SubCommand {
         }
 
         SVSMetaManager.setMeta(player, meta);
-        if (verbose) msg(Message.RIGHT_CLICK_BIND_CANCEL_PERMISSION);
+        if (verbose) {
+            msg(Message.CLICK_BIND_CANCEL_PERMISSION);
+            msg(Message.CLICK_INFO);
+        }
     }
 }

@@ -77,6 +77,10 @@ public class SubCommandOption extends SubCommand {
         values[1] = new SVSMetaValue(optionId);
 
         applyMeta(SVSMetaKey.OPTION, values);
-        msg(Message.RIGHT_CLICK_APPLY);
+
+        if (verbose) {
+            msg(Message.CLICK_APPLY);
+            msg(Message.CLICK_INFO);
+        }
     }
 }

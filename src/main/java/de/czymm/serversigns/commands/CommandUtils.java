@@ -59,7 +59,10 @@ public class CommandUtils {
                     executor instanceof Player ? ((Player) executor).getUniqueId() : SVSMetaManager.CONSOLE_UUID,
                     new SVSMeta(key, values)
             );
-            if (verbose) plugin.send(executor, Message.RIGHT_CLICK_BIND_CMD);
+            if (verbose) {
+                plugin.send(executor, Message.CLICK_BIND_CMD);
+                plugin.send(executor, Message.CLICK_INFO);
+            }
         } catch (CommandParseException ex) {
             if (verbose) plugin.send(executor, plugin.msgHandler.get(Message.INVALID_COMMAND) + " " + ex.getMessage());
         }

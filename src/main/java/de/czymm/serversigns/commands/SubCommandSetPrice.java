@@ -47,7 +47,10 @@ public class SubCommandSetPrice extends SubCommand {
         }
 
         applyMeta(SVSMetaKey.PRICE, new SVSMetaValue(argDouble(0)));
-        if (verbose) msg(Message.RIGHT_CLICK_SET_PRICE);
+        if (verbose) {
+            msg(Message.CLICK_SET_PRICE);
+            msg(Message.CLICK_INFO);
+        }
     }
 
 }
