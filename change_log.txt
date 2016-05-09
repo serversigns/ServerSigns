@@ -22,6 +22,8 @@ v4.5.1:
 
 v4.6:
 * Changed ServerSign execution system so that completely separate ServerSign data can be set for left or right clicking
+* All commands applied to ServerSigns will now be applied to the executor the admin clicks with (right or left)
 * Removed allow_left_clicking configuration option as it can be controlled entirely per-sign
 * Added global_default_executor configuration option to define the default click executor for ServerSigns (left|right|none)
+* Added /svs defaultExecutor <left|right|none> - this allows admins to set the default executor for each ServerSign individually
 * Added new conditional operator: hasBalance:<operator><amount> - i.e. hasBalance:>10000 or hasBalance:=250

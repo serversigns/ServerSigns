@@ -532,7 +532,14 @@ public class AdminListener implements Listener {
 
                 int lineNumber = meta.getValue().asInt();
                 if (lineNumber < 0) {
-                    plugin.serverSignsManager.remove(sign);
+                    if (sign.getServerSignExecutorData().size() == 1) {
+                        // Remove this sign
+                        plugin.serverSignsManager.remove(sign);
+                    } else {
+                        // Remove this executorData
+                        sign.getServerSignExecutorData().remove(clickType);
+                        plugin.serverSignsManager.save(sign);
+                    }
 
                     plugin.send(recipient, Message.COMMANDS_REMOVED);
                 } else if (lineNumber > execData.getCommands().size() || lineNumber < 1) {
