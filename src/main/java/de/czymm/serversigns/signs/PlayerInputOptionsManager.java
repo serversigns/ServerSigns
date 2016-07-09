@@ -129,8 +129,10 @@ public class PlayerInputOptionsManager implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
+        if (event.getMessage() == null) return;
+
         Player player = event.getPlayer();
         String firstWord = event.getMessage().contains(" ") ? event.getMessage().split(" ")[0] : event.getMessage();
 
