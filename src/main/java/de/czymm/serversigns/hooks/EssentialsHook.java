@@ -36,11 +36,17 @@ public class EssentialsHook {
     }
 
     public String getNickname(Player player) {
-        User user = essentials.getUser(player);
-        if (user != null) {
-            return user.getNickname();
-        }
+        try {
+            User user = essentials.getUser(player);
+            if (user != null) {
+                return user.getNickname();
+            }
 
-        return player.getDisplayName();
+            return player.getDisplayName();
+        } catch (Throwable thrown) {
+            // Catch any errors thrown and just return the player's name
+            // as it means we're unable to obtain their nickname anyway
+            return player.getName();
+        }
     }
 }

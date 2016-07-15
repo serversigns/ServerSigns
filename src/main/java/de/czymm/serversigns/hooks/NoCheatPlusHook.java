@@ -58,7 +58,6 @@ public class NoCheatPlusHook {
 
     public boolean exemptTemporarily(Player player, String checkType, long lengthInTicks) {
         final CheckType type = CheckType.valueOf(checkType.toUpperCase());
-        if (type == null) return false;
 
         final UUID id = player.getUniqueId();
         NCPExemptionManager.exemptPermanently(id, type);
@@ -74,7 +73,6 @@ public class NoCheatPlusHook {
 
     public boolean exemptPermanently(Player player, String checkType) {
         CheckType type = CheckType.valueOf(checkType.toUpperCase());
-        if (type == null) return false;
 
         NCPExemptionManager.exemptPermanently(player, type);
         return true;
@@ -92,7 +90,6 @@ public class NoCheatPlusHook {
 
     public boolean unexempt(UUID player, String checkType) {
         CheckType type = CheckType.valueOf(checkType.toUpperCase());
-        if (type == null) return false;
 
         NCPExemptionManager.unexempt(player, type);
         return true;
@@ -100,7 +97,6 @@ public class NoCheatPlusHook {
 
     public boolean unexempt(Player player, String checkType) {
         CheckType type = CheckType.valueOf(checkType.toUpperCase());
-        if (type == null) return false;
 
         NCPExemptionManager.unexempt(player, type);
         return true;
