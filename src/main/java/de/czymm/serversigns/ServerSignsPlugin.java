@@ -58,7 +58,7 @@ public class ServerSignsPlugin extends JavaPlugin {
     public Updater update;
     public PluginManager pm;
 
-    public PlayerListener playerListener = new PlayerListener(this);
+    public PlayerListener playerListener;
     public BlockListener blockListener = new BlockListener(this);
     public AdminListener adminListener = new AdminListener(this);
 
@@ -73,6 +73,12 @@ public class ServerSignsPlugin extends JavaPlugin {
     public PlayerInputOptionsManager inputOptionsManager;
 
     public static final Random r = new Random();
+    private static String serverVersion;
+
+    public ServerSignsPlugin() {
+        ServerSignsPlugin.serverVersion = this.getServer().getBukkitVersion().substring(0, 4);
+        this.playerListener  = new PlayerListener(this);
+    }
 
     @Override
     public void onEnable() {
@@ -226,5 +232,9 @@ public class ServerSignsPlugin extends JavaPlugin {
 
     public ServerSignsConfig getServerSignsConfig() {
         return config;
+    }
+
+    public static String getServerVersion() {
+        return ServerSignsPlugin.serverVersion;
     }
 }

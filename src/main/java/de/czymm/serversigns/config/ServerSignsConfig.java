@@ -17,6 +17,7 @@
 
 package de.czymm.serversigns.config;
 
+import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.legacy.OldServerSignsConfig;
 import de.czymm.serversigns.persist.PersistenceEntry;
 import de.czymm.serversigns.persist.mapping.BlocksMapper;
@@ -37,7 +38,7 @@ public class ServerSignsConfig implements IServerSignsConfig {
             "# A list of material names (should be in the Bukkit/Spigot Material enum form)",
             "# These materials define the blocks which can be used with ServerSigns",
             "# Refer to this page for the list: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html"})
-    private EnumSet<Material> blocks = EnumSet.of(Material.WALL_SIGN, Material.SIGN_POST);
+    private EnumSet<Material> blocks;
 
     @PersistenceEntry(comments = {"# Whether or not any block can be used with ServerSigns (overrides 'blocks' list)"})
     private boolean any_block = false;
@@ -112,6 +113,41 @@ public class ServerSignsConfig implements IServerSignsConfig {
 
     @PersistenceEntry(comments = {"# The number of hours your timezone is offset from GMT/UTC - must be an integer between -12 and 12"})
     private int time_zone_offset = 0;
+
+    ServerSignsConfig() {
+        switch (ServerSignsPlugin.getServerVersion()) {
+            case "1.9":
+            case "1.10":
+            case "1.11":
+            case "1.12":
+                this.blocks = EnumSet.of(
+                    Material.getMaterial("WALL_SIGN"),
+                    Material.getMaterial("SIGN_POST")
+                );
+                break;
+            case "1.13":
+                this.blocks = EnumSet.of(
+                    Material.getMaterial("WALL_SIGN"),
+                    Material.getMaterial("SIGN")
+                );
+                break;
+            default:
+                this.blocks = EnumSet.of(
+                    Material.getMaterial("OAK_SIGN"),
+                    Material.getMaterial("OAK_WALL_SIGN"),
+                    Material.getMaterial("ACACIA_SIGN"),
+                    Material.getMaterial("ACACIA_WALL_SIGN"),
+                    Material.getMaterial("BIRCH_SIGN"),
+                    Material.getMaterial("BIRCH_WALL_SIGN"),
+                    Material.getMaterial("DARK_OAK_SIGN"),
+                    Material.getMaterial("DARK_OAK_WALL_SIGN"),
+                    Material.getMaterial("JUNGLE_SIGN"),
+                    Material.getMaterial("JUNGLE_WALL_SIGN"),
+                    Material.getMaterial("SPRUCE_SIGN"),
+                    Material.getMaterial("SPRUCE_WALL_SIGN")
+                );
+        }
+    }
 
     public EnumSet<Material> getBlocks() {
         return blocks;

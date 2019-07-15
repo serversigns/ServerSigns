@@ -42,10 +42,35 @@ public class PlayerListener implements Listener {
     private ServerSignsPlugin plugin;
     private HashMap<UUID, PlatePair> plateMap = new HashMap<>();
 
-    private static final EnumSet<Material> PLATE_MATERIALS = EnumSet.of(Material.WOOD_PLATE, Material.STONE_PLATE, Material.IRON_PLATE, Material.GOLD_PLATE);
+    private static EnumSet<Material> PLATE_MATERIALS;
 
     public PlayerListener(ServerSignsPlugin instance) {
         this.plugin = instance;
+        switch (ServerSignsPlugin.getServerVersion()) {
+            case "1.9":
+            case "1.10":
+            case "1.11":
+            case "1.12":
+                PLATE_MATERIALS = EnumSet.of(
+                    Material.getMaterial("WOOD_PLATE"),
+                    Material.getMaterial("STONE_PLATE"),
+                    Material.getMaterial("IRON_PLATE"),
+                    Material.getMaterial("GOLD_PLATE")
+                );
+                break;
+            default:
+                PLATE_MATERIALS = EnumSet.of(
+                    Material.getMaterial("OAK_PRESSURE_PLATE"),
+                    Material.getMaterial("ACACIA_PRESSURE_PLATE"),
+                    Material.getMaterial("BIRCH_PRESSURE_PLATE"),
+                    Material.getMaterial("DARK_OAK_PRESSURE_PLATE"),
+                    Material.getMaterial("JUNGLE_PRESSURE_PLATE"),
+                    Material.getMaterial("SPRUCE_PRESSURE_PLATE"),
+                    Material.getMaterial("STONE_PRESSURE_PLATE"),
+                    Material.getMaterial("LIGHT_WEIGHTED_PRESSURE_PLATE"),
+                    Material.getMaterial("HEAVY_WEIGHTED_PRESSURE_PLATE")
+                );
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
