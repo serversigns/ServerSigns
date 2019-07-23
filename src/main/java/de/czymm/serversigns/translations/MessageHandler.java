@@ -36,7 +36,7 @@ public class MessageHandler {
     private ServerSignsPlugin plugin;
     private Path translationsDirectory;
 
-    private static final Set<String> SUPPORTED_LANGUAGES = new HashSet<>(Arrays.asList("en", "de"));
+    private static final Set<String> SUPPORTED_LANGUAGES = new HashSet<>(Arrays.asList("en", "de", "fr"));
 
     private Map<Message, String> currentTranslation = new HashMap<>(Message.values().length);
 
