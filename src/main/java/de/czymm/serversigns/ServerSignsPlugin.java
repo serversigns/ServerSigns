@@ -45,6 +45,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
@@ -76,7 +77,7 @@ public class ServerSignsPlugin extends JavaPlugin {
     private static String serverVersion;
 
     public ServerSignsPlugin() {
-        ServerSignsPlugin.serverVersion = this.getServer().getBukkitVersion().substring(0, 4);
+        ServerSignsPlugin.serverVersion = String.join(".", Arrays.asList(this.getServer().getBukkitVersion().split("\\.")).subList(0, 2));
         this.playerListener  = new PlayerListener(this);
     }
 
