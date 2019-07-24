@@ -107,9 +107,8 @@ public class InventoryUtils {
         }
 
         InventoryHolder holder = inventory.getHolder();
-        String title = inventory.getTitle();
 
-        Inventory ret = Bukkit.createInventory(holder, size, title);
+        Inventory ret = Bukkit.createInventory(holder, size);
 
         ItemStack[] contents = cloneItemStacks(inventory.getContents());
         ret.setContents(contents);

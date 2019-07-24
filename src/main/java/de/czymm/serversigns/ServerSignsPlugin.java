@@ -45,6 +45,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
@@ -58,7 +59,7 @@ public class ServerSignsPlugin extends JavaPlugin {
     public Updater update;
     public PluginManager pm;
 
-    public PlayerListener playerListener = new PlayerListener(this);
+    public PlayerListener playerListener;
     public BlockListener blockListener = new BlockListener(this);
     public AdminListener adminListener = new AdminListener(this);
 
@@ -73,6 +74,12 @@ public class ServerSignsPlugin extends JavaPlugin {
     public PlayerInputOptionsManager inputOptionsManager;
 
     public static final Random r = new Random();
+    private static String serverVersion;
+
+    public ServerSignsPlugin() {
+        ServerSignsPlugin.serverVersion = String.join(".", Arrays.asList(this.getServer().getBukkitVersion().split("\\.")).subList(0, 2));
+        this.playerListener  = new PlayerListener(this);
+    }
 
     @Override
     public void onEnable() {
@@ -226,5 +233,9 @@ public class ServerSignsPlugin extends JavaPlugin {
 
     public ServerSignsConfig getServerSignsConfig() {
         return config;
+    }
+
+    public static String getServerVersion() {
+        return ServerSignsPlugin.serverVersion;
     }
 }
