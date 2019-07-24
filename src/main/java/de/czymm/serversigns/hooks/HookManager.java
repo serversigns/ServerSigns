@@ -24,14 +24,14 @@ public class HookManager {
     public final HookWrapper<EssentialsHook> essentials;
     public final HookWrapper<NoCheatPlusHook> noCheatPlus;
     public final HookWrapper<VaultHook> vault;
-    public final HookWrapper<PlaceholderAPIHook> placeholderApi;
+    public final HookWrapper<PlaceholderAPIHook> placeholderAPI;
 
 
     public HookManager(ServerSignsPlugin plugin) {
         essentials = new HookWrapper<>(EssentialsHook.class, new Class[]{ServerSignsPlugin.class}, new Object[]{plugin});
         noCheatPlus = new HookWrapper<>(NoCheatPlusHook.class, new Class[]{ServerSignsPlugin.class}, new Object[]{plugin});
         vault = new HookWrapper<>(VaultHook.class, new Class[]{ServerSignsPlugin.class}, new Object[]{plugin});
-        placeholderApi = new HookWrapper<>(PlaceholderAPIHook.class, new Class[]{ServerSignsPlugin.class}, new Object[]{plugin});
+        placeholderAPI = new HookWrapper<>(PlaceholderAPIHook.class, new Class[]{ServerSignsPlugin.class}, new Object[]{plugin});
     }
 
     public void tryInstantiateHooks(boolean deepVerbose) {
@@ -52,7 +52,7 @@ public class HookManager {
             ServerSignsPlugin.log("Please download Vault at http://dev.bukkit.org/server-mods/vault/ for Economy and \"Permission grant\" support.");
         }
         try {
-            placeholderApi.instantiateHook();
+        	placeholderAPI.instantiateHook();
         } catch (Exception ex) {
             ServerSignsPlugin.log("Unable to load PlaceholderAPI dependency - placeholder features will be disabled");
         }

@@ -18,7 +18,6 @@
 package de.czymm.serversigns.hooks;
 
 import de.czymm.serversigns.ServerSignsPlugin;
-import me.clip.placeholderapi.PlaceholderAPI;
 
 import org.bukkit.Bukkit;
 
@@ -26,12 +25,15 @@ public class PlaceholderAPIHook {
 
 	protected ServerSignsPlugin pl;
 
-    private PlaceholderAPI placeholderAPI;
-
     public PlaceholderAPIHook(ServerSignsPlugin plugin) throws Exception {
         pl = plugin;
-        placeholderAPI = (PlaceholderAPI) Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
-        if (placeholderAPI == null) throw new Exception();
+        
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+        	throw new Exception();
+        }
+        
     }
+    
+
 
 }

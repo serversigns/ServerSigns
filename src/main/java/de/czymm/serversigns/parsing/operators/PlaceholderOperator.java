@@ -14,22 +14,33 @@ public class PlaceholderOperator extends ConditionalOperator{
 
 	@Override
     public ParameterValidityResponse checkParameterValidity(String params) {
-        return new ParameterValidityResponse(true); // Params are irrelevant
+		boolean isValid = params.indexOf('=') > 0 && params.length() - 2 >= params.indexOf('=');
+        return new ParameterValidityResponse(isValid, "Parameter must be in the format <placeholder>=<match>");
     }
 
-    @Override
+	@Override
     public boolean meetsConditions(Player executor, ServerSign executingSign, ServerSignsPlugin plugin) {
-    	if (params == null) {
+    	if (params == null || params.indexOf('=') < 1) {
             return false;
         }
+    	
+    	if (!plugin.hookManager.placeholderAPI.isHooked()) {
+            return false;
+        }
+    	
         if (executor == null) {
             return true; // Console
         }
         
         String[] paramSplit = params.split("=");
+        String[] ors = paramSplit[1].split("\\|");
         
-        if(paramSplit.length < 2) {
-        	return false;
+        if(ors.length > 1) {
+        	for (String or : ors) {
+        		if (PlaceholderAPI.setPlaceholders(executor, paramSplit[0]).equals(or)) {
+                    return true;
+                }
+        	}
         }
 
         return PlaceholderAPI.setPlaceholders(executor, paramSplit[0]).equals(paramSplit[1]);
