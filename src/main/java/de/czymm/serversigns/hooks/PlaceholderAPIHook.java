@@ -23,17 +23,15 @@ import org.bukkit.Bukkit;
 
 public class PlaceholderAPIHook {
 
-	protected ServerSignsPlugin pl;
+    protected ServerSignsPlugin pl;
 
     public PlaceholderAPIHook(ServerSignsPlugin plugin) throws Exception {
         pl = plugin;
-        
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-        	throw new Exception();
-        }
-        
-    }
-    
 
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            throw new Exception();
+        }
+
+    }
 
 }

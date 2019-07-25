@@ -26,7 +26,6 @@ public class HookManager {
     public final HookWrapper<VaultHook> vault;
     public final HookWrapper<PlaceholderAPIHook> placeholderAPI;
 
-
     public HookManager(ServerSignsPlugin plugin) {
         essentials = new HookWrapper<>(EssentialsHook.class, new Class[]{ServerSignsPlugin.class}, new Object[]{plugin});
         noCheatPlus = new HookWrapper<>(NoCheatPlusHook.class, new Class[]{ServerSignsPlugin.class}, new Object[]{plugin});
@@ -52,7 +51,7 @@ public class HookManager {
             ServerSignsPlugin.log("Please download Vault at http://dev.bukkit.org/server-mods/vault/ for Economy and \"Permission grant\" support.");
         }
         try {
-        	placeholderAPI.instantiateHook();
+            placeholderAPI.instantiateHook();
         } catch (Exception ex) {
             ServerSignsPlugin.log("Unable to load PlaceholderAPI dependency - placeholder features will be disabled");
         }
