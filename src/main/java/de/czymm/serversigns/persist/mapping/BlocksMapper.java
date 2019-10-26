@@ -17,12 +17,14 @@
 
 package de.czymm.serversigns.persist.mapping;
 
+import de.czymm.serversigns.ServerSignsPlugin;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.logging.Level;
 
 public class BlocksMapper implements IPersistenceMapper<EnumSet<Material>> {
     private MemorySection memorySection;
@@ -34,14 +36,24 @@ public class BlocksMapper implements IPersistenceMapper<EnumSet<Material>> {
 
     @Override
     public EnumSet<Material> getValue(String path) {
+        List<String> unknownMaterials = new ArrayList<>();
         List<String> blocksList = memorySection.getStringList(path);
         EnumSet<Material> blocks = EnumSet.noneOf(Material.class);
+
         for (String block : blocksList) {
             Material material = Material.getMaterial(block);
             if (material != null) {
                 blocks.add(material);
+            } else {
+                unknownMaterials.add(block);
             }
         }
+
+        if (!unknownMaterials.isEmpty()) {
+            ServerSignsPlugin.log("Wrong blocks : " + String.join(", ", unknownMaterials), Level.WARNING);
+            ServerSignsPlugin.log("Please visit the wiki : https://serversigns.de/wiki/Configuration", Level.WARNING);
+        }
+
         return blocks;
     }
 
