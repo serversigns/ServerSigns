@@ -21,4 +21,9 @@ v4.5.1:
 * Added new conditional operator: nearbyPlayers:<radius><operator><amount> - i.e. nearbyPlayers:10<50 or nearbyPlayers:100>25
 
 v4.5.2:
+* Add support of minecraft 1.14
+* Config blocks are generated based on the minecraft version
+* When blocks doesn't exist inside config, a warning is displayed
+
+v4.5.3
 *
