@@ -17,6 +17,7 @@
 
 package de.czymm.serversigns.persist.mapping;
 
+import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.utils.MaterialConvertor;
 import de.czymm.serversigns.utils.NumberUtils;
 import org.bukkit.Material;
@@ -25,6 +26,7 @@ import org.bukkit.configuration.MemorySection;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.logging.Level;
 
 public class BlocksIdMapper implements IPersistenceMapper<EnumSet<Material>> {
     private MemorySection memorySection;
@@ -36,15 +38,25 @@ public class BlocksIdMapper implements IPersistenceMapper<EnumSet<Material>> {
 
     @Override
     public EnumSet<Material> getValue(String path) {
+        List<String> unknownMaterials = new ArrayList<>();
         List<String> blocksList = memorySection.getStringList(path);
         EnumSet<Material> blocks = EnumSet.noneOf(Material.class);
+
         for (String blockId : blocksList) {
             int val = NumberUtils.parseInt(blockId, -1);
             Material material = MaterialConvertor.getMaterialById(val);
             if (material != null) {
                 blocks.add(material);
+            } else {
+                unknownMaterials.add(blockId);
             }
         }
+
+        if (!unknownMaterials.isEmpty()) {
+            ServerSignsPlugin.log("Unknown blocks : " + String.join(", ", unknownMaterials), Level.WARNING);
+            ServerSignsPlugin.log("Please visit the wiki : https://serversigns.de/wiki/Configuration", Level.WARNING);
+        }
+
         return blocks;
     }
 
