@@ -50,7 +50,7 @@ public class BlocksMapper implements IPersistenceMapper<EnumSet<Material>> {
         }
 
         if (!unknownMaterials.isEmpty()) {
-            ServerSignsPlugin.log("Wrong blocks : " + String.join(", ", unknownMaterials), Level.WARNING);
+            ServerSignsPlugin.log("Unknown blocks : " + String.join(", ", unknownMaterials), Level.WARNING);
             ServerSignsPlugin.log("Please visit the wiki : https://serversigns.de/wiki/Configuration", Level.WARNING);
         }
 
