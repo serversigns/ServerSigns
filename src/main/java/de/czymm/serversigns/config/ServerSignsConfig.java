@@ -116,6 +116,7 @@ public class ServerSignsConfig implements IServerSignsConfig {
 
     ServerSignsConfig() {
         switch (ServerSignsPlugin.getServerVersion()) {
+            case "1.8":
             case "1.9":
             case "1.10":
             case "1.11":
