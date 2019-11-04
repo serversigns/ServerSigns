@@ -26,4 +26,8 @@ v4.5.2:
 * When blocks doesn't exist inside config, a warning is displayed
 
 v4.5.3
+* Add missing support of 1.8 for materials
+* Fix too old version updater that couldn't download last version
+
+v4.5.4
 *
