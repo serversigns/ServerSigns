@@ -31,6 +31,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -79,7 +80,7 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         Block block = event.getClickedBlock();
 
-        if (SVSMetaManager.hasExclusiveMeta(player, SVSMetaKey.YES)) {
+        if (SVSMetaManager.hasExclusiveMeta(player, SVSMetaKey.YES) || event.getHand() == EquipmentSlot.OFF_HAND) {
             return;
         }
 
