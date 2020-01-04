@@ -151,7 +151,7 @@ public class MessageHandler {
                 Files.deleteIfExists(target);
                 Files.createFile(target);
 
-                try (BufferedWriter writer = Files.newBufferedWriter(target, Charset.defaultCharset()); BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
+                try (BufferedWriter writer = Files.newBufferedWriter(target, Charset.forName('UTF-8')); BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
                     writer.write("# This file is DELETED and REGENERATED on every server restart!");
                     writer.newLine();
                     writer.write("# Create a NEW FILE for custom language translations!");
