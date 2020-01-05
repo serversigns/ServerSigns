@@ -3,7 +3,7 @@ main: de.czymm.serversigns.ServerSignsPlugin
 version: ${version}
 api-version: 1.13
 authors: [CalibeR50, Exloki]
-softdepend: [Vault, NoCheatPlus, Essentials]
+softdepend: [Vault, NoCheatPlus, Essentials, PlaceholderAPI]
 load: POSTWORLD
 description: >
              ServerSigns
