@@ -23,7 +23,7 @@ import de.czymm.serversigns.utils.StringUtils;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -58,7 +58,7 @@ public class ConfigGenerator {
     }
 
     public static void generate(IServerSignsConfig config, Path path) throws ConfigLoadingException {
-        try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.defaultCharset())) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             writeArray(writer, HEADER);
             writer.newLine();
 
