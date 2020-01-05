@@ -23,7 +23,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -151,7 +151,7 @@ public class MessageHandler {
                 Files.deleteIfExists(target);
                 Files.createFile(target);
 
-                try (BufferedWriter writer = Files.newBufferedWriter(target, Charset.defaultCharset()); BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
+                try (BufferedWriter writer = Files.newBufferedWriter(target, StandardCharsets.UTF_8); BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
                     writer.write("# This file is DELETED and REGENERATED on every server restart!");
                     writer.newLine();
                     writer.write("# Create a NEW FILE for custom language translations!");
