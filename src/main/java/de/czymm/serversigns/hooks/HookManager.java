@@ -54,6 +54,7 @@ public class HookManager {
             placeholderAPI.instantiateHook();
         } catch (Exception ex) {
             ServerSignsPlugin.log("Unable to load PlaceholderAPI dependency - placeholder features will be disabled");
+            ServerSignsPlugin.log("You can download PlaceholderAPI at https://www.spigotmc.org/resources/placeholderapi.6245/");
         }
     }
 }
