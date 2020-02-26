@@ -35,6 +35,7 @@ import de.czymm.serversigns.taskmanager.TaskManager;
 import de.czymm.serversigns.translations.Message;
 import de.czymm.serversigns.translations.MessageHandler;
 import de.czymm.serversigns.translations.NoDefaultException;
+import de.czymm.serversigns.utils.formatter.MessageFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -65,6 +66,7 @@ public class ServerSignsPlugin extends JavaPlugin {
 
     public ServerSignsConfig config;
     public MessageHandler msgHandler;
+    private MessageFormatter messageFormatter;
 
     public ServerSignManager serverSignsManager;
     public ServerSignExecutor serverSignExecutor;
@@ -112,6 +114,8 @@ public class ServerSignsPlugin extends JavaPlugin {
             pm.registerEvents(this.playerListener, this);
             pm.registerEvents(this.blockListener, this);
             pm.registerEvents(this.inputOptionsManager, this);
+
+            messageFormatter = MessageFormatter.getFormatter(hookManager);
 
             if (config.getCheckForUpdates()) {
                 update = new Updater(this, 33254, this.getFile(), Updater.UpdateType.DEFAULT, true);
@@ -201,7 +205,7 @@ public class ServerSignsPlugin extends JavaPlugin {
 
     public void send(CommandSender sender, String message) {
         if (message.isEmpty()) return;
-        sender.sendMessage((config.getMessagePrefix().isEmpty() ? "" : ChatColor.DARK_GREEN + config.getMessagePrefix() + " ") + ChatColor.YELLOW + config.getMessageColour() + ChatColor.translateAlternateColorCodes('&', message));
+        sender.sendMessage((config.getMessagePrefix().isEmpty() ? "" : ChatColor.DARK_GREEN + config.getMessagePrefix() + " ") + ChatColor.YELLOW + config.getMessageColour() + messageFormatter.format(sender, message));
     }
 
     public void send(CommandSender to, Collection<String> messages) {
