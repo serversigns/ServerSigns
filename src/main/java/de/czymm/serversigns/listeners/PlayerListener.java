@@ -80,7 +80,7 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         Block block = event.getClickedBlock();
 
-        if (SVSMetaManager.hasExclusiveMeta(player, SVSMetaKey.YES) || event.getHand() == EquipmentSlot.OFF_HAND) {
+        if (SVSMetaManager.hasExclusiveMeta(player, SVSMetaKey.YES) || isOffHand(event)) {
             return;
         }
 
@@ -152,6 +152,20 @@ public class PlayerListener implements Listener {
 
         public void setTask(BukkitTask task) {
             this.task = task;
+        }
+    }
+
+    /**
+     * Define if the hand used in event is off hand
+     *
+     * @param event Event to analyse
+     * @return Is off hand
+     */
+    private boolean isOffHand(final PlayerInteractEvent event) {
+        try {
+            return event.getHand() == EquipmentSlot.OFF_HAND;
+        } catch (NoSuchMethodError e) {
+            return false;
         }
     }
 }
