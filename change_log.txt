@@ -29,5 +29,10 @@ v4.5.3
 * Add missing support of 1.8 for materials
 * Fix too old version updater that couldn't download last version
 
-v4.5.4
-*
+v4.6.0
+* Add official support for 1.15
+* Add PlaceholderApi support
+    * Add operator 'placeholder' to compare PlaceholderApi variables (string and number)
+    * Make PlaceholderApi variables available in all messages
+* Fix file encoding depending of computer encoding
+* Fix execution of commands executed twice caused by off hand

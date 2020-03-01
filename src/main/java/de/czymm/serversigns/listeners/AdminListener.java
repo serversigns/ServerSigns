@@ -48,7 +48,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -253,7 +253,7 @@ public class AdminListener implements Listener {
 
                 Path path = Paths.get(meta.getValue().asString());
                 try {
-                    List<String> commands = Files.readLines(path.toFile(), Charset.defaultCharset());
+                    List<String> commands = Files.readLines(path.toFile(), StandardCharsets.UTF_8);
                     ExecutableSVSR svsr = new ExecutableSVSR(plugin);
                     for (String command : commands) {
                         svsr.execute(clicked, (Player) recipient, command);

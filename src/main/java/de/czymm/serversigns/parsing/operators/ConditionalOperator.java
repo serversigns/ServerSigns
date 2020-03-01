@@ -40,6 +40,7 @@ public abstract class ConditionalOperator {
         VALUES.add(new NearbyPlayersOperator());
         VALUES.add(new OnlinePlayersOperator());
         VALUES.add(new HasBalanceOperator());
+        VALUES.add(new PlaceholderOperator());
     }
 
     protected String key;

@@ -6,7 +6,7 @@
 
     <groupId>de.czymm.serversigns</groupId>
     <artifactId>ServerSigns</artifactId>
-    <version>4.5.3</version>
+    <version>4.6.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,6 +51,10 @@
         <repository>
             <id>ess-repo</id>
             <url>http://repo.ess3.net/content/groups/essentials</url>
+        </repository>
+        <repository>
+            <id>clip-repo</id>
+            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
     </repositories>
 
@@ -110,6 +114,12 @@
             <groupId>net.ess3</groupId>
             <artifactId>Essentials</artifactId>
             <version>2.13-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.10.4</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
