@@ -18,7 +18,7 @@ edit_command: The command was edited successfully
 rightclick_reset_cooldown: Right-click a sign to reset cooldown
 reset_cooldown: Cooldowns were reset
 no_number: This is not a valid time value
-not_ready: The Sign is ready in <cooldown>
+not_ready: The sign is ready in <cooldown>
 line_not_found: The given line was not found
 not_enough_permissions: You don't have enough permissions
 not_enough_money: You don't have enough money
