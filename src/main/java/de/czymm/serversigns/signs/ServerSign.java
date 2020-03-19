@@ -17,6 +17,7 @@
 
 package de.czymm.serversigns.signs;
 
+import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.itemdata.ItemSearchCriteria;
 import de.czymm.serversigns.parsing.command.ServerSignCommand;
 import de.czymm.serversigns.persist.PersistenceEntry;
@@ -26,11 +27,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Attachable;
 import org.bukkit.material.Door;
+import org.bukkit.material.MaterialData;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class ServerSign implements Cloneable, Serializable {
@@ -507,21 +511,64 @@ public class ServerSign implements Cloneable, Serializable {
         return protectedBlocks.contains(location);
     }
 
+    /**
+     * Get attached block and add it to the list of protected blocks
+     */
     public void updateProtectedBlocks() {
         protectedBlocks.clear();
-        Block block = getLocation().getBlock();
+        final Block block = getLocation().getBlock();
+        Block attachedBlock = null;
 
-        if (block.getState().getData() instanceof Attachable) {
-            Attachable attachable = (Attachable) block.getState().getData();
-            addProtectedBlock(block.getRelative(attachable.getAttachedFace()).getLocation());
-        } else if (block.getState().getData() instanceof Door) {
-            Door door = (Door) block.getState().getData();
+        switch (ServerSignsPlugin.getServerVersion()) {
+            case "1.7":
+            case "1.8":
+            case "1.9":
+            case "1.10":
+            case "1.11":
+            case "1.12":
+                attachedBlock = old_getAttachedBlock(block);
+                break;
+            default:
+                attachedBlock = latest_getAttachedBlock(block);
+        }
+        if (attachedBlock != null) {
+            addProtectedBlock(attachedBlock.getLocation());
+        }
+    }
+
+    private Block old_getAttachedBlock(final Block block) {
+        final MaterialData data = block.getState().getData();
+
+        if (data instanceof Attachable) {
+            final Attachable attachable = (Attachable) data;
+            return block.getRelative(attachable.getAttachedFace());
+        }
+        if (data instanceof Door) {
+            final Door door = (Door) data;
             if (door.isTopHalf()) {
-                addProtectedBlock(block.getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN).getLocation());
+                return block.getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN);
             } else {
-                addProtectedBlock(block.getRelative(BlockFace.DOWN).getLocation());
+                return block.getRelative(BlockFace.DOWN);
             }
         }
+        return null;
+    }
+
+    private Block latest_getAttachedBlock(final Block block) {
+        final BlockState state = block.getState();
+
+        try {
+            final Object data = state.getClass().getMethod("getBlockData").invoke(state);
+            final Class directional = Class.forName("org.bukkit.block.data.Directional");
+
+            if (directional.isInstance(data)) {
+                final BlockFace face = (BlockFace)data.getClass().getMethod("getFacing").invoke(data);
+                return block.getRelative(face.getOppositeFace());
+            }
+        } catch(InvocationTargetException | IllegalAccessException | NoSuchMethodException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return block.getRelative(BlockFace.DOWN);
     }
 
     // Display internal messages
