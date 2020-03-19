@@ -27,6 +27,7 @@ import de.czymm.serversigns.hooks.HookManager;
 import de.czymm.serversigns.listeners.AdminListener;
 import de.czymm.serversigns.listeners.BlockListener;
 import de.czymm.serversigns.listeners.PlayerListener;
+import de.czymm.serversigns.meta.SVSMetaManager;
 import de.czymm.serversigns.signs.PlayerInputOptionsManager;
 import de.czymm.serversigns.signs.ServerSign;
 import de.czymm.serversigns.signs.ServerSignExecutor;
@@ -132,6 +133,8 @@ public class ServerSignsPlugin extends JavaPlugin {
                     // Failed to submit the stats D:
                 }
             }
+
+            SVSMetaManager.clear();
 
             log("Version " + getDescription().getVersion() + " is now enabled.");
         } catch (Exception ex) {

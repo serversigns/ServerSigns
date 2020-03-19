@@ -115,5 +115,6 @@ public class SVSMetaManager {
 
     public static void clear() {
         map.clear();
+        specialMap.clear();
     }
 }
