@@ -18,6 +18,8 @@
 package de.czymm.serversigns.listeners;
 
 import de.czymm.serversigns.ServerSignsPlugin;
+import de.czymm.serversigns.meta.SVSMetaKey;
+import de.czymm.serversigns.meta.SVSMetaManager;
 import de.czymm.serversigns.signs.ServerSign;
 import de.czymm.serversigns.translations.Message;
 import org.bukkit.Location;
@@ -38,6 +40,10 @@ public class BlockListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         Location location = block.getLocation();
+        if (SVSMetaManager.hasExclusiveMeta(event.getPlayer(), SVSMetaKey.YES)) {
+            event.setCancelled(true);
+            return;
+        }
 
         if (plugin.config.getAnyBlock() || plugin.config.getBlocks().contains(block.getType())) {
             ServerSign sign = plugin.serverSignsManager.getServerSignByLocation(location);
