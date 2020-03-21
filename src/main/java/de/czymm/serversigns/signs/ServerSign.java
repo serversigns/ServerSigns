@@ -22,6 +22,7 @@ import de.czymm.serversigns.itemdata.ItemSearchCriteria;
 import de.czymm.serversigns.parsing.command.ServerSignCommand;
 import de.czymm.serversigns.persist.PersistenceEntry;
 import de.czymm.serversigns.persist.mapping.*;
+import de.czymm.serversigns.utils.BlockUtils;
 import de.czymm.serversigns.utils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,6 +36,7 @@ import org.bukkit.material.MaterialData;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class ServerSign implements Cloneable, Serializable {
@@ -503,8 +505,8 @@ public class ServerSign implements Cloneable, Serializable {
         protectedBlocks.clear();
     }
 
-    public void addProtectedBlock(Location location) {
-        protectedBlocks.add(location);
+    public void addProtectedBlock(final Block block) {
+        protectedBlocks.add(block.getLocation());
     }
 
     public boolean isProtected(Location location) {
@@ -526,49 +528,52 @@ public class ServerSign implements Cloneable, Serializable {
             case "1.10":
             case "1.11":
             case "1.12":
-                attachedBlock = old_getAttachedBlock(block);
+                old_updateProtectedBlocks(block);
                 break;
             default:
-                attachedBlock = latest_getAttachedBlock(block);
-        }
-        if (attachedBlock != null) {
-            addProtectedBlock(attachedBlock.getLocation());
+                latest_updateProtectedBlocks(block);
         }
     }
 
-    private Block old_getAttachedBlock(final Block block) {
+    private void old_updateProtectedBlocks(final Block block) {
         final MaterialData data = block.getState().getData();
 
         if (data instanceof Attachable) {
             final Attachable attachable = (Attachable) data;
-            return block.getRelative(attachable.getAttachedFace());
-        }
-        if (data instanceof Door) {
-            final Door door = (Door) data;
-            if (door.isTopHalf()) {
-                return block.getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN);
+            addProtectedBlock(block.getRelative(attachable.getAttachedFace()));
+        } else if (data instanceof Door) {
+            if (((Door)data).isTopHalf()) {
+                addProtectedBlock(block.getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN));
             } else {
-                return block.getRelative(BlockFace.DOWN);
+                addProtectedBlock(block.getRelative(BlockFace.DOWN));
             }
         }
-        return null;
     }
 
-    private Block latest_getAttachedBlock(final Block block) {
+    private void latest_updateProtectedBlocks(final Block block) {
         final BlockState state = block.getState();
 
         try {
-            final Object data = state.getClass().getMethod("getBlockData").invoke(state);
+            final Method getBlockData = state.getClass().getMethod("getBlockData");
+            final Object data = getBlockData.invoke(state);
             final Class directional = Class.forName("org.bukkit.block.data.Directional");
+            final Class door = Class.forName("org.bukkit.block.data.type.Door");
 
-            if (directional.isInstance(data)) {
+            if (door.isInstance(data)) {
+                if (BlockUtils.latest_isTopHalf(state)) {
+                    addProtectedBlock(block.getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN));
+                } else {
+                    addProtectedBlock(block.getRelative(BlockFace.DOWN));
+                }
+            } else if (directional.isInstance(data)) {
                 final BlockFace face = (BlockFace)data.getClass().getMethod("getFacing").invoke(data);
-                return block.getRelative(face.getOppositeFace());
+                addProtectedBlock(block.getRelative(face.getOppositeFace()));
+            } else {
+                addProtectedBlock(block.getRelative(BlockFace.DOWN));
             }
         } catch(InvocationTargetException | IllegalAccessException | NoSuchMethodException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return block.getRelative(BlockFace.DOWN);
     }
 
     // Display internal messages

@@ -22,6 +22,7 @@ import de.czymm.serversigns.legacy.ServerSignConverter;
 import de.czymm.serversigns.persist.PersistenceException;
 import de.czymm.serversigns.persist.YamlFieldPersistence;
 import de.czymm.serversigns.persist.mapping.MappingException;
+import de.czymm.serversigns.utils.BlockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -29,7 +30,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.material.Door;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -217,10 +217,9 @@ public class ServerSignManager {
         Block block = sign.getLocation().getBlock();
 
         signs.put(sign.getLocation(), sign);
-        if (block.getState().getData() instanceof Door) {
+        if (BlockUtils.isDoor(block)) {
             // Door
-            Door door = (Door) block.getState().getData();
-            signs.put(block.getRelative(door.isTopHalf() ? BlockFace.DOWN : BlockFace.UP).getLocation(), sign);
+            signs.put(block.getRelative(BlockUtils.isTopHalf(block) ? BlockFace.DOWN : BlockFace.UP).getLocation(), sign);
         } else if (block.getState() instanceof Chest) {
             // Potentially double chest
             Chest chest = (Chest) block.getState();
@@ -271,10 +270,9 @@ public class ServerSignManager {
     private void removeMultiReference(ServerSign sign) {
         Block block = sign.getLocation().getBlock();
 
-        if (block.getState().getData() instanceof Door) {
+        if (BlockUtils.isDoor(block)) {
             // Door
-            Door door = (Door) block.getState().getData();
-            signs.remove(block.getRelative(door.isTopHalf() ? BlockFace.DOWN : BlockFace.UP).getLocation());
+            signs.remove(block.getRelative(BlockUtils.isTopHalf(block) ? BlockFace.DOWN : BlockFace.UP).getLocation());
         } else if (block.getState() instanceof Chest) {
             // Potentially double chest
             Chest chest = (Chest) block.getState();
@@ -347,6 +345,6 @@ public class ServerSignManager {
     }
 
     private boolean isSpecialMultiBlock(Block block) {
-        return block.getState().getData() instanceof Door || block.getState() instanceof Chest;
+        return BlockUtils.isDoor(block) || block.getState() instanceof Chest;
     }
 }
