@@ -48,6 +48,7 @@ public class PlayerListener implements Listener {
     public PlayerListener(ServerSignsPlugin instance) {
         this.plugin = instance;
         switch (ServerSignsPlugin.getServerVersion()) {
+            case "1.7":
             case "1.8":
             case "1.9":
             case "1.10":

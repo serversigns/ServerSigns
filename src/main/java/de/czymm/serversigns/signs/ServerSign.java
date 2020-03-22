@@ -519,7 +519,6 @@ public class ServerSign implements Cloneable, Serializable {
     public void updateProtectedBlocks() {
         protectedBlocks.clear();
         final Block block = getLocation().getBlock();
-        Block attachedBlock = null;
 
         switch (ServerSignsPlugin.getServerVersion()) {
             case "1.7":
