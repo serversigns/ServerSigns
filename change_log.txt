@@ -36,3 +36,10 @@ v4.6.0
     * Make PlaceholderApi variables available in all messages
 * Fix file encoding depending of computer encoding
 * Fix execution of commands executed twice caused by off hand
+
+v4.6.1
+* Add Scoreboard operator with hasTeam sub operator
+* Fix protection of attached blocks (broken since version 1.12)
+* Fix execution of sign on both part of the door
+* Clear pending commands on enable to prevent old pending commands when reloading
+* Cancel break events when a player has a pending command
