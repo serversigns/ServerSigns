@@ -41,6 +41,7 @@ public abstract class ConditionalOperator {
         VALUES.add(new OnlinePlayersOperator());
         VALUES.add(new HasBalanceOperator());
         VALUES.add(new PlaceholderOperator());
+        VALUES.add(new ScoreboardOperator());
     }
 
     protected String key;
