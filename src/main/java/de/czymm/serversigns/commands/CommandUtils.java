@@ -37,6 +37,9 @@ public class CommandUtils {
         String rawCmd = command.trim();
         if (rawCmd.startsWith("*") || rawCmd.startsWith("/"))
             rawCmd = rawCmd.substring(1);
+        if (rawCmd.startsWith("<server>"))
+            rawCmd = rawCmd.substring(8);
+        rawCmd = rawCmd.trim();
         if (rawCmd.contains(" ")) rawCmd = rawCmd.split(" ")[0];
 
         if (plugin.config.getBlockedCommands().contains(rawCmd.toLowerCase())) {
