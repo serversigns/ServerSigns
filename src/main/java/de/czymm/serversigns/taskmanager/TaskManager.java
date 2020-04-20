@@ -25,6 +25,7 @@ import de.czymm.serversigns.taskmanager.tasks.PlayerTask;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
@@ -112,6 +113,12 @@ public class TaskManager {
                 task.setPersisted(true);
             }
             queue.offer(task);
+        }
+    }
+
+    public void addAllTasks(final List<? extends TaskManagerTask> tasks) {
+        for (TaskManagerTask task : tasks) {
+            this.addTask(task);
         }
     }
 

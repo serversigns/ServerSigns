@@ -85,7 +85,6 @@ public class ServerSignExecutor {
                     plugin.hookManager.noCheatPlus.getHook().exemptTemporarily(player, "CHAT_COMMANDS", 40L); // 2 seconds should cover any spam issues
                 }
 
-                List<TaskManagerTask> tasks = new ArrayList<>();
 
                 // Pre-execution granted permissions
                 List<PermissionGrantPlayerTask> grantTasks = null;
@@ -97,27 +96,25 @@ public class ServerSignExecutor {
                         ServerSignsPlugin.log("ServerSign at " + sign.getLocationString() + " has been activated, but cannot execute as it is attempting to grant permissions but no Vault hook or config-defined commands exist");
                         return;
                     }
-                    grantTasks = grantPermissions(player.getUniqueId(), 0, sign.getGrantPermissions(), tasks);
+                    grantTasks = grantPermissions(player.getUniqueId(), 0, sign.getGrantPermissions());
+                    plugin.taskManager.addAllTasks(grantTasks);
                 }
 
                 // Commands
-                createCommandTasks(sign, tasks, player, event == null ? null : event.getAction());
+                boolean executedTasks = createCommandTasks(sign, player, event == null ? null : event.getAction());
                 if (plugin.inputOptionsManager.hasCompletedAnswers(player)) { // Clear completed answers as they're no longer needed for this execution
                     plugin.inputOptionsManager.getCompletedAnswers(player, true);
                 }
 
                 // Remove granted permissions
                 if (sign.getGrantPermissions() != null && !sign.getGrantPermissions().isEmpty()) {
-                    removePermissions(player.getUniqueId(), 0, grantTasks, tasks);
+                    plugin.taskManager.addAllTasks(removePermissions(player.getUniqueId(), 0, grantTasks));
                 }
 
                 // Bulked so we can halt execution of the whole sign if necessary
-                if (sign.getCommands().size() > 0 && tasks.isEmpty()) {
+                if (sign.getCommands().size() > 0 && !executedTasks && grantTasks.isEmpty()) {
                     // No commands applicable for this interaction, halt execution
                     return;
-                }
-                for (TaskManagerTask task : tasks) {
-                    plugin.taskManager.addTask(task);
                 }
             }
 
@@ -174,9 +171,7 @@ public class ServerSignExecutor {
             sign.setCurrentLoop(currentLoop);
 
             // Format and execute commands
-            for (TaskManagerTask task : createCommandTasks(sign, null, executor, null)) {
-                plugin.taskManager.addTask(task);
-            }
+            createCommandTasks(sign, executor, null);
 
             if (loops == 0) {
                 // Scheduled infinity until restart
@@ -208,8 +203,8 @@ public class ServerSignExecutor {
         }.runTaskLater(plugin, loopDelay * 20);
     }
 
-    private List<TaskManagerTask> createCommandTasks(ServerSign sign, List<TaskManagerTask> existingList, Player executor, Action eventAction) {
-        List<TaskManagerTask> tasks = existingList == null ? new ArrayList<TaskManagerTask>() : existingList;
+    private boolean createCommandTasks(ServerSign sign, Player executor, Action eventAction) {
+        boolean executedTasks = false;
 
         ProcessingData processingData = new ProcessingData();
         for (ServerSignCommand command : sign.getCommands()) {
@@ -230,10 +225,11 @@ public class ServerSignExecutor {
                 break;
             }
 
-            tasks.addAll(command.getTasks(executor, plugin, getInjectedCommandReplacements(sign, true)));
+            executedTasks = true;
+            plugin.taskManager.addAllTasks(command.getTasks(executor, plugin, getInjectedCommandReplacements(sign, true)));
         }
 
-        return tasks;
+        return executedTasks;
     }
 
     private class ProcessingData {
@@ -661,22 +657,23 @@ public class ServerSignExecutor {
     // UTILITY FUNCTIONS
     //-----------------------------------------------------
 
-    private List<PermissionGrantPlayerTask> grantPermissions(UUID player, long timestamp, List<String> permissions, List<TaskManagerTask> tasks) {
+    private List<PermissionGrantPlayerTask> grantPermissions(UUID player, long timestamp, List<String> permissions) {
         assert !permissions.isEmpty();
-        List<PermissionGrantPlayerTask> list = new ArrayList<>();
+        List<PermissionGrantPlayerTask> tasks = new ArrayList<>();
 
         for (String perm : permissions) {
             PermissionGrantPlayerTask grantTask = new PermissionGrantPlayerTask(timestamp, perm, player, true);
             tasks.add(grantTask);
-            list.add(grantTask);
         }
 
-        return list;
+        return tasks;
     }
 
-    private void removePermissions(UUID player, long timestamp, List<PermissionGrantPlayerTask> grantTasks, List<TaskManagerTask> tasks) {
+    private List<TaskManagerTask> removePermissions(UUID player, long timestamp, List<PermissionGrantPlayerTask> grantTasks) {
+        final List<TaskManagerTask> tasks = new ArrayList<>();
         for (PermissionGrantPlayerTask grantTask : grantTasks) {
             tasks.add(new PermissionRemovePlayerTask(timestamp, player, grantTask, true));
         }
+        return tasks;
     }
 }
