@@ -51,7 +51,7 @@ public class SubCommandDev extends SubCommand {
         }
 
         if (argStr(0).equalsIgnoreCase("hooks")) {
-            sender.sendMessage(String.format("Vault: %b, NCP: %b, Ess: %b", plugin.hookManager.vault.isHooked(), plugin.hookManager.noCheatPlus.isHooked(), plugin.hookManager.essentials.isHooked()));
+            sender.sendMessage(String.format("Vault: %b, NCP: %b, Ess: %b, PAPI: %b", plugin.hookManager.vault.isHooked(), plugin.hookManager.noCheatPlus.isHooked(), plugin.hookManager.essentials.isHooked(), plugin.hookManager.placeholderAPI.isHooked()));
             return;
         }
 
