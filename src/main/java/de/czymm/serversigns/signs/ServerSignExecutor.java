@@ -112,7 +112,7 @@ public class ServerSignExecutor {
                 }
 
                 // Bulked so we can halt execution of the whole sign if necessary
-                if (sign.getCommands().size() > 0 && !executedTasks && grantTasks.isEmpty()) {
+                if (sign.getCommands().size() > 0 && !executedTasks && (grantTasks == null || grantTasks.isEmpty())) {
                     // No commands applicable for this interaction, halt execution
                     return;
                 }
