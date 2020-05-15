@@ -27,7 +27,7 @@ public class SubCommandResetCooldown extends SubCommand {
     public SubCommandResetCooldown(ServerSignsPlugin plugin) {
         super(
                 plugin,
-                "cooldown_reset",
+                "reset_cooldown",
                 "resetcd",
                 "Reset the cooldown data for a ServerSign",
                 "cdr", "cooldownreset", "cdreset", "resetcooldown", "rcd", "resetcd"

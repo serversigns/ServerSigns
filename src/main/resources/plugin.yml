@@ -29,24 +29,27 @@ permissions:
           serversigns.command.set_cancel: true
           serversigns.command.cancel_permission: true
           serversigns.command.confirmation: true
-          serversigns.command.reset_cooldown: true
           serversigns.command.copy: true
           serversigns.command.create: true
           serversigns.command.edit: true
-          serversigns.command.holding: true
+          serversigns.command.grant: true
           serversigns.command.held_item_criteria: true
+          serversigns.command.holding: true
+          serversigns.command.import: true
           serversigns.command.insert: true
           serversigns.command.list: true
           serversigns.command.long: true
-          serversigns.command.grant: true
+          serversigns.command.option: true
           serversigns.command.price_item: true
           serversigns.command.price_item_criteria: true
           serversigns.command.reload: true
           serversigns.command.reload_config: true
           serversigns.command.reload_signs: true
           serversigns.command.remove: true
-          serversigns.command.resetcooldowns: true
           serversigns.command.reset_all_cooldowns: true
+          serversigns.command.reset_cooldown: true
+          serversigns.command.resetcooldowns: true
+          serversigns.command.select: true
           serversigns.command.set_cooldown: true
           serversigns.command.set_global_cooldown: true
           serversigns.command.set_loops: true
@@ -54,6 +57,7 @@ permissions:
           serversigns.command.set_price: true
           serversigns.command.set_uses: true
           serversigns.command.silent: true
+          serversigns.command.timelimit: true
           serversigns.command.void: true
           serversigns.command.xp: true
 
