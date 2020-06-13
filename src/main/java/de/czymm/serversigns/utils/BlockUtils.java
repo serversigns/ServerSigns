@@ -1,6 +1,5 @@
 package de.czymm.serversigns.utils;
 
-import de.czymm.serversigns.ServerSignsPlugin;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.Door;
@@ -18,17 +17,7 @@ public class BlockUtils {
     }
 
     private static boolean isOld() {
-        switch (ServerSignsPlugin.getServerVersion()) {
-            case "1.7":
-            case "1.8":
-            case "1.9":
-            case "1.10":
-            case "1.11":
-            case "1.12":
-                return true;
-            default:
-                return false;
-        }
+        return Version.is_lower_or_equals_to(Version.V1_12);
     }
 
     public static boolean old_isTopHalf(final BlockState state) {

@@ -36,6 +36,7 @@ import de.czymm.serversigns.taskmanager.TaskManager;
 import de.czymm.serversigns.translations.Message;
 import de.czymm.serversigns.translations.MessageHandler;
 import de.czymm.serversigns.translations.NoDefaultException;
+import de.czymm.serversigns.utils.Version;
 import de.czymm.serversigns.utils.formatter.MessageFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -77,10 +78,10 @@ public class ServerSignsPlugin extends JavaPlugin {
     public PlayerInputOptionsManager inputOptionsManager;
 
     public static final Random r = new Random();
-    private static String serverVersion;
 
     public ServerSignsPlugin() {
-        ServerSignsPlugin.serverVersion = String.join(".", Arrays.asList(this.getServer().getBukkitVersion().split("\\.")).subList(0, 2));
+        Version.init_version(this.getServer().getBukkitVersion());
+
         this.playerListener  = new PlayerListener(this);
     }
 
@@ -240,9 +241,5 @@ public class ServerSignsPlugin extends JavaPlugin {
 
     public ServerSignsConfig getServerSignsConfig() {
         return config;
-    }
-
-    public static String getServerVersion() {
-        return ServerSignsPlugin.serverVersion;
     }
 }

@@ -17,13 +17,13 @@
 
 package de.czymm.serversigns.signs;
 
-import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.itemdata.ItemSearchCriteria;
 import de.czymm.serversigns.parsing.command.ServerSignCommand;
 import de.czymm.serversigns.persist.PersistenceEntry;
 import de.czymm.serversigns.persist.mapping.*;
 import de.czymm.serversigns.utils.BlockUtils;
 import de.czymm.serversigns.utils.ItemUtils;
+import de.czymm.serversigns.utils.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -520,17 +520,10 @@ public class ServerSign implements Cloneable, Serializable {
         protectedBlocks.clear();
         final Block block = getLocation().getBlock();
 
-        switch (ServerSignsPlugin.getServerVersion()) {
-            case "1.7":
-            case "1.8":
-            case "1.9":
-            case "1.10":
-            case "1.11":
-            case "1.12":
-                old_updateProtectedBlocks(block);
-                break;
-            default:
-                latest_updateProtectedBlocks(block);
+        if (Version.is_lower_or_equals_to(Version.V1_12)) {
+            old_updateProtectedBlocks(block);
+        } else {
+            latest_updateProtectedBlocks(block);
         }
     }
 

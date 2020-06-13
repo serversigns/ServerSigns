@@ -22,6 +22,7 @@ import de.czymm.serversigns.meta.SVSMetaKey;
 import de.czymm.serversigns.meta.SVSMetaManager;
 import de.czymm.serversigns.signs.ServerSign;
 import de.czymm.serversigns.translations.Message;
+import de.czymm.serversigns.utils.Version;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -42,37 +43,31 @@ import java.util.UUID;
 public class PlayerListener implements Listener {
     private ServerSignsPlugin plugin;
     private HashMap<UUID, PlatePair> plateMap = new HashMap<>();
+    private static boolean offHandSupported = true;
 
     private static EnumSet<Material> PLATE_MATERIALS;
 
     public PlayerListener(ServerSignsPlugin instance) {
         this.plugin = instance;
-        switch (ServerSignsPlugin.getServerVersion()) {
-            case "1.7":
-            case "1.8":
-            case "1.9":
-            case "1.10":
-            case "1.11":
-            case "1.12":
-                PLATE_MATERIALS = EnumSet.of(
-                    Material.getMaterial("WOOD_PLATE"),
-                    Material.getMaterial("STONE_PLATE"),
-                    Material.getMaterial("IRON_PLATE"),
-                    Material.getMaterial("GOLD_PLATE")
-                );
-                break;
-            default:
-                PLATE_MATERIALS = EnumSet.of(
-                    Material.getMaterial("OAK_PRESSURE_PLATE"),
-                    Material.getMaterial("ACACIA_PRESSURE_PLATE"),
-                    Material.getMaterial("BIRCH_PRESSURE_PLATE"),
-                    Material.getMaterial("DARK_OAK_PRESSURE_PLATE"),
-                    Material.getMaterial("JUNGLE_PRESSURE_PLATE"),
-                    Material.getMaterial("SPRUCE_PRESSURE_PLATE"),
-                    Material.getMaterial("STONE_PRESSURE_PLATE"),
-                    Material.getMaterial("LIGHT_WEIGHTED_PRESSURE_PLATE"),
-                    Material.getMaterial("HEAVY_WEIGHTED_PRESSURE_PLATE")
-                );
+        if (Version.is_lower_or_equals_to(Version.V1_12)) {
+            PLATE_MATERIALS = EnumSet.of(
+                Material.getMaterial("WOOD_PLATE"),
+                Material.getMaterial("STONE_PLATE"),
+                Material.getMaterial("IRON_PLATE"),
+                Material.getMaterial("GOLD_PLATE")
+            );
+        } else {
+            PLATE_MATERIALS = EnumSet.of(
+                Material.getMaterial("OAK_PRESSURE_PLATE"),
+                Material.getMaterial("ACACIA_PRESSURE_PLATE"),
+                Material.getMaterial("BIRCH_PRESSURE_PLATE"),
+                Material.getMaterial("DARK_OAK_PRESSURE_PLATE"),
+                Material.getMaterial("JUNGLE_PRESSURE_PLATE"),
+                Material.getMaterial("SPRUCE_PRESSURE_PLATE"),
+                Material.getMaterial("STONE_PRESSURE_PLATE"),
+                Material.getMaterial("LIGHT_WEIGHTED_PRESSURE_PLATE"),
+                Material.getMaterial("HEAVY_WEIGHTED_PRESSURE_PLATE")
+            );
         }
     }
 
@@ -155,8 +150,6 @@ public class PlayerListener implements Listener {
             this.task = task;
         }
     }
-
-    private static boolean offHandSupported = true;
 
     /**
      * Define if the hand used in event is off hand

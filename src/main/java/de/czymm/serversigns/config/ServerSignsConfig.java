@@ -17,11 +17,11 @@
 
 package de.czymm.serversigns.config;
 
-import de.czymm.serversigns.ServerSignsPlugin;
 import de.czymm.serversigns.legacy.OldServerSignsConfig;
 import de.czymm.serversigns.persist.PersistenceEntry;
 import de.czymm.serversigns.persist.mapping.BlocksMapper;
 import de.czymm.serversigns.persist.mapping.ColouredStringMapper;
+import de.czymm.serversigns.utils.Version;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -115,39 +115,31 @@ public class ServerSignsConfig implements IServerSignsConfig {
     private int time_zone_offset = 0;
 
     ServerSignsConfig() {
-        switch (ServerSignsPlugin.getServerVersion()) {
-            case "1.7":
-            case "1.8":
-            case "1.9":
-            case "1.10":
-            case "1.11":
-            case "1.12":
-                this.blocks = EnumSet.of(
-                    Material.getMaterial("WALL_SIGN"),
-                    Material.getMaterial("SIGN_POST")
-                );
-                break;
-            case "1.13":
-                this.blocks = EnumSet.of(
-                    Material.getMaterial("WALL_SIGN"),
-                    Material.getMaterial("SIGN")
-                );
-                break;
-            default:
-                this.blocks = EnumSet.of(
-                    Material.getMaterial("OAK_SIGN"),
-                    Material.getMaterial("OAK_WALL_SIGN"),
-                    Material.getMaterial("ACACIA_SIGN"),
-                    Material.getMaterial("ACACIA_WALL_SIGN"),
-                    Material.getMaterial("BIRCH_SIGN"),
-                    Material.getMaterial("BIRCH_WALL_SIGN"),
-                    Material.getMaterial("DARK_OAK_SIGN"),
-                    Material.getMaterial("DARK_OAK_WALL_SIGN"),
-                    Material.getMaterial("JUNGLE_SIGN"),
-                    Material.getMaterial("JUNGLE_WALL_SIGN"),
-                    Material.getMaterial("SPRUCE_SIGN"),
-                    Material.getMaterial("SPRUCE_WALL_SIGN")
-                );
+        if (Version.is_lower_or_equals_to(Version.V1_12)) {
+            this.blocks = EnumSet.of(
+                Material.getMaterial("WALL_SIGN"),
+                Material.getMaterial("SIGN_POST")
+            );
+        } else if (Version.is_equals_to(Version.V1_13)) {
+            this.blocks = EnumSet.of(
+                Material.getMaterial("WALL_SIGN"),
+                Material.getMaterial("SIGN")
+            );
+        } else {
+            this.blocks = EnumSet.of(
+                Material.getMaterial("OAK_SIGN"),
+                Material.getMaterial("OAK_WALL_SIGN"),
+                Material.getMaterial("ACACIA_SIGN"),
+                Material.getMaterial("ACACIA_WALL_SIGN"),
+                Material.getMaterial("BIRCH_SIGN"),
+                Material.getMaterial("BIRCH_WALL_SIGN"),
+                Material.getMaterial("DARK_OAK_SIGN"),
+                Material.getMaterial("DARK_OAK_WALL_SIGN"),
+                Material.getMaterial("JUNGLE_SIGN"),
+                Material.getMaterial("JUNGLE_WALL_SIGN"),
+                Material.getMaterial("SPRUCE_SIGN"),
+                Material.getMaterial("SPRUCE_WALL_SIGN")
+            );
         }
     }
 
