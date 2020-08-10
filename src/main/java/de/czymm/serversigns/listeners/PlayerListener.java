@@ -156,6 +156,8 @@ public class PlayerListener implements Listener {
         }
     }
 
+    private static boolean offHandSupported = true;
+
     /**
      * Define if the hand used in event is off hand
      *
@@ -163,9 +165,13 @@ public class PlayerListener implements Listener {
      * @return Is off hand
      */
     private boolean isOffHand(final PlayerInteractEvent event) {
+        if(!offHandSupported) {
+            return false;
+        }
         try {
             return event.getHand() == EquipmentSlot.OFF_HAND;
         } catch (NoSuchMethodError e) {
+            offHandSupported = false;
             return false;
         }
     }
