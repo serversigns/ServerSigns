@@ -81,7 +81,10 @@ public class PlayerInputOptionsManager implements Listener {
 
         playerData.answers.add(answer);
         pendingToDisplay.remove(0);
-        plugin.send(player, "&7&oOK!"); // Useful for players to know their answer is submitted correctly
+
+        if (playerData.sign.shouldDisplayInternalMessages()) {
+            plugin.send(player, "&7&oOK!"); // Useful for players to know their answer is submitted correctly
+        }
 
         if (pendingToDisplay.size() > 0) {
             askQuestion(player, playerData.sign.getInputOption(pendingToDisplay.get(0)));
