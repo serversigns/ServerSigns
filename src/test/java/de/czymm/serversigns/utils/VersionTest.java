@@ -13,7 +13,7 @@ import static de.czymm.serversigns.utils.Version.*;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PowerMockRunner.class)
-public class VerionsTest {
+public class VersionTest {
     private static class VersionData {
         final String v1;
         final Version v2;
@@ -44,61 +44,61 @@ public class VerionsTest {
     }
 
     @Test
-    public void testVersion_init_version() {
-        assertTrue(is_lower_than(V1_7));
+    public void testVersion_initVersion() {
+        assertTrue(isLowerThan(V1_7));
 
-        init_version("1.12");
+        initVersion("1.12");
 
-        assertTrue(is_equals_to(V1_12));
+        assertTrue(isEqualsTo(V1_12));
     }
 
     @Test
     public void testVersion_is_higher_than() {
         for (final VersionData data : testDatas) {
-            Version.init_version(data.v1);
+            Version.initVersion(data.v1);
 
-            System.out.println(data.getMessage("is_higher_than", 0));
-            assertEquals(data.expectResults[0], is_higher_than(data.v2));
+            System.out.println(data.getMessage("isHigherThan", 0));
+            assertEquals(data.expectResults[0], isHigherThan(data.v2));
         }
     }
 
     @Test
     public void testVersion_is_higher_or_equals_to() {
         for (final VersionData data : testDatas) {
-            Version.init_version(data.v1);
+            Version.initVersion(data.v1);
 
-            System.out.println(data.getMessage("is_higher_or_equals_than", 1));
-            assertEquals(data.expectResults[1], is_higher_or_equals_to(data.v2));
+            System.out.println(data.getMessage("isHigherOrEqualsTo", 1));
+            assertEquals(data.expectResults[1], isHigherOrEqualsTo(data.v2));
         }
     }
 
     @Test
     public void testVersion_is_equals_to() {
         for (final VersionData data : testDatas) {
-            Version.init_version(data.v1);
+            Version.initVersion(data.v1);
 
-            System.out.println(data.getMessage("is_equals_to", 2));
-            assertEquals(data.expectResults[2], is_equals_to(data.v2));
+            System.out.println(data.getMessage("isEqualsTo", 2));
+            assertEquals(data.expectResults[2], isEqualsTo(data.v2));
         }
     }
 
     @Test
     public void testVersion_is_lower_or_equals_to() {
         for (final VersionData data : testDatas) {
-            Version.init_version(data.v1);
+            Version.initVersion(data.v1);
 
-            System.out.println(data.getMessage("is_lower_or_equals_than", 3));
-            assertEquals(data.expectResults[3], is_lower_or_equals_to(data.v2));
+            System.out.println(data.getMessage("isLowerOrEqualsTo", 3));
+            assertEquals(data.expectResults[3], isLowerOrEqualsTo(data.v2));
         }
     }
 
     @Test
     public void testVersion_is_lower_than() {
         for (final VersionData data : testDatas) {
-            Version.init_version(data.v1);
+            Version.initVersion(data.v1);
 
-            System.out.println(data.getMessage("is_lower_than", 4));
-            assertEquals(data.expectResults[4], is_lower_than(data.v2));
+            System.out.println(data.getMessage("isLowerThan", 4));
+            assertEquals(data.expectResults[4], isLowerThan(data.v2));
         }
     }
 }

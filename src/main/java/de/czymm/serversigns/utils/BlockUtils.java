@@ -17,7 +17,7 @@ public class BlockUtils {
     }
 
     private static boolean isOld() {
-        return Version.is_lower_or_equals_to(Version.V1_12);
+        return Version.isLowerOrEqualsTo(Version.V1_12);
     }
 
     public static boolean old_isTopHalf(final BlockState state) {

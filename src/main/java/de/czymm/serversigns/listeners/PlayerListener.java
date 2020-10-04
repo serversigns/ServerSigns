@@ -49,7 +49,7 @@ public class PlayerListener implements Listener {
 
     public PlayerListener(ServerSignsPlugin instance) {
         this.plugin = instance;
-        if (Version.is_lower_or_equals_to(Version.V1_12)) {
+        if (Version.isLowerOrEqualsTo(Version.V1_12)) {
             PLATE_MATERIALS = EnumSet.of(
                 Material.getMaterial("WOOD_PLATE"),
                 Material.getMaterial("STONE_PLATE"),

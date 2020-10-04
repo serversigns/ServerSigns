@@ -520,7 +520,7 @@ public class ServerSign implements Cloneable, Serializable {
         protectedBlocks.clear();
         final Block block = getLocation().getBlock();
 
-        if (Version.is_lower_or_equals_to(Version.V1_12)) {
+        if (Version.isLowerOrEqualsTo(Version.V1_12)) {
             old_updateProtectedBlocks(block);
         } else {
             latest_updateProtectedBlocks(block);

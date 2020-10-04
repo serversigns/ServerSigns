@@ -80,7 +80,7 @@ public class ServerSignsPlugin extends JavaPlugin {
     public static final Random r = new Random();
 
     public ServerSignsPlugin() {
-        Version.init_version(this.getServer().getBukkitVersion());
+        Version.initVersion(this.getServer().getBukkitVersion());
 
         this.playerListener  = new PlayerListener(this);
     }

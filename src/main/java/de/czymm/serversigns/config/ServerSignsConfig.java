@@ -115,12 +115,12 @@ public class ServerSignsConfig implements IServerSignsConfig {
     private int time_zone_offset = 0;
 
     ServerSignsConfig() {
-        if (Version.is_lower_or_equals_to(Version.V1_12)) {
+        if (Version.isLowerOrEqualsTo(Version.V1_12)) {
             this.blocks = EnumSet.of(
                 Material.getMaterial("WALL_SIGN"),
                 Material.getMaterial("SIGN_POST")
             );
-        } else if (Version.is_equals_to(Version.V1_13)) {
+        } else if (Version.isEqualsTo(Version.V1_13)) {
             this.blocks = EnumSet.of(
                 Material.getMaterial("WALL_SIGN"),
                 Material.getMaterial("SIGN")
