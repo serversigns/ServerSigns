@@ -48,14 +48,10 @@ public class ItemLore extends ItemData implements IItemData {
 
     @Override
     public ItemMeta applyMetaValue(ItemMeta meta, String value) throws DataException {
-        if (!value.isEmpty()) {
-            List<String> lores = meta.hasLore() ? meta.getLore() : new ArrayList<String>();
-            lores.add(ChatColor.translateAlternateColorCodes('&', value.replaceAll("_", " ")));
-            meta.setLore(lores);
+        List<String> lores = meta.hasLore() ? meta.getLore() : new ArrayList<String>();
+        lores.add(ChatColor.translateAlternateColorCodes('&', value.replaceAll("_", " ")));
+        meta.setLore(lores);
 
-            return meta;
-        }
-
-        throw new DataException("Empty strings cannot be used for ItemStack lores!");
+        return meta;
     }
 }
