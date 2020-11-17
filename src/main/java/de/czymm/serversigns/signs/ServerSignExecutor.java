@@ -557,7 +557,7 @@ public class ServerSignExecutor {
             if (sign.shouldDisplayInternalMessages()) {
                 plugin.send(player, Message.NOT_ENOUGH_ITEMS);
                 for (ItemStack required : leftover) {
-                    plugin.send(player, ItemUtils.getDescription(required, plugin.config.getMessageColour()));
+                    plugin.sendBasic(player, ItemUtils.getDescription(required, plugin.config.getMessageColour()));
                 }
             }
             return false;

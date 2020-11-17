@@ -207,6 +207,16 @@ public class ServerSignsPlugin extends JavaPlugin {
         this.getServer().dispatchCommand(getServer().getConsoleSender(), command);
     }
 
+    public void sendBasic(CommandSender sender, String message) {
+        if (message.isEmpty()) return;
+        sender.sendMessage((config.getMessagePrefix().isEmpty() ? "" : ChatColor.DARK_GREEN + config.getMessagePrefix() + " ") + ChatColor.YELLOW + config.getMessageColour() + MessageFormatter.toColor(message));
+    }
+
+    public void sendBasic(CommandSender to, Collection<String> messages) {
+        for (String str : messages)
+            sendBasic(to, str);
+    }
+
     public void send(CommandSender sender, String message) {
         if (message.isEmpty()) return;
         sender.sendMessage((config.getMessagePrefix().isEmpty() ? "" : ChatColor.DARK_GREEN + config.getMessagePrefix() + " ") + ChatColor.YELLOW + config.getMessageColour() + messageFormatter.format(sender, message));

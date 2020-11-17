@@ -22,7 +22,7 @@ import org.bukkit.command.CommandSender;
 
 public abstract class MessageFormatter {
 
-    protected String toColor(final String message) {
+    public static String toColor(final String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 

@@ -28,6 +28,6 @@ public class BasicMessageFormatter extends MessageFormatter {
      */
     @Override
     public String format(final CommandSender player, final String message) {
-        return this.toColor(message);
+        return MessageFormatter.toColor(message);
     }
 }

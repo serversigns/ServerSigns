@@ -298,7 +298,7 @@ public class AdminListener implements Listener {
                     }
 
                     if (!sign.getPermissionMessage().isEmpty())
-                        plugin.send(recipient, "&6No Perm Message: &e" + sign.getPermissionMessage());
+                        plugin.sendBasic(recipient, "&6No Perm Message: &e" + sign.getPermissionMessage());
 
                     if (sign.getPrice() != 0)
                         plugin.send(recipient, "&6Price: &e" + sign.getPrice());
@@ -307,7 +307,7 @@ public class AdminListener implements Listener {
                         plugin.send(recipient, "&6Xp Cost: &e" + sign.getXP());
 
                     if (sign.isConfirmation())
-                        plugin.send(recipient, "&6Confirmation: &etrue" + (sign.getConfirmationMessage().isEmpty() ? "" : ", &6Message: &e" + sign.getConfirmationMessage()));
+                        plugin.sendBasic(recipient, "&6Confirmation: &etrue" + (sign.getConfirmationMessage().isEmpty() ? "" : ", &6Message: &e" + sign.getConfirmationMessage()));
 
                     if (sign.getCooldown() != 0)
                         plugin.send(recipient, "&6Cooldown: &e" + TimeUtils.getTimeSpan(sign.getCooldown() * 1000, TimeUtils.TimeUnit.SECONDS, TimeUtils.TimeUnit.YEARS, true, false));
@@ -328,7 +328,7 @@ public class AdminListener implements Listener {
                     if (!sign.getPriceItems().isEmpty()) {
                         plugin.send(recipient, "&6Price Items: ");
                         for (ItemStack stack : sign.getPriceItems()) {
-                            plugin.send(recipient, ItemUtils.getDescription(stack, plugin.config.getMessageColour()));
+                            plugin.sendBasic(recipient, ItemUtils.getDescription(stack, plugin.config.getMessageColour()));
                         }
 
                         plugin.send(recipient, "&6Price Item Criteria: &a&oTrue &c&oFalse");
@@ -366,12 +366,12 @@ public class AdminListener implements Listener {
                     }
 
                     if (!sign.getInputOptions().isEmpty()) {
-                        plugin.send(recipient, "&6'Option Menus' (Q+As): ");
+                        plugin.sendBasic(recipient, "&6'Option Menus' (Q+As): ");
                         for (PlayerInputOptions options : sign.getInputOptions()) {
-                            plugin.send(recipient, "&bID: " + options.getName());
-                            plugin.send(recipient, "  &9" + options.getQuestion());
+                            plugin.sendBasic(recipient, "&bID: " + options.getName());
+                            plugin.sendBasic(recipient, "  &9" + options.getQuestion());
                             for (int k = 0; k < options.getAnswersLength(); k++) {
-                                plugin.send(recipient, "  &3" + options.getAnswerLabel(k) + " - " + options.getAnswerDescription(k));
+                                plugin.sendBasic(recipient, "  &3" + options.getAnswerLabel(k) + " - " + options.getAnswerDescription(k));
                             }
                         }
                     }
@@ -400,7 +400,7 @@ public class AdminListener implements Listener {
                             }
                             builder.append("&7").append(line.getInteractValue() == 0 ? "both " : line.getInteractValue() == 1 ? "left " : "right ");
                             builder.append("&f").append(line.getUnformattedCommand());
-                            plugin.send(recipient, builder.toString().trim());
+                            plugin.sendBasic(recipient, builder.toString().trim());
                         }
                     }
 
