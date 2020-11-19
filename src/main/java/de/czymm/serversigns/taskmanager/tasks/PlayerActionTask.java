@@ -65,7 +65,7 @@ public class PlayerActionTask extends PlayerTask<PlayerActionTaskType> {
                         player.setOp(true);
                     }
 
-                    performCommand(plugin, player);
+                    plugin.runOnMainThread(() -> performCommand(plugin, player));
                 } finally {
                     if (changedOp) {
                         player.setOp(false);

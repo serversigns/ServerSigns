@@ -204,7 +204,8 @@ public class ServerSignsPlugin extends JavaPlugin {
         if (!config.getDisableCommandLogging()) {
             log("Executing command: " + command);
         }
-        this.getServer().dispatchCommand(getServer().getConsoleSender(), command);
+
+        runOnMainThread(() -> this.getServer().dispatchCommand(getServer().getConsoleSender(), command));
     }
 
     public void sendBasic(CommandSender sender, String message) {
@@ -251,5 +252,13 @@ public class ServerSignsPlugin extends JavaPlugin {
 
     public ServerSignsConfig getServerSignsConfig() {
         return config;
+    }
+
+    public void runOnMainThread(Runnable runnable) {
+        if (Bukkit.isPrimaryThread()) {
+            runnable.run();
+        } else {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this, runnable);
+        }
     }
 }
