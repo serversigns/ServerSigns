@@ -58,6 +58,7 @@ import java.util.regex.Matcher;
 
 public class ServerSignsPlugin extends JavaPlugin {
     private static Logger logger;
+    private Metrics metrics;
 
     public Updater update;
     public PluginManager pm;
@@ -129,7 +130,7 @@ public class ServerSignsPlugin extends JavaPlugin {
                 log("You have decided to opt-out of Metrics statistic gathering. Enable this by setting 'metrics_opt_out' to false in the config.yml");
             } else {
                 try {
-                    new Metrics(this);
+                    this.metrics =  new Metrics(this);
                 } catch (IOException e) {
                     // Failed to submit the stats D:
                 }
@@ -149,6 +150,15 @@ public class ServerSignsPlugin extends JavaPlugin {
         if (taskManager != null) {
             taskManager.stop();
         }
+
+        if (metrics != null && metrics.isOptOut()) {
+            try {
+                metrics.disable();
+            } catch (IOException e) {
+                // Fail to kill task on disable
+            }
+        }
+
         log(getDescription().getName() + " is now disabled.");
     }
 
