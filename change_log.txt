@@ -43,3 +43,17 @@ v4.6.1
 * Fix execution of sign on both part of the door
 * Clear pending commands on enable to prevent old pending commands when reloading
 * Cancel break events when a player has a pending command
+
+v4.6.2
+* Add blocked_commands for <server> sub command
+* Make tasks and conditions executed in the order
+* Add papi in dev hooks
+* Fix NPE when grantTasks is null
+* Update list of admin permissions
+* Add new system to compare version
+* Disable Ok option message when silent is true
+* Prevent parsing of placeholders with /svs info
+* Allow empty lore un price item
+* Execute player commands on main thread
+* Disable Metrics when disable the plugin - Prevent to have running task in background after disable (Nag Author)
+* Add 1.16 signs and plates
