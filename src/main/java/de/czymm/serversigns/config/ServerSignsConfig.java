@@ -141,6 +141,14 @@ public class ServerSignsConfig implements IServerSignsConfig {
                 Material.getMaterial("SPRUCE_WALL_SIGN")
             );
         }
+        if (Version.isHigherOrEqualsTo(Version.V1_16)) {
+            this.blocks.addAll(EnumSet.of(
+                Material.getMaterial("CRIMSON_SIGN"),
+                Material.getMaterial("CRIMSON_WALL_SIGN"),
+                Material.getMaterial("WARPED_SIGN"),
+                Material.getMaterial("WARPED_WALL_SIGN")
+            ));
+        }
     }
 
     public EnumSet<Material> getBlocks() {

@@ -69,6 +69,12 @@ public class PlayerListener implements Listener {
                 Material.getMaterial("HEAVY_WEIGHTED_PRESSURE_PLATE")
             );
         }
+        if (Version.isHigherOrEqualsTo(Version.V1_16)) {
+            PLATE_MATERIALS.addAll(EnumSet.of(
+                Material.getMaterial("CRIMSON_PRESSURE_PLATE"),
+                Material.getMaterial("WARPED_PRESSURE_PLATE")
+            ));
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
