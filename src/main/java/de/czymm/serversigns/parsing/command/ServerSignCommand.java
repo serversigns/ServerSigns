@@ -122,6 +122,10 @@ public class ServerSignCommand implements Serializable {
         return de.czymm.serversigns.utils.StringUtils.colour(formatRandoms(ret));
     }
 
+    private String getFormattedCommandWithPlaceholders(Player executor, ServerSignsPlugin plugin, Map<String, String> injectedReplacements) {
+        return plugin.messageFormatter.format(executor, getFormattedCommand(executor, plugin, injectedReplacements));
+    }
+
     private static final Pattern RANDOM_PATTERN = Pattern.compile("<r:(-?\\d+)-(-?\\d+)>");
 
     private String formatRandoms(String input) {
@@ -154,11 +158,11 @@ public class ServerSignCommand implements Serializable {
         if (taskObj instanceof PlayerActionTaskType && executor != null) {
             tasks.add(new PlayerActionTask(getTimestamp(), (PlayerActionTaskType) taskObj, getFormattedCommand(executor, plugin, injectedReplacements), executor.getUniqueId(), isAlwaysPersisted()));
         } else if (taskObj instanceof ServerActionTaskType) {
-            tasks.add(new ServerActionTask(getTimestamp(), (ServerActionTaskType) taskObj, getFormattedCommand(executor, plugin, injectedReplacements), isAlwaysPersisted()));
+            tasks.add(new ServerActionTask(getTimestamp(), (ServerActionTaskType) taskObj, getFormattedCommandWithPlaceholders(executor, plugin, injectedReplacements), isAlwaysPersisted()));
         } else if (taskObj instanceof PermissionGrantPlayerTaskType && executor != null) {
-            tasks.add(new PermissionGrantPlayerTask(getTimestamp(), getFormattedCommand(executor, plugin, injectedReplacements), executor.getUniqueId(), isAlwaysPersisted()));
+            tasks.add(new PermissionGrantPlayerTask(getTimestamp(), getFormattedCommandWithPlaceholders(executor, plugin, injectedReplacements), executor.getUniqueId(), isAlwaysPersisted()));
         } else if (taskObj instanceof PermissionRemovePlayerTaskType && executor != null) {
-            tasks.add(new PermissionRemovePlayerTask(getTimestamp(), getFormattedCommand(executor, plugin, injectedReplacements), executor.getUniqueId(), isAlwaysPersisted()));
+            tasks.add(new PermissionRemovePlayerTask(getTimestamp(), getFormattedCommandWithPlaceholders(executor, plugin, injectedReplacements), executor.getUniqueId(), isAlwaysPersisted()));
         }
 
         if (executor != null && !grantTasks.isEmpty()) {

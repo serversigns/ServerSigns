@@ -30,6 +30,10 @@ public class PlaceholderMessageFormatter extends MessageFormatter {
      */
     @Override
     public String format(final CommandSender player, final String message) {
-        return PlaceholderAPI.setPlaceholders((Player)player, MessageFormatter.toColor(message));
+        final String msg = MessageFormatter.toColor(message);
+        if (player instanceof Player) {
+            return PlaceholderAPI.setPlaceholders((Player)player, msg);
+        }
+        return msg;
     }
 }

@@ -69,7 +69,7 @@ public class ServerSignsPlugin extends JavaPlugin {
 
     public ServerSignsConfig config;
     public MessageHandler msgHandler;
-    private MessageFormatter messageFormatter;
+    public MessageFormatter messageFormatter;
 
     public ServerSignManager serverSignsManager;
     public ServerSignExecutor serverSignExecutor;
