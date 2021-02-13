@@ -57,3 +57,7 @@ v4.6.2
 * Execute player commands on main thread
 * Disable Metrics when disable the plugin - Prevent to have running task in background after disable (Nag Author)
 * Add 1.16 signs and plates
+
+v4.6.3
+* Fix Placeholders not parsed in server and broadcast commands
+* Add restriction to .txt files only for svs import
