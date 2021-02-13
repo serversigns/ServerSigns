@@ -24,6 +24,7 @@ import de.czymm.serversigns.meta.SVSMetaValue;
 import de.czymm.serversigns.translations.Message;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class SubCommandImport extends SubCommand {
@@ -45,8 +46,17 @@ public class SubCommandImport extends SubCommand {
         }
 
         String path = loopArgs(0);
-        if (!Files.exists(Paths.get(path))) {
+        final Path fullPath = Paths.get(plugin.getDataFolder().getAbsolutePath()).resolve(path);
+
+        // Check if file exists and is not a folder
+        if (!Files.exists(fullPath) || fullPath.toFile().isDirectory()) {
             if (verbose) msg(Message.IMPORT_FILE_NOT_FOUND);
+            return;
+        }
+
+        // Check the path is not outside of plugin data folder (plugins/ServerSigns/)
+        if (!path.endsWith(".txt") || !fullPath.toAbsolutePath().normalize().startsWith(plugin.getDataFolder().getAbsolutePath())) {
+            if (verbose) msg(Message.INVALID_FILE_PATH);
             return;
         }
 

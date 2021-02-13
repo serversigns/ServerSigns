@@ -126,6 +126,7 @@ public enum Message {
     OPTION_LABEL_UNIQUE("option_label_unique"),
     UNABLE_TO_EXECUTE_CMD("unable_to_execute_cmd"),
     IMPORT_FILE_NOT_FOUND("import_file_not_found"),
+    INVALID_FILE_PATH("invalid_file_path"),
     IMPORT_SUCCESS("import_success"),
     IMPORT_SELECT_SIGN("import_select_sign"),
     OPTION_LABEL_DESC_SEPARATOR("option_label_desc_separator"),
