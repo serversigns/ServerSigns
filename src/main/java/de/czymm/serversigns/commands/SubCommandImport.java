@@ -46,7 +46,7 @@ public class SubCommandImport extends SubCommand {
         }
 
         String path = loopArgs(0);
-        final Path fullPath = Paths.get(plugin.getDataFolder().getAbsolutePath()).resolve(path);
+        final Path fullPath = Paths.get(plugin.getDataFolder().getAbsolutePath()).resolve(path).toAbsolutePath().normalize();
 
         // Check if file exists and is not a folder
         if (!Files.exists(fullPath) || fullPath.toFile().isDirectory()) {
@@ -55,7 +55,7 @@ public class SubCommandImport extends SubCommand {
         }
 
         // Check the path is not outside of plugin data folder (plugins/ServerSigns/)
-        if (!path.endsWith(".txt") || !fullPath.toAbsolutePath().normalize().startsWith(plugin.getDataFolder().getAbsolutePath())) {
+        if (!fullPath.toString().endsWith(".txt") || !fullPath.startsWith(plugin.getDataFolder().getAbsolutePath())) {
             if (verbose) msg(Message.INVALID_FILE_PATH);
             return;
         }

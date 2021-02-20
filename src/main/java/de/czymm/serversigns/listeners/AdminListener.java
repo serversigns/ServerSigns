@@ -251,20 +251,21 @@ public class AdminListener implements Listener {
             case IMPORT:
                 if (sign == null) return;
 
-                Path path = Paths.get(meta.getValue().asString());
+                String path = meta.getValue().asString();
+                Path fullPath = Paths.get(plugin.getDataFolder().getAbsolutePath()).resolve(path);
                 try {
-                    List<String> commands = Files.readLines(path.toFile(), StandardCharsets.UTF_8);
+                    List<String> commands = Files.readLines(fullPath.toFile(), StandardCharsets.UTF_8);
                     ExecutableSVSR svsr = new ExecutableSVSR(plugin);
                     for (String command : commands) {
                         svsr.execute(clicked, (Player) recipient, command);
                     }
                 } catch (Exception ex) {
                     plugin.send(recipient, "An error occurred, please refer to console for details.");
-                    ServerSignsPlugin.log("An error occurred while importing file '" + path.toString() + "'", Level.WARNING, ex);
+                    ServerSignsPlugin.log("An error occurred while importing file '" + path + "'", Level.WARNING, ex);
                     return;
                 }
 
-                plugin.send(recipient, Message.IMPORT_SUCCESS, "<string>", path.toString());
+                plugin.send(recipient, Message.IMPORT_SUCCESS, "<string>", path);
                 saveRemoveExit = true;
                 break;
 
