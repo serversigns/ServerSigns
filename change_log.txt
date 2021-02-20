@@ -61,3 +61,6 @@ v4.6.2
 v4.6.3
 * Fix Placeholders not parsed in server and broadcast commands
 * Add restriction to .txt files only for svs import
+
+v4.6.4
+* Fix import command not working
