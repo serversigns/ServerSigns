@@ -40,7 +40,10 @@ public class VersionTest {
         testDatas.add(new VersionData("1.7", V1_12 , false, false, false, true, true));
         testDatas.add(new VersionData("1.9", V1_7  , true, true, false, false, false));
         testDatas.add(new VersionData("1.12", V1_7 , true, true, false, false, false));
+        testDatas.add(new VersionData("1.14", V1_12, true, true, false, false, false));
         testDatas.add(new VersionData("1.14", V1_14, false, true, true, true, false));
+
+        initVersion("0.0");
     }
 
     @Test
@@ -50,6 +53,33 @@ public class VersionTest {
         initVersion("1.12");
 
         assertTrue(isEqualsTo(V1_12));
+    }
+
+    @Test
+    public void testVersion_initVersion_with_complex_version() {
+        assertTrue(isLowerThan(V1_7));
+
+        initVersion("spigot-1.11-R0.1-SNAPSHOT");
+
+        assertTrue(isEqualsTo(V1_11));
+    }
+
+    @Test
+    public void testVersion_initVersion_with_other_complex_version() {
+        assertTrue(isLowerThan(V1_7));
+
+        initVersion("spigot-1.11.2-R0.1-SNAPSHOT");
+
+        assertTrue(isEqualsTo(V1_11));
+    }
+
+    @Test
+    public void testVersion_initVersion_doesnt_parse_invalid() {
+        assertTrue(isLowerThan(V1_7));
+
+        initVersion("1.plop");
+
+        assertTrue(isLowerThan(V1_7));
     }
 
     @Test

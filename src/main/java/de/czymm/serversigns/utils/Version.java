@@ -1,5 +1,8 @@
 package de.czymm.serversigns.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public enum Version {
     CURRENT(0, 0),
     V1_7(1, 7),
@@ -16,17 +19,19 @@ public enum Version {
     private int major;
     private int minor;
 
+    private static final Pattern versionRegex = Pattern.compile("(\\d+)[.](\\d+)");
+
     Version(final int major, final int minor) {
         this.major = major;
         this.minor = minor;
     }
 
     private void updateVersion(final String strVersion) {
-        final String[] splitVersion = strVersion.split("\\.");
+        final Matcher matcher = versionRegex.matcher(strVersion);
 
-        if (splitVersion.length >= 2) {
-            major = Integer.parseInt(splitVersion[0]);
-            minor = Integer.parseInt(splitVersion[1]);
+        if (matcher.find() && matcher.groupCount() >= 2) {
+            major = Integer.parseInt(matcher.group(1));
+            minor = Integer.parseInt(matcher.group(2));
         }
     }
 
