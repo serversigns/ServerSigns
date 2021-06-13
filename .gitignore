@@ -4,3 +4,5 @@ ServerSigns.iml
 .classpath
 .settings
 .project
+.metals
+.bloop
