@@ -1,0 +1,118 @@
+# 这个文件在每次服务器重新启动时被删除和重新生成！
+# 为自定义语言翻译创建一个新文件！
+# 有关更多信息，请参阅维基百科：http://serversigns.de/cfg
+
+rightclick_bind_command: 对告示牌点击右键以将命令绑定上去
+set_command: 成功绑定告示牌的命令
+rightclick_list: 对告示牌点击右键以列出所有的命令
+rightclick_set_price: 对告示牌点击右键以设定价格
+set_price: 成功设定告示牌的价格
+rightclick_bind_permission: 对告示牌点击右键以设定权限
+set_permission: 成功设定告示牌的权限
+rightclick_set_cooldown: 对告示牌点击右键以设定冷却时间
+set_cooldown: 成功设定告示牌的冷却时间
+rightclick_copy: 对告示牌点击右键以选择告示牌
+rightclick_paste: 对另外一个告示牌点击右键进行贴上
+rightclick_del_command: 对告示牌点击右键以移除命令
+del_command: 成功移除告示牌的命令
+rightclick_del_permission: 对告示牌点击右键移除权限
+del_permission: 成功移除告示牌的权限
+commands_removed: 已对告示牌移除所有命令
+edit_command: 成功编辑告示牌的命令
+rightclick_reset_cooldown: 对告示牌点击右键以重置冷却时间
+reset_cooldown: 已重置告示牌的冷却时间
+no_number: 时间值无效
+not_ready: 告示牌的冷却时间为 <cooldown>
+line_not_found: 未找到指定的行数
+not_enough_permissions: 你没有足够的权限
+not_enough_money: 你没有足够的金钱
+cannot_destroy: 你不被允许摧毁这个告示牌
+need_confirmation_cost: 告示牌价格为 <currency> <price>。使用「/svs yes」或者再次对告示牌点击确认
+need_confirmation: 使用 /svs yes 或者再次对告示牌点击确认
+all_cooldowns_reset: 已重置所有冷却时间
+reload_success: ServerSigns 已经重新载入
+invalid_itemid: 无效的物品 ID
+priceitem_success: 成功设定告示牌的物品价格
+priceitem_bind: 对告示牌点击右键以设定物品价格
+not_enough_items: '你需要以下物品才能使用此告示牌 ： '
+priceitem_remove: 对告示牌点击右键以删除物品价格
+priceitem_removed: 成功移除告示牌的物品价格
+xpcost_bind: 对告示牌点击右键以设定经验值等级花费
+set_xp: 成功设定告示牌的经验等级花费
+itemcriteria_boolean: '你的参数必须是「true」或者「false」'
+not_enough_xp: 你没有足够的经验值使用此告示牌
+funds_withdrawn: '<number> <currency> 已经从你的金钱余额中扣除'
+permissions_required: 无法继续，此功能需要 Vault 或者配置定义的权限命令
+priceitemcriteria_bind: '对告示牌点击右键以设定物品价格标准'
+priceitemcriteria_set: 成功设定告示牌的物品价格标准
+persistance_on: '你已开启永久复制，请使用「/svs copy persist」以关闭此功能'
+persistance_off: 你关闭了永久复制
+must_sneak: 你必须要潜行才能破坏 ServerSign
+set_confirmation: '告示牌确认设定为 <boolean>'
+invalid_hand_item: '你必须手持物品'
+invalid_index: '该告示牌索引处不存在命令，请尝试另外一个告示牌'
+delay_greater_than_zero: '延迟必须大于零'
+set_loops: '成功设定告示牌为循环资料'
+rightclick_bind_loops: '对告示牌点击右键以设定循环资料'
+loop_must_finish: '目前计画的循环必须先完成 ！ '
+need_confirmation_price_items: '这个告示牌将需要以下物品 ： '
+need_confirmation_xp: '这个告示牌将需要 <integer> 级经验 ！ '
+levels_needed: '你需要 <integer> 级经验 ！ '
+holding_bind: '对告示牌点击右键以添加保留物品要求选项'
+holding_success: '成功添加告示牌的保留物品要求选项'
+holding_remove: '对告示牌点击右键以移除所有保留物品要求选项'
+holding_removed: '成功移除告示牌的保留物品要求选项'
+helditemcriteria_bind: '对告示牌点击右键以设定保留物品条件'
+helditemcriteria_set: '成功设定告示牌的保留物品条件'
+need_confirmation_held_items: '你需要手持以下物品才能使用此告示牌 ： '
+must_be_holding: '你必须手持以下物品才能使用此告示牌 ： '
+blocked_command: 'ServerSigns 无法执行该命令 ！ '
+player_not_found: '找不到名称为 <string> 的玩家 （区分大小写）'
+cooldowns_reset: '成功重置告示牌 <string> 的所有冷却时间'
+long_command_again: '当你准备好将命令绑定到告示牌后，使用「/svs long」以绑定命令到告示牌'
+long_type_to_chat: '你现在可以在聊天栏中输入要绑定的命令'
+long_cancelled: '你还没有输入任何信息 ！正在取消。 '
+uses_greater_zero: '使用的参数必须为 0 或者更大 ！ '
+rightclick_remove_uses: '对告示牌点击右键以移除使用限制'
+rightclick_set_uses: '对告示牌点击右键以设定使用限制'
+uses_success: '成功设定告示牌的使用限制'
+set_cancel_mode: '已设定告示牌的取消事件为 <mode>'
+rightclick_bind_cancel_permission: '对告示牌点击右键取消绑定权限'
+set_cancel_permission: '成功设定告示牌的取消权限'
+cancelled_due_to_permission: '你目前的权限阻止使用此告示牌'
+reload_config_success: 'ServerSigns 配置文件和翻译成功已重新载入'
+reload_signs_success: '已从硬盘中载入已存储的 ServerSigns'
+features_not_available: 'ServerSign 需要的功能目前无法使用 - 请将此报告给管理员'
+invalid_command: '无法解析你的命令 ！ '
+reload_signs_fail: '遇到可能阻止 ServerSign 载入的错误 ！ '
+reload_config_fail: '载入时发生错误 ！为了安全起见关闭插件'
+copy_success: '成功创建复制告示牌'
+right_click_create: '对告示牌点右键以创建新的 ServerSign'
+create_success: '成功创建 ServerSign'
+block_protected: '这个方块被 ServerSign 保护 ！ '
+list_persist_on: '你已开启永久列表，请使用「/svs list false」以关闭此功能'
+list_persist_off: '你已关闭永久列表'
+xp_removed: '已移除 <levels> 级经验'
+silent_success: '已设定告示牌的静音模式'
+right_click_select: '对告示牌点击右键以选择用于自动命令程序'
+sign_selected: '成功选择用于自动命令程序'
+sign_deselected: '已移除告示牌的自动命令程序'
+timelimit_invalid: '无效的日期和时间格式 ！格式必须是 DDMMYY,HHMMSS 使用日月年、时分秒'
+timelimit_success: '成功设定告示牌的时间限制'
+rightclick_apply: '对告示牌点击右键以应用该命令'
+rightclick_view_list: '对告示牌点击右键以查看详细信息'
+timelimit_expired: '为时已晚 ！告示牌已经在 <string> 前到期'
+timelimit_waiting: '此告示牌将在 <string> 中可以使用'
+option_create_w_question: '你必须用问题声明新的选项 ID ！ '
+option_invalid_answer: '&c无效的回答 ！请在尝试一次，或者输入「exit」离开'
+option_set: '成功应用告示牌的选项 ID'
+option_label_unique: '选项答案标签必须是唯一的 ！ '
+unable_to_execute_cmd: '&c因为找不到匹配的命令，所以无法执行「<string>」。 '
+import_file_not_found: 'ServerSigns 目录中找不到文件'
+invalid_file_path: '无效的路径，文件必须位于 ServerSign 目录中，且扩展名称为 .txt'
+import_success: '成功汇入文件「<string>」'
+import_select_sign: '对现有的 Serversign 告示牌点击右键以将命令汇入到'
+option_label_desc_separator: ' - '
+xp_cost_removed: '成功从告示牌中移除经验等级花费'
+xp_cost_invalid: '经验等级花费必须是大于 -1 的整数'
+permissions_removed: '成功移除告示牌的权限'
