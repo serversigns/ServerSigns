@@ -71,10 +71,15 @@ public class PlayerListener implements Listener {
         }
         if (Version.isHigherOrEqualsTo(Version.V1_16)) {
             PLATE_MATERIALS.addAll(EnumSet.of(
+                Material.getMaterial("POLISHED_BLACKSTONE_PRESSURE_PLATE"),
                 Material.getMaterial("CRIMSON_PRESSURE_PLATE"),
                 Material.getMaterial("WARPED_PRESSURE_PLATE")
             ));
         }
+        if (Version.isHigherOrEqualsTo(Version.V1_19)) {
+            PLATE_MATERIALS.add(Material.getMaterial("MANGROVE_PRESSURE_PLATE"));
+        }
+
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
