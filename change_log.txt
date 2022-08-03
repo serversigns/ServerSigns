@@ -64,3 +64,12 @@ v4.6.3
 
 v4.6.4
 * Fix import command not working
+
+v4.7.0
+* Add support of minecraft 1.17
+* Improve parsing of minecraft versions
+
+v4.8.0
+* Add support of minecraft 1.19
+  * Add new mangrove plate and signs
+* Add missing polished_blackstone_pressure_plate

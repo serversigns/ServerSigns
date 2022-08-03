@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <buildNumber></buildNumber>
-        <tagVersion>4.7.0</tagVersion>
+        <tagVersion>4.8.0</tagVersion>
     </properties>
 
     <build>
