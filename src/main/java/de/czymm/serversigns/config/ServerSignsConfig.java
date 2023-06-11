@@ -155,6 +155,36 @@ public class ServerSignsConfig implements IServerSignsConfig {
                 Material.getMaterial("MANGROVE_WALL_SIGN")
             ));
         }
+        if (Version.isHigherOrEqualsTo(Version.V1_20)) {
+            this.blocks.addAll(EnumSet.of(
+                Material.getMaterial("BAMBOO_SIGN"),
+                Material.getMaterial("BAMBOO_WALL_SIGN"),
+                Material.getMaterial("BAMBOO_HANGING_SIGN"),
+                Material.getMaterial("BAMBOO_WALL_HANGING_SIGN"),
+                Material.getMaterial("CHERRY_SIGN"),
+                Material.getMaterial("CHERRY_WALL_SIGN"),
+                Material.getMaterial("CHERRY_HANGING_SIGN"),
+                Material.getMaterial("CHERRY_WALL_HANGING_SIGN"),
+                Material.getMaterial("ACACIA_HANGING_SIGN"),
+                Material.getMaterial("ACACIA_WALL_HANGING_SIGN"),
+                Material.getMaterial("BIRCH_HANGING_SIGN"),
+                Material.getMaterial("BIRCH_WALL_HANGING_SIGN"),
+                Material.getMaterial("CRIMSON_HANGING_SIGN"),
+                Material.getMaterial("CRIMSON_WALL_HANGING_SIGN"),
+                Material.getMaterial("DARK_OAK_HANGING_SIGN"),
+                Material.getMaterial("DARK_OAK_WALL_HANGING_SIGN"),
+                Material.getMaterial("JUNGLE_HANGING_SIGN"),
+                Material.getMaterial("JUNGLE_WALL_HANGING_SIGN"),
+                Material.getMaterial("MANGROVE_HANGING_SIGN"),
+                Material.getMaterial("MANGROVE_WALL_HANGING_SIGN"),
+                Material.getMaterial("OAK_HANGING_SIGN"),
+                Material.getMaterial("OAK_WALL_HANGING_SIGN"),
+                Material.getMaterial("SPRUCE_HANGING_SIGN"),
+                Material.getMaterial("SPRUCE_WALL_HANGING_SIGN"),
+                Material.getMaterial("WARPED_HANGING_SIGN"),
+                Material.getMaterial("WARPED_WALL_HANGING_SIGN")
+            ));
+        }
     }
 
     public EnumSet<Material> getBlocks() {

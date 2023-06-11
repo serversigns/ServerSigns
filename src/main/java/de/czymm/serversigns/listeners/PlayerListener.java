@@ -79,6 +79,10 @@ public class PlayerListener implements Listener {
         if (Version.isHigherOrEqualsTo(Version.V1_19)) {
             PLATE_MATERIALS.add(Material.getMaterial("MANGROVE_PRESSURE_PLATE"));
         }
+        if (Version.isHigherOrEqualsTo(Version.V1_20)) {
+            PLATE_MATERIALS.add(Material.getMaterial("BAMBOO_PRESSURE_PLATE"));
+            PLATE_MATERIALS.add(Material.getMaterial("CHERRY_PRESSURE_PLATE"));
+        }
 
     }
 
