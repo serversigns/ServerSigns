@@ -320,7 +320,8 @@ public class ServerSignManager {
     }
 
     private Path getPath(ServerSign sign) {
-        return SIGNS_DIRECTORY.resolve(sign.getWorld() + "_" + sign.getX() + "_" + sign.getY() + "_" + sign.getZ() + ".yml");
+        String safeWorld = sign.getWorld().replace(System.getProperty("file.separator"), "_");
+        return SIGNS_DIRECTORY.resolve(safeWorld + "_" + sign.getX() + "_" + sign.getY() + "_" + sign.getZ() + ".yml");
     }
 
     public ServerSign getServerSignByLocation(Location location) {
