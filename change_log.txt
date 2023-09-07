@@ -78,3 +78,6 @@ v4.9.0
 * Add support of minecraf 1.20
   * Add new bamboo and cherry plate and signs
   * Add new hanging signs
+
+v4.9.1
+* Exclude file separator from sign file name
