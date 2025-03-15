@@ -81,3 +81,7 @@ v4.9.0
 
 v4.9.1
 * Exclude file separator from sign file name
+
+v4.10.0
+* Add support of minecraf 1.21
+  * Add new pale oak plate and signs
