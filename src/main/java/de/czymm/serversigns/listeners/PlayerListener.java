@@ -83,7 +83,9 @@ public class PlayerListener implements Listener {
             PLATE_MATERIALS.add(Material.getMaterial("BAMBOO_PRESSURE_PLATE"));
             PLATE_MATERIALS.add(Material.getMaterial("CHERRY_PRESSURE_PLATE"));
         }
-
+        if (Version.isHigherOrEqualsTo(Version.V1_21)) {
+            PLATE_MATERIALS.add(Material.getMaterial("PALE_OAK_PRESSURE_PLATE"));
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)

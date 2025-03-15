@@ -185,6 +185,14 @@ public class ServerSignsConfig implements IServerSignsConfig {
                 Material.getMaterial("WARPED_WALL_HANGING_SIGN")
             ));
         }
+        if (Version.isHigherOrEqualsTo(Version.V1_21)) {
+            this.blocks.addAll(EnumSet.of(
+                Material.getMaterial("PALE_OAK_SIGN"),
+                Material.getMaterial("PALE_OAK_WALL_SIGN"),
+                Material.getMaterial("PALE_OAK_HANGING_SIGN"),
+                Material.getMaterial("PALE_OAK_WALL_HANGING_SIGN")
+            ));
+        }
     }
 
     public EnumSet<Material> getBlocks() {
