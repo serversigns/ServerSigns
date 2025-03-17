@@ -22,6 +22,7 @@ import de.czymm.serversigns.meta.SVSMetaKey;
 import de.czymm.serversigns.meta.SVSMetaManager;
 import de.czymm.serversigns.signs.ServerSign;
 import de.czymm.serversigns.translations.Message;
+import de.czymm.serversigns.utils.MaterialUtils;
 import de.czymm.serversigns.utils.Version;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -50,41 +51,36 @@ public class PlayerListener implements Listener {
     public PlayerListener(ServerSignsPlugin instance) {
         this.plugin = instance;
         if (Version.isLowerOrEqualsTo(Version.V1_12)) {
-            PLATE_MATERIALS = EnumSet.of(
-                Material.getMaterial("WOOD_PLATE"),
-                Material.getMaterial("STONE_PLATE"),
-                Material.getMaterial("IRON_PLATE"),
-                Material.getMaterial("GOLD_PLATE")
+            PLATE_MATERIALS = MaterialUtils.getMaterials(
+                "WOOD_PLATE",
+                "STONE_PLATE",
+                "IRON_PLATE",
+                "GOLD_PLATE"
             );
         } else {
-            PLATE_MATERIALS = EnumSet.of(
-                Material.getMaterial("OAK_PRESSURE_PLATE"),
-                Material.getMaterial("ACACIA_PRESSURE_PLATE"),
-                Material.getMaterial("BIRCH_PRESSURE_PLATE"),
-                Material.getMaterial("DARK_OAK_PRESSURE_PLATE"),
-                Material.getMaterial("JUNGLE_PRESSURE_PLATE"),
-                Material.getMaterial("SPRUCE_PRESSURE_PLATE"),
-                Material.getMaterial("STONE_PRESSURE_PLATE"),
-                Material.getMaterial("LIGHT_WEIGHTED_PRESSURE_PLATE"),
-                Material.getMaterial("HEAVY_WEIGHTED_PRESSURE_PLATE")
+            PLATE_MATERIALS = MaterialUtils.getMaterials(
+                // 1.13
+                "OAK_PRESSURE_PLATE",
+                "ACACIA_PRESSURE_PLATE",
+                "BIRCH_PRESSURE_PLATE",
+                "DARK_OAK_PRESSURE_PLATE",
+                "JUNGLE_PRESSURE_PLATE",
+                "SPRUCE_PRESSURE_PLATE",
+                "STONE_PRESSURE_PLATE",
+                "LIGHT_WEIGHTED_PRESSURE_PLATE",
+                "HEAVY_WEIGHTED_PRESSURE_PLATE",
+                // 1.16
+                "POLISHED_BLACKSTONE_PRESSURE_PLATE",
+                "CRIMSON_PRESSURE_PLATE",
+                "WARPED_PRESSURE_PLATE",
+                // 1.19
+                "MANGROVE_PRESSURE_PLATE",
+                "BAMBOO_PRESSURE_PLATE",
+                // 1.20
+                "CHERRY_PRESSURE_PLATE",
+                // 1.21
+                "PALE_OAK_PRESSURE_PLATE"
             );
-        }
-        if (Version.isHigherOrEqualsTo(Version.V1_16)) {
-            PLATE_MATERIALS.addAll(EnumSet.of(
-                Material.getMaterial("POLISHED_BLACKSTONE_PRESSURE_PLATE"),
-                Material.getMaterial("CRIMSON_PRESSURE_PLATE"),
-                Material.getMaterial("WARPED_PRESSURE_PLATE")
-            ));
-        }
-        if (Version.isHigherOrEqualsTo(Version.V1_19)) {
-            PLATE_MATERIALS.add(Material.getMaterial("MANGROVE_PRESSURE_PLATE"));
-        }
-        if (Version.isHigherOrEqualsTo(Version.V1_20)) {
-            PLATE_MATERIALS.add(Material.getMaterial("BAMBOO_PRESSURE_PLATE"));
-            PLATE_MATERIALS.add(Material.getMaterial("CHERRY_PRESSURE_PLATE"));
-        }
-        if (Version.isHigherOrEqualsTo(Version.V1_21)) {
-            PLATE_MATERIALS.add(Material.getMaterial("PALE_OAK_PRESSURE_PLATE"));
         }
     }
 

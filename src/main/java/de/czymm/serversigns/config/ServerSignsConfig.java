@@ -21,6 +21,7 @@ import de.czymm.serversigns.legacy.OldServerSignsConfig;
 import de.czymm.serversigns.persist.PersistenceEntry;
 import de.czymm.serversigns.persist.mapping.BlocksMapper;
 import de.czymm.serversigns.persist.mapping.ColouredStringMapper;
+import de.czymm.serversigns.utils.MaterialUtils;
 import de.czymm.serversigns.utils.Version;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -116,82 +117,65 @@ public class ServerSignsConfig implements IServerSignsConfig {
 
     ServerSignsConfig() {
         if (Version.isLowerOrEqualsTo(Version.V1_12)) {
-            this.blocks = EnumSet.of(
-                Material.getMaterial("WALL_SIGN"),
-                Material.getMaterial("SIGN_POST")
-            );
+            this.blocks = MaterialUtils.getMaterials("WALL_SIGN", "SIGN_POST");
         } else if (Version.isEqualsTo(Version.V1_13)) {
-            this.blocks = EnumSet.of(
-                Material.getMaterial("WALL_SIGN"),
-                Material.getMaterial("SIGN")
-            );
+            this.blocks = MaterialUtils.getMaterials("WALL_SIGN", "SIGN");
         } else {
-            this.blocks = EnumSet.of(
-                Material.getMaterial("OAK_SIGN"),
-                Material.getMaterial("OAK_WALL_SIGN"),
-                Material.getMaterial("ACACIA_SIGN"),
-                Material.getMaterial("ACACIA_WALL_SIGN"),
-                Material.getMaterial("BIRCH_SIGN"),
-                Material.getMaterial("BIRCH_WALL_SIGN"),
-                Material.getMaterial("DARK_OAK_SIGN"),
-                Material.getMaterial("DARK_OAK_WALL_SIGN"),
-                Material.getMaterial("JUNGLE_SIGN"),
-                Material.getMaterial("JUNGLE_WALL_SIGN"),
-                Material.getMaterial("SPRUCE_SIGN"),
-                Material.getMaterial("SPRUCE_WALL_SIGN")
+            this.blocks = MaterialUtils.getMaterials(
+                // 1.14
+                "OAK_SIGN",
+                "OAK_WALL_SIGN",
+                "ACACIA_SIGN",
+                "ACACIA_WALL_SIGN",
+                "BIRCH_SIGN",
+                "BIRCH_WALL_SIGN",
+                "DARK_OAK_SIGN",
+                "DARK_OAK_WALL_SIGN",
+                "JUNGLE_SIGN",
+                "JUNGLE_WALL_SIGN",
+                "SPRUCE_SIGN",
+                "SPRUCE_WALL_SIGN",
+                // 1.16
+                "CRIMSON_SIGN",
+                "CRIMSON_WALL_SIGN",
+                "WARPED_SIGN",
+                "WARPED_WALL_SIGN",
+                // 1.19
+                "MANGROVE_SIGN",
+                "MANGROVE_WALL_SIGN",
+                // 1.20
+                "BAMBOO_SIGN",
+                "BAMBOO_WALL_SIGN",
+                "BAMBOO_HANGING_SIGN",
+                "BAMBOO_WALL_HANGING_SIGN",
+                "CHERRY_SIGN",
+                "CHERRY_WALL_SIGN",
+                "CHERRY_HANGING_SIGN",
+                "CHERRY_WALL_HANGING_SIGN",
+                "ACACIA_HANGING_SIGN",
+                "ACACIA_WALL_HANGING_SIGN",
+                "BIRCH_HANGING_SIGN",
+                "BIRCH_WALL_HANGING_SIGN",
+                "CRIMSON_HANGING_SIGN",
+                "CRIMSON_WALL_HANGING_SIGN",
+                "DARK_OAK_HANGING_SIGN",
+                "DARK_OAK_WALL_HANGING_SIGN",
+                "JUNGLE_HANGING_SIGN",
+                "JUNGLE_WALL_HANGING_SIGN",
+                "MANGROVE_HANGING_SIGN",
+                "MANGROVE_WALL_HANGING_SIGN",
+                "OAK_HANGING_SIGN",
+                "OAK_WALL_HANGING_SIGN",
+                "SPRUCE_HANGING_SIGN",
+                "SPRUCE_WALL_HANGING_SIGN",
+                "WARPED_HANGING_SIGN",
+                "WARPED_WALL_HANGING_SIGN",
+                // 1.21
+                "PALE_OAK_SIGN",
+                "PALE_OAK_WALL_SIGN",
+                "PALE_OAK_HANGING_SIGN",
+                "PALE_OAK_WALL_HANGING_SIGN"
             );
-        }
-        if (Version.isHigherOrEqualsTo(Version.V1_16)) {
-            this.blocks.addAll(EnumSet.of(
-                Material.getMaterial("CRIMSON_SIGN"),
-                Material.getMaterial("CRIMSON_WALL_SIGN"),
-                Material.getMaterial("WARPED_SIGN"),
-                Material.getMaterial("WARPED_WALL_SIGN")
-            ));
-        }
-        if (Version.isHigherOrEqualsTo(Version.V1_19)) {
-            this.blocks.addAll(EnumSet.of(
-                Material.getMaterial("MANGROVE_SIGN"),
-                Material.getMaterial("MANGROVE_WALL_SIGN")
-            ));
-        }
-        if (Version.isHigherOrEqualsTo(Version.V1_20)) {
-            this.blocks.addAll(EnumSet.of(
-                Material.getMaterial("BAMBOO_SIGN"),
-                Material.getMaterial("BAMBOO_WALL_SIGN"),
-                Material.getMaterial("BAMBOO_HANGING_SIGN"),
-                Material.getMaterial("BAMBOO_WALL_HANGING_SIGN"),
-                Material.getMaterial("CHERRY_SIGN"),
-                Material.getMaterial("CHERRY_WALL_SIGN"),
-                Material.getMaterial("CHERRY_HANGING_SIGN"),
-                Material.getMaterial("CHERRY_WALL_HANGING_SIGN"),
-                Material.getMaterial("ACACIA_HANGING_SIGN"),
-                Material.getMaterial("ACACIA_WALL_HANGING_SIGN"),
-                Material.getMaterial("BIRCH_HANGING_SIGN"),
-                Material.getMaterial("BIRCH_WALL_HANGING_SIGN"),
-                Material.getMaterial("CRIMSON_HANGING_SIGN"),
-                Material.getMaterial("CRIMSON_WALL_HANGING_SIGN"),
-                Material.getMaterial("DARK_OAK_HANGING_SIGN"),
-                Material.getMaterial("DARK_OAK_WALL_HANGING_SIGN"),
-                Material.getMaterial("JUNGLE_HANGING_SIGN"),
-                Material.getMaterial("JUNGLE_WALL_HANGING_SIGN"),
-                Material.getMaterial("MANGROVE_HANGING_SIGN"),
-                Material.getMaterial("MANGROVE_WALL_HANGING_SIGN"),
-                Material.getMaterial("OAK_HANGING_SIGN"),
-                Material.getMaterial("OAK_WALL_HANGING_SIGN"),
-                Material.getMaterial("SPRUCE_HANGING_SIGN"),
-                Material.getMaterial("SPRUCE_WALL_HANGING_SIGN"),
-                Material.getMaterial("WARPED_HANGING_SIGN"),
-                Material.getMaterial("WARPED_WALL_HANGING_SIGN")
-            ));
-        }
-        if (Version.isHigherOrEqualsTo(Version.V1_21)) {
-            this.blocks.addAll(EnumSet.of(
-                Material.getMaterial("PALE_OAK_SIGN"),
-                Material.getMaterial("PALE_OAK_WALL_SIGN"),
-                Material.getMaterial("PALE_OAK_HANGING_SIGN"),
-                Material.getMaterial("PALE_OAK_WALL_HANGING_SIGN")
-            ));
         }
     }
 
